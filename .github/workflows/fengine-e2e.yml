@@ -1,0 +1,44 @@
+name: fengine E2E
+
+on:
+  workflow_dispatch: {}
+  push:
+    paths:
+      - 'packages/fengine/**'
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: getfluxo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d getfluxo" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install pnpm
+        run: npm i -g pnpm@8
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do pg_isready -h 127.0.0.1 -p 5432 && break || sleep 2; done
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Set DATABASE_URL
+        run: echo "DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/getfluxo" >> $GITHUB_ENV
+      - name: Generate prisma client
+        run: pnpm --filter @getflux/fengine prisma:generate
+        working-directory: ./packages/fengine
+      - name: Run e2e tests
+        run: pnpm --filter @getflux/fengine test:e2e
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
