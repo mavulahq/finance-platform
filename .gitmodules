@@ -1,28 +1,28 @@
 [submodule "packages/fengine"]
 path = packages/fengine
-url = git@github.com:getflux/fengine.git
+url = git@github.com:getfluxo/fengine.git
 	branch = main
 [submodule "packages/fwallet"]
 path = packages/fwallet
-url = git@github.com:getflux/fwallet.git
+url = git@github.com:getfluxo/fwallet.git
 	branch = main
 [submodule "packages/fwallet-mobile"]
 path = packages/fwallet-mobile
-url = git@github.com:getflux/fwallet-mobile.git
+url = git@github.com:getfluxo/fwallet-mobile.git
 	branch = main
 [submodule "packages/fagent"]
 path = packages/fagent
-url = git@github.com:getflux/fagent.git
+url = git@github.com:getfluxo/fagent.git
 	branch = main
 [submodule "packages/fwk"]
 path = packages/fwk
-url = git@github.com:getflux/fwk.git
+url = git@github.com:getfluxo/fwk.git
 	branch = main
 [submodule "packages/fxAI"]
 path = packages/fxAI
-url = git@github.com:getflux/fxAI.git
+url = git@github.com:getfluxo/fxAI.git
 	branch = main
 [submodule "packages/fpay"]
 path = packages/fpay
-url = git@github.com:getflux/fpay.git
+url = git@github.com:getfluxo/fpay.git
 	branch = main
