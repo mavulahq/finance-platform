@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fengine
+  namespace: getfluxo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fengine
+  template:
+    metadata:
+      labels:
+        app: fengine
+    spec:
+      containers:
+        - name: fengine
+          image: getfluxio/fengine:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: fengine-secrets
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
