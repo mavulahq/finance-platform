@@ -1,7 +1,7 @@
-# GetFlux.io - CI/CD Pipeline Architecture
+# getfluxo.io - CI/CD Pipeline Architecture
 
-**Author**: Estandar Mustaq <estandarmustaq@getflux.io>  
-**Copyright**: (c) 2025 GetFlux.io - All Rights Reserved  
+**Author**: Estandar Mustaq <mustaqueestandarjunior@gmail.com>  
+**Copyright**: (c) 2026 getfluxo.io - All Rights Reserved  
 **Document Version**: 1.0.0
 
 ---
@@ -115,39 +115,39 @@ jobs:
     strategy:
       matrix:
         package: [fengine, fwallet, fpay, fwk, fxAI, fagent]
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      
+
       - uses: pnpm/action-setup@v2
         with:
           version: ${{ needs.setup.outputs.pnpm-version }}
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ needs.setup.outputs.node-version }}
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Lint
         run: pnpm --filter @getflux/${{ matrix.package }} lint
-      
+
       - name: Type check
         run: pnpm --filter @getflux/${{ matrix.package }} typecheck
-      
+
       - name: Unit tests
         run: pnpm --filter @getflux/${{ matrix.package }} test:unit
-      
+
       - name: Integration tests
         run: pnpm --filter @getflux/${{ matrix.package }} test:integration
-      
+
       - name: Coverage report
         run: pnpm --filter @getflux/${{ matrix.package }} test:coverage
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
@@ -159,16 +159,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      
+
       - name: SonarQube scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
+
       - name: npm audit
         run: npm audit --production --audit-level=moderate
-      
+
       - name: Git secrets scan
         run: |
           git clone https://github.com/gitleaks/gitleaks-action.git
@@ -207,7 +207,7 @@ name: Build Containers
 
 on:
   workflow_run:
-    workflows: ["CI - Build & Test"]
+    workflows: ['CI - Build & Test']
     types: [completed]
     branches: [main]
   push:
@@ -218,30 +218,30 @@ jobs:
   build-images:
     if: github.event.workflow_run.conclusion == 'success' || startsWith(github.ref, 'refs/tags/release/')
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         service: [fengine, fpay, fagent, fwk]
-    
+
     permissions:
       contents: read
       packages: write
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Log in to ECR
         uses: aws-actions/amazon-ecr-login@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      
+
       - name: Generate image tag
         id: tags
         run: |
@@ -253,7 +253,7 @@ jobs:
           REGISTRY=${{ secrets.AWS_REGISTRY }}
           echo "tag=${REGISTRY}/getflux/${{ matrix.service }}:${VERSION}" >> $GITHUB_OUTPUT
           echo "latest=${REGISTRY}/getflux/${{ matrix.service }}:latest" >> $GITHUB_OUTPUT
-      
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -264,19 +264,19 @@ jobs:
             ${{ steps.tags.outputs.latest }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ steps.tags.outputs.tag }}
           format: 'sarif'
           output: 'trivy-results.sarif'
-      
+
       - name: Upload Trivy results
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
-      
+
       - name: Sign image
         run: |
           cosign sign --key ${{ secrets.COSIGN_KEY }} ${{ steps.tags.outputs.tag }}
@@ -318,31 +318,31 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.event.inputs.environment }}
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Configure kubectl
         run: |
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
           kubectl version
-      
+
       - name: Update Kubernetes manifests
         run: |
           kubectl set image deployment/fengine-api \
             fengine=${{ secrets.AWS_REGISTRY }}/getflux/fengine:${{ github.event.inputs.version }} \
             -n getflux-${{ github.event.inputs.environment }}
-      
+
       - name: Monitor rollout
         run: |
           kubectl rollout status deployment/fengine-api \
             -n getflux-${{ github.event.inputs.environment }} \
             --timeout=10m
-      
+
       - name: Health checks
         run: |
           bash packages/finfra/scripts/health-check.sh ${{ github.event.inputs.environment }}
-      
+
       - name: Slack notification
         if: success()
         uses: slackapi/slack-github-action@v1.24.0
@@ -361,7 +361,7 @@ jobs:
                 }
               ]
             }
-      
+
       - name: Auto-rollback on failure
         if: failure()
         run: |
@@ -382,6 +382,7 @@ jobs:
 **Cost**: ~$300/month
 
 **Deployment**:
+
 ```bash
 # Auto-deployed on PR merge to main
 git merge origin/main
@@ -397,6 +398,7 @@ git merge origin/main
 **Cost**: ~$2,500/month
 
 **Deployment**:
+
 ```bash
 # Manual trigger with approval
 git tag release/v1.2.3
@@ -442,17 +444,17 @@ Application Traces
 
 ### 4.2 Key Metrics & Alerts
 
-| Metric | Threshold | Severity |
-|--------|-----------|----------|
-| API Response Time (p99) | > 500ms | Warning |
-| API Response Time (p99) | > 1s | Critical |
-| Error Rate | > 1% | Warning |
-| Error Rate | > 5% | Critical |
-| Pod CPU | > 80% | Warning |
-| Pod Memory | > 90% | Critical |
-| Database Connections | > 80 of 100 | Warning |
-| Database Replication Lag | > 5s | Critical |
-| Disk Usage | > 85% | Warning |
+| Metric                   | Threshold   | Severity |
+| ------------------------ | ----------- | -------- |
+| API Response Time (p99)  | > 500ms     | Warning  |
+| API Response Time (p99)  | > 1s        | Critical |
+| Error Rate               | > 1%        | Warning  |
+| Error Rate               | > 5%        | Critical |
+| Pod CPU                  | > 80%       | Warning  |
+| Pod Memory               | > 90%       | Critical |
+| Database Connections     | > 80 of 100 | Warning  |
+| Database Replication Lag | > 5s        | Critical |
+| Disk Usage               | > 85%       | Warning  |
 
 ---
 
@@ -461,27 +463,29 @@ Application Traces
 ### 5.1 Automatic Rollback
 
 **Triggers**:
+
 - Pod CrashLoopBackOff detected
 - Health check failures (3 consecutive)
 - Error rate > 10% for 5 minutes
 - Response time p99 > 2 seconds for 5 minutes
 
 **Action**:
+
 ```bash
-kubectl rollout undo deployment/fengine-api -n getflux-prod
+kubectl rollout undo deployment/fengine-api -n getfluxo-prod
 ```
 
 ### 5.2 Manual Rollback
 
 ```bash
 # View rollout history
-kubectl rollout history deployment/fengine-api -n getflux-prod
+kubectl rollout history deployment/fengine-api -n getfluxo-prod
 
 # Rollback to previous revision
-kubectl rollout undo deployment/fengine-api -n getflux-prod --to-revision=5
+kubectl rollout undo deployment/fengine-api -n getfluxo-prod --to-revision=5
 
 # Verify
-kubectl rollout status deployment/fengine-api -n getflux-prod
+kubectl rollout status deployment/fengine-api -n getfluxo-prod
 ```
 
 ---
@@ -491,6 +495,7 @@ kubectl rollout status deployment/fengine-api -n getflux-prod
 ### 6.1 Deployment Audit Trail
 
 All deployments logged:
+
 - Who: GitHub actor
 - What: Commit SHA, image tag, version
 - When: Timestamp
@@ -498,7 +503,7 @@ All deployments logged:
 - Why: Commit message, approval reason
 - Approval: Manual or automated
 
-**Audit Log Location**: `s3://getflux-audit-logs/deployments/`
+**Audit Log Location**: `s3://getfluxo-audit-logs/deployments/`
 
 ### 6.2 Security Scanning Results
 
@@ -544,6 +549,7 @@ feature branches
 - **Build**: Metadata (e.g., +build.20250120)
 
 **Examples**:
+
 - `release/v1.0.0` - First production release
 - `release/v1.1.0` - New features, backward compatible
 - `release/v1.1.1` - Bug fix
