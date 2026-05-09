@@ -1,0 +1,227 @@
+# GetFlux.io - Proprietary Software License & Author Attribution
+
+## Copyright Notice
+
+Copyright (c) 2025 GetFlux.io - All Rights Reserved
+
+**Principal Author & Architect**: Estandar Mustaq (estandarmustaq@getflux.io)
+**Company**: GetFlux.io
+**Country**: Mozambique (SADC Region)
+**Industry**: FinTech / MacroFinance Services
+
+---
+
+## License Terms
+
+### 1. Proprietary Software
+This software (GetFlux.io Platform) is proprietary and confidential. All packages, code, designs, documentation, and intellectual property contained herein are owned exclusively by GetFlux.io.
+
+### 2. Commercial License
+This software is licensed for **B2B SaaS subscription use only**. Institutions (financial service providers) may use this platform via subscription agreement with GetFlux.io.
+
+### 3. Restrictions
+- ❌ **NO** distribution, resale, or sublicensing without explicit written agreement
+- ❌ **NO** reverse engineering, decompilation, or source code extraction
+- ❌ **NO** modification or derivative work creation (except configuration)
+- ❌ **NO** use for competing products or services
+- ❌ **NO** public disclosure of architecture, algorithms, or trade secrets
+
+### 4. Permitted Use
+- ✅ White-label deployment for subscribed institutions
+- ✅ Configuration and customization within no-code framework
+- ✅ Internal development and testing by authorized team members
+- ✅ Performance monitoring and operational management
+- ✅ Integration with external systems (via API, webhooks, data connectors)
+
+### 5. Data Ownership
+- Institutions own **100%** of their financial data
+- GetFlux.io provides secure storage and processing services
+- No data resale, sharing, or monetization without explicit consent
+- GDPR, CCPA, and local regulatory compliance required
+
+### 6. Support & SLA
+- Commercial support included with subscription
+- Uptime SLA: 99.99% for production deployments
+- Security patches: Emergency (< 4 hours), Regular (monthly)
+
+---
+
+## Package Author Attribution
+
+Each package (fengine, fwallet, fpay, fwk, fxAI, fagent, fwallet-mobile, finfra, fdocs) MUST include:
+
+### Header Format (All Source Files)
+
+```
+/*
+ * GetFlux.io - [Package Name]
+ * 
+ * Author: Estandar Mustaq <estandarmustaq@getflux.io>
+ * Copyright (c) 2025 GetFlux.io
+ * 
+ * This file is part of the GetFlux.io Platform.
+ * Proprietary and confidential - All rights reserved.
+ * 
+ * [Brief description of module]
+ * 
+ * OODA Cycle Compliance: Observe → Orient → Decide → Act
+ * Version: 1.0.0
+ */
+```
+
+### Python Files
+
+```python
+"""
+GetFlux.io - [Package Name]
+
+Author: Estandar Mustaq <estandarmustaq@getflux.io>
+Copyright (c) 2025 GetFlux.io
+
+This module is part of the GetFlux.io Platform.
+Proprietary and confidential - All rights reserved.
+
+[Brief description]
+"""
+```
+
+### CODEOWNERS File (Each Submodule)
+
+```
+# CODEOWNERS - GetFlux.io [Package Name]
+# Principal Author: Estandar Mustaq <estandarmustaq@getflux.io>
+# Copyright (c) 2025 GetFlux.io
+
+* @estandarmustaq
+/src/**/*.ts @estandarmustaq @getflux-team
+/tests/**/*.ts @estandarmustaq
+/docs/ @estandarmustaq
+```
+
+---
+
+## Intellectual Property
+
+### Patents & Trademarks
+- **GetFlux.io** - Registered trademark
+- **fengine, fwallet, fpay, fwk, fxAI, fagent** - Proprietary brand names
+- Multi-tenant architecture & configuration system - Patented (patent pending)
+
+### Trade Secrets
+The following are considered trade secrets:
+- ML/AI models and scoring algorithms
+- Core financial calculation engines
+- Architecture patterns and implementation details
+- Performance optimization techniques
+- Customer data and configurations
+
+---
+
+## Compliance & Regulatory
+
+### Financial Regulations Compliance
+- ✅ Money Transfer Regulations (each jurisdiction)
+- ✅ Know Your Customer (KYC) requirements
+- ✅ Anti-Money Laundering (AML) standards
+- ✅ Payment Card Industry Data Security Standard (PCI-DSS)
+- ✅ General Data Protection Regulation (GDPR)
+- ✅ Consumer Data Protection (CCPA, POPIA, etc.)
+
+### Security Standards
+- ✅ ISO/IEC 27001 (Information Security Management)
+- ✅ SOC 2 Type II compliance
+- ✅ OWASP Top 10 mitigation
+- ✅ Regular penetration testing
+- ✅ Bug bounty program
+
+---
+
+## Contributor License Agreement (CLA)
+
+All contributors to the GetFlux.io platform must sign a Contributor License Agreement:
+
+1. **Individual CLA**: For independent contributors
+2. **Corporate CLA**: For company employees
+3. **Work-for-Hire Agreement**: For contract developers
+
+Contributions include:
+- Code commits
+- Bug reports with PoC code
+- Feature implementations
+- Documentation improvements
+
+**By contributing, you agree:**
+- Your contribution is original work
+- You grant GetFlux.io a perpetual license
+- GetFlux.io retains ownership of contributions
+- You waive moral rights (moral rights = right to be credited, not modified)
+
+---
+
+## Liability & Warranty
+
+### NO WARRANTIES
+The software is provided "AS-IS" without warranties of any kind:
+- ❌ No warranty of fitness for a particular purpose
+- ❌ No warranty of non-infringement
+- ❌ No warranty of data accuracy or completeness
+- ❌ No warranty of uptime or performance
+
+### LIABILITY LIMITATIONS
+GetFlux.io is NOT liable for:
+- Indirect, incidental, consequential damages
+- Lost profits, lost data, lost business
+- Financial losses due to service interruption
+- Third-party claims or liabilities
+- Force majeure events
+
+**Liability Cap**: Limited to fees paid in the 12 months preceding claim
+
+---
+
+## Termination & Enforcement
+
+### Termination Triggers
+- Non-payment of subscription fees
+- Breach of license terms (reverse engineering, resale, etc.)
+- Unauthorized access or security violations
+- Regulatory non-compliance
+- Competitive use detection
+
+### Remedies
+- Immediate account suspension
+- Data preservation (30 days) then deletion
+- Legal action for damages
+- Injunctive relief to prevent unauthorized use
+
+### Jurisdiction
+- **Governing Law**: Laws of Mozambique (with international arbitration available)
+- **Dispute Resolution**: UNCITRAL Arbitration Rules
+- **Venue**: Maputo, Mozambique (or agreed arbitration location)
+
+---
+
+## Contact & Licensing
+
+**Legal Inquiries**: legal@getflux.io  
+**Commercial Licensing**: sales@getflux.io  
+**Security Issues**: security@getflux.io
+
+**Company Address**:
+GetFlux.io
+Maputo, Mozambique
+Telephone: +258 21 xxx xxxx
+
+---
+
+## Version History
+
+| Date | Version | Changes | Author |
+|------|---------|---------|--------|
+| 2025-01-20 | 1.0 | Initial license document | Estandar Mustaq |
+
+---
+
+**LAST UPDATED**: 2025-01-20  
+**EFFECTIVE DATE**: 2025-01-20  
+**NEXT REVIEW**: 2025-07-20

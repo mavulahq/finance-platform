@@ -1,0 +1,64 @@
+{
+  "name": "getflux-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GetFlux.io - Digital Core Banking MacroFinance as a Service (B2B SaaS)",
+  "author": "Estandar Mustaq <estandarmustaq@getflux.io>",
+  "copyright": "Copyright (c) 2025 GetFlux.io - All Rights Reserved",
+  "license": "PROPRIETARY",
+  "homepage": "https://getflux.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/getfluxio/getflux-monorepo.git"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "prepare": "git submodule update --init --recursive",
+    "postinstall": "pnpm install --recursive",
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test",
+    "test:ci": "pnpm -r test:ci",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "format": "pnpm -r format",
+    "format:check": "pnpm -r format:check",
+    "ci:submodule:sync": "git submodule foreach --recursive 'git fetch origin && git checkout $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo main)'",
+    "docs:generate": "pnpm --filter fdocs generate",
+    "infra:plan": "pnpm --filter finfra terraform plan",
+    "infra:apply": "pnpm --filter finfra terraform apply",
+    "docker:build-all": "pnpm --filter finfra docker build-all",
+    "deploy:staging": "pnpm --filter finfra deploy:staging",
+    "deploy:production": "pnpm --filter finfra deploy:production"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.3"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "react",
+        "react-dom"
+      ]
+    }
+  },
+  "workspaces": [
+    "packages/fengine",
+    "packages/fwallet",
+    "packages/fwallet-mobile",
+    "packages/fagent",
+    "packages/fwk",
+    "packages/fxAI",
+    "packages/fpay",
+    "packages/finfra",
+    "packages/fdocs"
+  ]
+}

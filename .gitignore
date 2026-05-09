@@ -1,0 +1,177 @@
+# GetFlux.io Monorepo - .gitignore
+# Author: Estandar Mustaq <estandarmustaq@getflux.io>
+# Copyright (c) 2025 GetFlux.io
+
+# =============================================================================
+# Dependencies
+# =============================================================================
+node_modules/
+.pnpm-store/
+dist/
+build/
+.turbo/
+
+# Lock files (each package manages its own)
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# =============================================================================
+# Build outputs
+# =============================================================================
+*.tsbuildinfo
+.next/
+.nuxt/
+out/
+.vuepress/dist/
+
+# =============================================================================
+# IDE & Editor
+# =============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.env.local
+.env.*.local
+
+# =============================================================================
+# Testing
+# =============================================================================
+coverage/
+.nyc_output/
+jest-junit-results.xml
+test-results/
+
+# =============================================================================
+# Logs
+# =============================================================================
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =============================================================================
+# Environment & Secrets
+# =============================================================================
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+.env.development
+secrets/
+*.pem
+*.key
+kubeconfig
+
+# =============================================================================
+# Docker
+# =============================================================================
+Dockerfile.bak
+docker-compose.override.yml
+.docker/
+
+# =============================================================================
+# Kubernetes
+# =============================================================================
+kubeconfig/
+*.kubeconfig
+kubernetes/secrets/
+kustomization/overlays/*/secrets/
+
+# =============================================================================
+# Terraform
+# =============================================================================
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+.terraform/
+.terraform.lock.hcl
+terraform/crash.log
+terraform/crash.*.log
+terraform/override.tf
+terraform/override.tf.json
+terraform/*_override.tf
+terraform/*_override.tf.json
+
+# =============================================================================
+# AWS
+# =============================================================================
+.aws/credentials
+.aws/config
+credentials
+terraform.tfvars
+
+# =============================================================================
+# OS & Temp
+# =============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.tmp
+tmp/
+temp/
+
+# =============================================================================
+# IDE specific
+# =============================================================================
+.vscode/extensions.json
+.vscode/settings.json
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# =============================================================================
+# Optional npm cache
+# =============================================================================
+.npm
+.eslintcache
+.stylelintcache
+
+# =============================================================================
+# Monorepo specific
+# =============================================================================
+# Don't commit individual package lock files (pnpm handles this)
+packages/*/pnpm-lock.yaml
+packages/*/yarn.lock
+packages/*/package-lock.json
+
+# Build outputs per package
+packages/*/dist/
+packages/*/build/
+packages/*/.next/
+packages/*/.nuxt/
+
+# Don't commit Terraform state from any package's finfra
+packages/finfra/terraform.tfstate*
+packages/finfra/terraform.tfvars
+
+# =============================================================================
+# Development
+# =============================================================================
+.history/
+*.orig
+.backup/
+
+# =============================================================================
+# Allowed exceptions (use git add -f to override)
+# =============================================================================
+# !.env.example
+# !.gitkeep
+# !.github/workflows/

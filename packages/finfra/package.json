@@ -1,0 +1,43 @@
+/*
+ * GetFlux.io - finfra (Infrastructure)
+ * 
+ * Author: Estandar Mustaq <estandarmustaq@getflux.io>
+ * Copyright (c) 2025 GetFlux.io
+ * 
+ * Infrastructure-as-Code and deployment automation
+ * 
+ * OODA Cycle: Infrastructure decisions follow Observe → Orient → Decide → Act
+ */
+
+{
+  "name": "@getflux/finfra",
+  "version": "1.0.0",
+  "description": "GetFlux.io Infrastructure Package - Docker, Kubernetes, Terraform, CI/CD",
+  "author": "Estandar Mustaq <estandarmustaq@getflux.io>",
+  "license": "PROPRIETARY",
+  "private": true,
+  "scripts": {
+    "docker:build": "bash docker/build.sh",
+    "docker:push": "bash docker/push.sh",
+    "k8s:apply": "bash kubernetes/apply.sh",
+    "k8s:delete": "bash kubernetes/delete.sh",
+    "tf:init": "terraform -chdir=terraform init",
+    "tf:plan": "terraform -chdir=terraform plan",
+    "tf:apply": "terraform -chdir=terraform apply",
+    "tf:destroy": "terraform -chdir=terraform destroy",
+    "deploy:staging": "bash scripts/deploy-staging.sh",
+    "deploy:prod": "bash scripts/deploy-production.sh",
+    "health:check": "bash scripts/health-check.sh",
+    "backup:db": "bash scripts/backup-database.sh",
+    "migrate:schema": "bash scripts/migrate-schema.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "docker": ">=24.0.0",
+    "kubernetes": ">=1.28.0"
+  }
+}
