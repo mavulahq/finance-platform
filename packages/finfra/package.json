@@ -1,8 +1,8 @@
 /*
- * GetFlux.io - finfra (Infrastructure)
+ * getfluxo.io - finfra (Infrastructure)
  * 
  * Author: Estandar Mustaq <estandarmustaq@getflux.io>
- * Copyright (c) 2025 GetFlux.io
+ * Copyright (c) 2025 getfluxo.io
  * 
  * Infrastructure-as-Code and deployment automation
  * 
@@ -10,9 +10,9 @@
  */
 
 {
-  "name": "@getflux/finfra",
+  "name": "@getfluxo/finfra",
   "version": "1.0.0",
-  "description": "GetFlux.io Infrastructure Package - Docker, Kubernetes, Terraform, CI/CD",
+  "description": "getfluxo.io Infrastructure Package - Docker, Kubernetes, Terraform, CI/CD",
   "author": "Estandar Mustaq <estandarmustaq@getflux.io>",
   "license": "PROPRIETARY",
   "private": true,

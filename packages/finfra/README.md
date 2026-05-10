@@ -1,6 +1,6 @@
 # finfra - Infrastructure
 
-This package contains Terraform modules and Kubernetes manifests used to provision and operate GetFlux.io.
+This package contains Terraform modules and Kubernetes manifests used to provision and operate getfluxo.io.
 
 Usage:
 

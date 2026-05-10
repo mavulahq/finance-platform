@@ -1,19 +1,19 @@
 {
-  "name": "getflux-monorepo",
+  "name": "getfluxo",
   "version": "1.0.0",
   "private": true,
-  "description": "GetFlux.io - Digital Core Banking MacroFinance as a Service (B2B SaaS)",
-  "author": "Estandar Mustaq <estandarmustaq@getflux.io>",
-  "copyright": "Copyright (c) 2025 GetFlux.io - All Rights Reserved",
+  "description": "getfluxo.io - Digital Core Banking MacroFinance as a Service (B2B SaaS)",
+  "author": "Estandar Mustaq <mustaqueestandarjunior@gmail.com>",
+  "copyright": "Copyright (c) 2026 getfluxo.io - All Rights Reserved",
   "license": "PROPRIETARY",
-  "homepage": "https://getflux.io",
+  "homepage": "https://getfluxo.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/getfluxio/getflux-monorepo.git"
+    "url": "https://github.com/getfluxo-io/getfluxo.git"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=8.0.0"
+    "node": "20.15.0",
+    "pnpm": "10.33.0"
   },
   "scripts": {
     "prepare": "git submodule update --init --recursive",

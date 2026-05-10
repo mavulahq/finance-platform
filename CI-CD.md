@@ -45,7 +45,7 @@
 │  3️⃣  BUILD_CONTAINERS.yml                                         │
 │      • Trigger: CI_BUILD_TEST success + tag release               │
 │      • Build images (with submodule commits)                      │
-│      • Tag: getflux/fengine:1.2.3                                 │
+│      • Tag: getfluxo/fengine:1.2.3                                 │
 │      • Push to ECR (AWS)                                           │
 │      • Sign images (Cosign)                                        │
 │      • Generate SBOM                                               │
@@ -134,19 +134,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm --filter @getflux/${{ matrix.package }} lint
+        run: pnpm --filter @getfluxo/${{ matrix.package }} lint
 
       - name: Type check
-        run: pnpm --filter @getflux/${{ matrix.package }} typecheck
+        run: pnpm --filter @getfluxo/${{ matrix.package }} typecheck
 
       - name: Unit tests
-        run: pnpm --filter @getflux/${{ matrix.package }} test:unit
+        run: pnpm --filter @getfluxo/${{ matrix.package }} test:unit
 
       - name: Integration tests
-        run: pnpm --filter @getflux/${{ matrix.package }} test:integration
+        run: pnpm --filter @getfluxo/${{ matrix.package }} test:integration
 
       - name: Coverage report
-        run: pnpm --filter @getflux/${{ matrix.package }} test:coverage
+        run: pnpm --filter @getfluxo/${{ matrix.package }} test:coverage
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -251,8 +251,8 @@ jobs:
             VERSION=sha-${GITHUB_SHA::7}
           fi
           REGISTRY=${{ secrets.AWS_REGISTRY }}
-          echo "tag=${REGISTRY}/getflux/${{ matrix.service }}:${VERSION}" >> $GITHUB_OUTPUT
-          echo "latest=${REGISTRY}/getflux/${{ matrix.service }}:latest" >> $GITHUB_OUTPUT
+          echo "tag=${REGISTRY}/getfluxo/${{ matrix.service }}:${VERSION}" >> $GITHUB_OUTPUT
+          echo "latest=${REGISTRY}/getfluxo/${{ matrix.service }}:latest" >> $GITHUB_OUTPUT
 
       - name: Build and push
         uses: docker/build-push-action@v4
@@ -330,7 +330,7 @@ jobs:
       - name: Update Kubernetes manifests
         run: |
           kubectl set image deployment/fengine-api \
-            fengine=${{ secrets.AWS_REGISTRY }}/getflux/fengine:${{ github.event.inputs.version }} \
+            fengine=${{ secrets.AWS_REGISTRY }}/getfluxo/fengine:${{ github.event.inputs.version }} \
             -n getflux-${{ github.event.inputs.environment }}
 
       - name: Monitor rollout

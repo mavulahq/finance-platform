@@ -1,247 +1,130 @@
-# getfluxo.io - Proprietary Software License & Author Attribution
+getfluxo.io - Proprietary Software License & Author Attribution
 
-## Copyright Notice
+Copyright (c) 2025 getfluxo.io. All Rights Reserved.
 
-Copyright (c) 2026 getfluxo.io - All Rights Reserved
+Principal Author & Architect: Estandar Mustaq <mustaqueestandarjunior@gmail.com>
+Company: getfluxo.io
+Country: Mozambique (SADC Region)
+Industry: FinTech / MacroFinance Services
 
-**Principal Author & Architect**: Estandar Mustaq (mustaqueestandarjunior@gmail.com)
-**Company**: getfluxo.io
-**Country**: Mozambique (SADC Region)
-**Industry**: FinTech / MacroFinance Services
+================================================================================
 
----
+1. PROPRIETARY SOFTWARE
 
-## License Terms
+This software (getfluxo.io Platform) is proprietary and confidential. All packages, 
+code, designs, documentation, and intellectual property contained herein are owned 
+exclusively by getfluxo.io.
 
-### 1. Proprietary Software
+2. COMMERCIAL LICENSE
 
-This software (getfluxo.io Platform) is proprietary and confidential. All packages, code, designs, documentation, and intellectual property contained herein are owned exclusively by getfluxo.io.
+This software is licensed for B2B SaaS subscription use only. Institutions 
+(financial service providers) may use this platform via subscription agreement 
+with getfluxo.io.
 
-### 2. Commercial License
+3. RESTRICTIONS
 
-This software is licensed for **B2B SaaS subscription use only**. Institutions (financial service providers) may use this platform via subscription agreement with getfluxo.io.
+- NO distribution, resale, or sublicensing without explicit written agreement
+- NO reverse engineering, decompilation, or source code extraction
+- NO modification or derivative work creation (except configuration)
+- NO use for competing products or services
+- NO public disclosure of architecture, algorithms, or trade secrets
 
-### 3. Restrictions
+4. PERMITTED USE
 
-- ❌ **NO** distribution, resale, or sublicensing without explicit written agreement
-- ❌ **NO** reverse engineering, decompilation, or source code extraction
-- ❌ **NO** modification or derivative work creation (except configuration)
-- ❌ **NO** use for competing products or services
-- ❌ **NO** public disclosure of architecture, algorithms, or trade secrets
+- White-label deployment for subscribed institutions
+- Configuration and customization within no-code framework
+- Internal development and testing by authorized team members
+- Performance monitoring and operational management
+- Integration with external systems (via API, webhooks, data connectors)
 
-### 4. Permitted Use
+5. DATA OWNERSHIP
 
-- ✅ White-label deployment for subscribed institutions
-- ✅ Configuration and customization within no-code framework
-- ✅ Internal development and testing by authorized team members
-- ✅ Performance monitoring and operational management
-- ✅ Integration with external systems (via API, webhooks, data connectors)
-
-### 5. Data Ownership
-
-- Institutions own **100%** of their financial data
+- Institutions own 100% of their financial data
 - getfluxo.io provides secure storage and processing services
 - No data resale, sharing, or monetization without explicit consent
 - GDPR, CCPA, and local regulatory compliance required
 
-### 6. Support & SLA
+6. SUPPORT & SLA
 
 - Commercial support included with subscription
 - Uptime SLA: 99.99% for production deployments
-- Security patches: Emergency (< 4 hours), Regular (monthly)
+- 24/7 monitoring and incident response
 
----
+7. WARRANTY DISCLAIMER
 
-## Package Author Attribution
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL getfluxo.io BE LIABLE 
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+ARISING FROM THE USE OF OR INABILITY TO USE THE SOFTWARE.
 
-Each package (fengine, fwallet, fpay, fwk, fxAI, fagent, fwallet-mobile, finfra, fdocs) MUST include:
+8. LIMITATION OF LIABILITY
 
-### Header Format (All Source Files)
+In no event shall getfluxo.io's total liability exceed the fees paid for the 
+Software in the preceding 12 months. Some jurisdictions do not allow the 
+limitation of liability, so this limitation may not apply to you.
 
-```
+9. TERMINATION
+
+This license is effective until terminated. Your rights under this license will 
+terminate automatically without notice from getfluxo.io if you fail to comply with 
+any terms of this license. Upon termination, you shall cease all use of the 
+Software and destroy all copies in your possession.
+
+10. GOVERNING LAW
+
+This license is governed by the laws of the jurisdiction where getfluxo.io is 
+incorporated, without regard to its conflict of law principles.
+
+11. COMPLIANCE & REGULATIONS
+
+The Software complies with applicable financial services regulations in the SADC 
+region, including but not limited to KYC/AML, data protection laws, and 
+anti-money laundering directives. Usage must comply with all local and 
+international regulations.
+
+12. CONTRIBUTOR LICENSE AGREEMENT (CLA)
+
+By contributing to this project, you agree to assign all intellectual property 
+rights to getfluxo.io. Contributions are accepted under the terms of this 
+proprietary license.
+
+================================================================================
+
+SOURCE FILE HEADER FORMAT
+
+Each source file should include the following header:
+
+For TypeScript/JavaScript:
+
 /*
- * getfluxo.io - [Package Name]
- *
- * Author: Estandar Mustaq <estandarmustaq@getflux.io>
- * Copyright (c) 2026 getfluxo.io
- *
- * This file is part of the getfluxo.io Platform.
- * Proprietary and confidential - All rights reserved.
- *
+ * getfluxo.io - [Module/Package Name]
+ * Copyright (c) 2025 getfluxo.io
+ * 
+ * Author: [Author Name] <[Email]>
+ * License: Proprietary - See LICENSE file
+ * 
  * [Brief description of module]
- *
- * OODA Cycle Compliance: Observe → Orient → Decide → Act
- * Version: 1.0.0
  */
-```
 
-### Python Files
+For Python:
 
-```python
-"""
-getfluxo.io - [Package Name]
+# getfluxo.io - [Module/Package Name]
+# Copyright (c) 2025 getfluxo.io
+# Author: [Author Name] <[Email]>
+# License: Proprietary
 
-Author: Estandar Mustaq <estandarmustaq@getflux.io>
-Copyright (c) 2026 getfluxo.io
+For Shell/Bash:
 
-This module is part of the getfluxo.io Platform.
-Proprietary and confidential - All rights reserved.
+#!/usr/bin/env bash
+# getfluxo.io - [Module/Package Name]
+# Copyright (c) 2025 getfluxo.io
+# Author: [Author Name] <[Email]>
 
-[Brief description]
-"""
-```
+================================================================================
 
-### CODEOWNERS File (Each Submodule)
+For legal inquiries, contact: legal@getfluxo.io
+For security issues, contact: security@getfluxo.io
+For support, contact: support@getfluxo.io
 
-```
-# CODEOWNERS - getfluxo.io [Package Name]
-# Principal Author: Estandar Mustaq <mustaqueestandarjunior@gmail.com>
-# Copyright (c) 2026 getfluxo.io
-
-* @estandarmustaq
-/src/**/*.ts @estandarmustaq @getflux-team
-/tests/**/*.ts @estandarmustaq
-/docs/ @estandarmustaq
-```
-
----
-
-## Intellectual Property
-
-### Patents & Trademarks
-
-- **GetFlux.io** - Registered trademark
-- **fengine, fwallet, fpay, fwk, fxAI, fagent** - Proprietary brand names
-- Multi-tenant architecture & configuration system - Patented (patent pending)
-
-### Trade Secrets
-
-The following are considered trade secrets:
-
-- ML/AI models and scoring algorithms
-- Core financial calculation engines
-- Architecture patterns and implementation details
-- Performance optimization techniques
-- Customer data and configurations
-
----
-
-## Compliance & Regulatory
-
-### Financial Regulations Compliance
-
-- ✅ Money Transfer Regulations (each jurisdiction)
-- ✅ Know Your Customer (KYC) requirements
-- ✅ Anti-Money Laundering (AML) standards
-- ✅ Payment Card Industry Data Security Standard (PCI-DSS)
-- ✅ General Data Protection Regulation (GDPR)
-- ✅ Consumer Data Protection (CCPA, POPIA, etc.)
-
-### Security Standards
-
-- ✅ ISO/IEC 27001 (Information Security Management)
-- ✅ SOC 2 Type II compliance
-- ✅ OWASP Top 10 mitigation
-- ✅ Regular penetration testing
-- ✅ Bug bounty program
-
----
-
-## Contributor License Agreement (CLA)
-
-All contributors to the getfluxo.io platform must sign a Contributor License Agreement:
-
-1. **Individual CLA**: For independent contributors
-2. **Corporate CLA**: For company employees
-3. **Work-for-Hire Agreement**: For contract developers
-
-Contributions include:
-
-- Code commits
-- Bug reports with PoC code
-- Feature implementations
-- Documentation improvements
-
-**By contributing, you agree:**
-
-- Your contribution is original work
-- You grant getfluxo.io a perpetual license
-- getfluxo.io retains ownership of contributions
-- You waive moral rights (moral rights = right to be credited, not modified)
-
----
-
-## Liability & Warranty
-
-### NO WARRANTIES
-
-The software is provided "AS-IS" without warranties of any kind:
-
-- ❌ No warranty of fitness for a particular purpose
-- ❌ No warranty of non-infringement
-- ❌ No warranty of data accuracy or completeness
-- ❌ No warranty of uptime or performance
-
-### LIABILITY LIMITATIONS
-
-getfluxo.io is NOT liable for:
-
-- Indirect, incidental, consequential damages
-- Lost profits, lost data, lost business
-- Financial losses due to service interruption
-- Third-party claims or liabilities
-- Force majeure events
-
-**Liability Cap**: Limited to fees paid in the 12 months preceding claim
-
----
-
-## Termination & Enforcement
-
-### Termination Triggers
-
-- Non-payment of subscription fees
-- Breach of license terms (reverse engineering, resale, etc.)
-- Unauthorized access or security violations
-- Regulatory non-compliance
-- Competitive use detection
-
-### Remedies
-
-- Immediate account suspension
-- Data preservation (30 days) then deletion
-- Legal action for damages
-- Injunctive relief to prevent unauthorized use
-
-### Jurisdiction
-
-- **Governing Law**: Laws of Mozambique (with international arbitration available)
-- **Dispute Resolution**: UNCITRAL Arbitration Rules
-- **Venue**: Maputo, Mozambique (or agreed arbitration location)
-
----
-
-## Contact & Licensing
-
-**Legal Inquiries**: [EMAIL_ADDRESS]  
-**Commercial Licensing**: [EMAIL_ADDRESS]  
-**Security Issues**: [EMAIL_ADDRESS]
-
-**Company Address**:
-getfluxo.io
-Maputo, Mozambique
-Telephone: +258 21 xxx xxxx
-
----
-
-## Version History
-
-| Date       | Version | Changes                  | Author          |
-| ---------- | ------- | ------------------------ | --------------- |
-| 2025-01-20 | 1.0     | Initial license document | Estandar Mustaq |
-
----
-
-**LAST UPDATED**: 2025-01-20  
-**EFFECTIVE DATE**: 2025-01-20  
-**NEXT REVIEW**: 2025-07-20
+Last Updated: 2025-01-20

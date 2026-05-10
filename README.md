@@ -1,7 +1,7 @@
-# GetFlux.io - Digital Core Banking MacroFinance as a Service
+# getfluxo.io - Digital Core Banking MacroFinance as a Service
 
 **Author**: Estandar Mustaq <estandarmustaq@getflux.io>  
-**Company**: GetFlux.io  
+**Company**: getfluxo.io  
 **Region**: SADC (Southern African Development Community)  
 **License**: Proprietary (see LICENSED file)  
 **Status**: Architecture Phase - Ready for Implementation
@@ -10,7 +10,7 @@
 
 ## Overview
 
-**GetFlux.io** is a **multi-tenant B2B SaaS platform** for financial services delivery. Financial institutions configure their services and products through a no-code interface, and the platform generates white-labeled applications that load institution-specific configurations at runtime.
+**getfluxo.io** is a **multi-tenant B2B SaaS platform** for financial services delivery. Financial institutions configure their services and products through a no-code interface, and the platform generates white-labeled applications that load institution-specific configurations at runtime.
 
 ### Key Features
 
@@ -41,7 +41,7 @@ docker --version  # 24.0.0+
 
 ```bash
 # Clone monorepo with all submodules
-git clone --recurse-submodules https://github.com/getfluxio/getflux-monorepo.git
+git clone --recurse-submodules https://github.com/getfluxio/getfluxo.git
 cd getfluxo
 
 # Install dependencies
@@ -276,13 +276,13 @@ git push
 pnpm test
 
 # Specific package
-pnpm --filter @getflux/fengine test
+pnpm --filter @getfluxo/fengine test
 
 # Watch mode
-pnpm --filter @getflux/fengine test:watch
+pnpm --filter @getfluxo/fengine test:watch
 
 # Coverage report
-pnpm --filter @getflux/fengine test:coverage
+pnpm --filter @getfluxo/fengine test:coverage
 ```
 
 ### Building
@@ -292,7 +292,7 @@ pnpm --filter @getflux/fengine test:coverage
 pnpm build
 
 # Specific package
-pnpm --filter @getflux/fengine build
+pnpm --filter @getfluxo/fengine build
 
 # Watch mode (development)
 pnpm dev
@@ -325,7 +325,7 @@ docker-compose up -d
 docker-compose exec postgres pg_isready
 
 # Run migrations
-pnpm --filter @getflux/fengine prisma migrate dev
+pnpm --filter @getfluxo/fengine prisma migrate dev
 
 # Start dev servers
 pnpm dev
@@ -448,9 +448,9 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 All files must include header:
 ```typescript
 /*
- * GetFlux.io - [Package Name]
+ * getfluxo.io - [Package Name]
  * Author: Estandar Mustaq <estandarmustaq@getflux.io>
- * Copyright (c) 2025 GetFlux.io
+ * Copyright (c) 2025 getfluxo.io
  * 
  * Description of module
  */
@@ -485,8 +485,8 @@ All files must include header:
 See [LICENSED](./LICENSED) file for complete terms
 
 **Author**: Estandar Mustaq <estandarmustaq@getflux.io>  
-**Company**: GetFlux.io  
-**Copyright**: (c) 2025 GetFlux.io
+**Company**: getfluxo.io  
+**Copyright**: (c) 2025 getfluxo.io
 
 ---
 

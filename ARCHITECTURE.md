@@ -1,4 +1,4 @@
-# GetFlux.io - Digital Core Banking MacroFinance as a Service (B2B SaaS)
+# getfluxo.io - Digital Core Banking MacroFinance as a Service (B2B SaaS)
 
 **Version**: 1.0  
 **Status**: Architecture Phase  
