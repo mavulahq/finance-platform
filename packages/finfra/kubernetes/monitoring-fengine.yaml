@@ -1,0 +1,63 @@
+/*
+ * getfluxo.io - Prometheus ServiceMonitor & Alerting Rules
+ * Copyright (c) 2025 getfluxo.io
+ * 
+ * Author: Estandar Mustaq <estandarmustaq@getfluxo.io>
+ * License: Proprietary - See LICENSE file
+ */
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: fengine-metrics
+  namespace: getfluxo
+  labels:
+    app: fengine
+spec:
+  selector:
+    matchLabels:
+      app: fengine
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: fengine-alerts
+  namespace: getfluxo
+spec:
+  groups:
+    - name: fengine
+      interval: 30s
+      rules:
+        - alert: FengineHighErrorRate
+          expr: |
+            rate(http_requests_total{job="fengine", status=~"5.."}[5m]) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "fengine high error rate (instance: {{ $labels.instance }})"
+            description: "Error rate > 5% for 5 minutes. Current: {{ $value }}"
+
+        - alert: FengineSlowRequests
+          expr: |
+            histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job="fengine"}[5m])) > 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "fengine slow requests (instance: {{ $labels.instance }})"
+            description: "p99 latency > 1s. Current: {{ $value }}s"
+
+        - alert: FengineHighMemory
+          expr: |
+            container_memory_usage_bytes{pod=~"fengine-.*"} / container_spec_memory_limit_bytes > 0.8
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "fengine high memory (pod: {{ $labels.pod }})"
+            description: "Memory usage > 80% of limit. Current: {{ $value | humanizePercentage }}"
