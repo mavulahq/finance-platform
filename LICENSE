@@ -11,14 +11,14 @@ Industry: FinTech / MacroFinance Services
 
 1. PROPRIETARY SOFTWARE
 
-This software (getfluxo.io Platform) is proprietary and confidential. All packages, 
-code, designs, documentation, and intellectual property contained herein are owned 
+This software (getfluxo.io Platform) is proprietary and confidential. All packages,
+code, designs, documentation, and intellectual property contained herein are owned
 exclusively by getfluxo.io.
 
 2. COMMERCIAL LICENSE
 
-This software is licensed for B2B SaaS subscription use only. Institutions 
-(financial service providers) may use this platform via subscription agreement 
+This software is licensed for B2B SaaS subscription use only. Institutions
+(financial service providers) may use this platform via subscription agreement
 with getfluxo.io.
 
 3. RESTRICTIONS
@@ -53,40 +53,40 @@ with getfluxo.io.
 7. WARRANTY DISCLAIMER
 
 THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL getfluxo.io BE LIABLE 
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL getfluxo.io BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 ARISING FROM THE USE OF OR INABILITY TO USE THE SOFTWARE.
 
 8. LIMITATION OF LIABILITY
 
-In no event shall getfluxo.io's total liability exceed the fees paid for the 
-Software in the preceding 12 months. Some jurisdictions do not allow the 
+In no event shall getfluxo.io's total liability exceed the fees paid for the
+Software in the preceding 12 months. Some jurisdictions do not allow the
 limitation of liability, so this limitation may not apply to you.
 
 9. TERMINATION
 
-This license is effective until terminated. Your rights under this license will 
-terminate automatically without notice from getfluxo.io if you fail to comply with 
-any terms of this license. Upon termination, you shall cease all use of the 
+This license is effective until terminated. Your rights under this license will
+terminate automatically without notice from getfluxo.io if you fail to comply with
+any terms of this license. Upon termination, you shall cease all use of the
 Software and destroy all copies in your possession.
 
 10. GOVERNING LAW
 
-This license is governed by the laws of the jurisdiction where getfluxo.io is 
+This license is governed by the laws of the jurisdiction where getfluxo.io is
 incorporated, without regard to its conflict of law principles.
 
 11. COMPLIANCE & REGULATIONS
 
-The Software complies with applicable financial services regulations in the SADC 
-region, including but not limited to KYC/AML, data protection laws, and 
-anti-money laundering directives. Usage must comply with all local and 
+The Software complies with applicable financial services regulations in the SADC
+region, including but not limited to KYC/AML, data protection laws, and
+anti-money laundering directives. Usage must comply with all local and
 international regulations.
 
 12. CONTRIBUTOR LICENSE AGREEMENT (CLA)
 
-By contributing to this project, you agree to assign all intellectual property 
-rights to getfluxo.io. Contributions are accepted under the terms of this 
+By contributing to this project, you agree to assign all intellectual property
+rights to getfluxo.io. Contributions are accepted under the terms of this
 proprietary license.
 
 ================================================================================
@@ -97,28 +97,35 @@ Each source file should include the following header:
 
 For TypeScript/JavaScript:
 
-/*
- * getfluxo.io - [Module/Package Name]
- * Copyright (c) 2025 getfluxo.io
- * 
- * Author: [Author Name] <[Email]>
- * License: Proprietary - See LICENSE file
- * 
- * [Brief description of module]
- */
+/\*
+
+- getfluxo.io - [Module/Package Name]
+- Copyright (c) 2026 getfluxo.io
+-
+- Author: [Author Name] <[Email]>
+- License: Proprietary - See LICENSE file
+-
+- [Brief description of module]
+  \*/
 
 For Python:
 
 # getfluxo.io - [Module/Package Name]
-# Copyright (c) 2025 getfluxo.io
+
+# Copyright (c) 2026 getfluxo.io
+
 # Author: [Author Name] <[Email]>
+
 # License: Proprietary
 
 For Shell/Bash:
 
 #!/usr/bin/env bash
+
 # getfluxo.io - [Module/Package Name]
-# Copyright (c) 2025 getfluxo.io
+
+# Copyright (c) 2026 getfluxo.io
+
 # Author: [Author Name] <[Email]>
 
 ================================================================================
@@ -127,4 +134,4 @@ For legal inquiries, contact: legal@getfluxo.io
 For security issues, contact: security@getfluxo.io
 For support, contact: support@getfluxo.io
 
-Last Updated: 2025-01-20
+Last Updated: 2026-05-11
