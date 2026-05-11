@@ -6,6 +6,7 @@
 # Dependencies
 # =============================================================================
 node_modules/
+**/node_modules/
 .pnpm-store/
 dist/
 build/
@@ -157,6 +158,7 @@ packages/*/dist/
 packages/*/build/
 packages/*/.next/
 packages/*/.nuxt/
+packages/*/node_modules/
 
 # Don't commit Terraform state from any package's finfra
 packages/finfra/terraform.tfstate*
