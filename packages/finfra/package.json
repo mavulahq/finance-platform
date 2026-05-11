@@ -1,14 +1,3 @@
-/*
- * getfluxo.io - finfra (Infrastructure)
- * 
- * Author: Estandar Mustaq <estandarmustaq@getflux.io>
- * Copyright (c) 2025 getfluxo.io
- * 
- * Infrastructure-as-Code and deployment automation
- * 
- * OODA Cycle: Infrastructure decisions follow Observe → Orient → Decide → Act
- */
-
 {
   "name": "@getfluxo/finfra",
   "version": "1.0.0",
@@ -32,11 +21,12 @@
     "migrate:schema": "bash scripts/migrate-schema.sh"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
+    "@types/node": "^24.0.0",
     "dotenv": "^16.3.1"
   },
   "engines": {
-    "node": ">=20.0.0",
+    "node": "24.15.0",
+    "pnpm": "10.33.0",
     "docker": ">=24.0.0",
     "kubernetes": ">=1.28.0"
   }
