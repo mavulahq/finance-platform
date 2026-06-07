@@ -5,7 +5,7 @@ ROOT_DIR=$(cd "$(dirname "$0")/.." && pwd)
 IMAGE_NAME=${IMAGE_NAME:-getfluxio/fengine}
 IMAGE_TAG=${IMAGE_TAG:-latest}
 DOCKERFILE=${DOCKERFILE:-"$ROOT_DIR/../fengine/Dockerfile"}
-CONTEXT_DIR=${CONTEXT_DIR:-"$ROOT_DIR/.."}
+CONTEXT_DIR=${CONTEXT_DIR:-"$ROOT_DIR/../.."}
 
 if [ ! -f "$DOCKERFILE" ]; then
   echo "Dockerfile not found: $DOCKERFILE" >&2

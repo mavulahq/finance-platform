@@ -1,10 +1,6 @@
-/*
- * getfluxo.io - Prometheus ServiceMonitor & Alerting Rules
- * Copyright (c) 2025 getfluxo.io
- * 
- * Author: Estandar Mustaq <estandarmustaq@getfluxo.io>
- * License: Proprietary - See LICENSE file
- */
+# getfluxo.io - Prometheus ServiceMonitor & Alerting Rules
+# Copyright (c) 2025 getfluxo.io
+# License: Proprietary - See LICENSE file
 
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

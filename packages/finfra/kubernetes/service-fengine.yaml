@@ -7,7 +7,12 @@ spec:
   selector:
     app: fengine
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
+      targetPort: 3000
+    - name: metrics
+      protocol: TCP
+      port: 9090
       targetPort: 3000
   type: ClusterIP
