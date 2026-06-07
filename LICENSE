@@ -1,137 +1,172 @@
-getfluxo.io - Proprietary Software License & Author Attribution
+fluxo / getfluxo.io - Proprietary Software License
 
-Copyright (c) 2025 getfluxo.io. All Rights Reserved.
+Copyright (c) 2026 fluxo / getfluxo.io. All rights reserved.
 
-Principal Author & Architect: Estandar Mustaq <mustaqueestandarjunior@gmail.com>
-Company: getfluxo.io
-Country: Mozambique (SADC Region)
-Industry: FinTech / MacroFinance Services
+Owner: fluxo / getfluxo.io
+Principal Author and Architect: Estandar Mustaq
+Website: https://getfluxo.io
+Location: Maputo, Mozambique
+Contact: legal@getfluxo.io
 
-================================================================================
+===============================================================================
 
-1. PROPRIETARY SOFTWARE
+1. Purpose Of The Platform
 
-This software (getfluxo.io Platform) is proprietary and confidential. All packages,
-code, designs, documentation, and intellectual property contained herein are owned
-exclusively by getfluxo.io.
+fluxo is a Mozambican fintech that provides dedicated financial technology as a
+B2B SaaS platform for financial institutions in Mozambique and the SADC region.
+The platform enables cooperatives, microfinance institutions, fintechs, wallets
+and other financial-service providers to operate digital financial products under
+their own brand.
 
-2. COMMERCIAL LICENSE
+The product scope includes, without limitation:
 
-This software is licensed for B2B SaaS subscription use only. Institutions
-(financial service providers) may use this platform via subscription agreement
-with getfluxo.io.
+- digital core banking and financial product configuration;
+- institutional web operations through fwallet;
+- white-label customer mobile experiences through fwallet-mobile;
+- fengine as the internal financial source of truth for calculations, loans,
+  transactions, ledger posting, rules and audit trails;
+- fpay integrations for mobile money and payment rails such as M-Pesa and e-Mola;
+- fxAI services for risk scoring, credit scoring and collections prioritization;
+- compliance-oriented workflows for onboarding, AML/PLD-CFT, audit trails,
+  reporting and tenant isolation.
 
-3. RESTRICTIONS
+This repository contains proprietary product code, architecture, workflows,
+documentation, designs, business logic, trade secrets and implementation details
+of fluxo / getfluxo.io.
 
-- NO distribution, resale, or sublicensing without explicit written agreement
-- NO reverse engineering, decompilation, or source code extraction
-- NO modification or derivative work creation (except configuration)
-- NO use for competing products or services
-- NO public disclosure of architecture, algorithms, or trade secrets
+2. No Open Source License
 
-4. PERMITTED USE
+This software is not open source. No license is granted to use, copy, modify,
+publish, distribute, sublicense, sell, host, reverse engineer or create
+derivative works from this software except as expressly allowed in a written
+agreement signed by fluxo / getfluxo.io.
 
-- White-label deployment for subscribed institutions
-- Configuration and customization within no-code framework
-- Internal development and testing by authorized team members
-- Performance monitoring and operational management
-- Integration with external systems (via API, webhooks, data connectors)
+Possession of a copy of this repository does not grant any ownership interest,
+commercial right, deployment right, resale right or intellectual-property right.
 
-5. DATA OWNERSHIP
+3. Authorized Use
 
-- Institutions own 100% of their financial data
-- getfluxo.io provides secure storage and processing services
-- No data resale, sharing, or monetization without explicit consent
-- GDPR, CCPA, and local regulatory compliance required
+Use is permitted only for:
 
-6. SUPPORT & SLA
+- fluxo / getfluxo.io team members, contractors and authorized contributors
+  working on the platform;
+- subscribed institutions using the platform under a separate commercial SaaS,
+  enterprise, pilot, evaluation or implementation agreement;
+- institution-side configuration of products, rates, workflows, branding,
+  integrations and operational settings through approved no-code or API
+  surfaces;
+- production, staging, testing, monitoring, support and maintenance activities
+  explicitly authorized by fluxo / getfluxo.io.
 
-- Commercial support included with subscription
-- Uptime SLA: 99.99% for production deployments
-- 24/7 monitoring and incident response
+Any customer or institutional use is governed by the applicable commercial
+agreement. If that agreement conflicts with this license, the signed commercial
+agreement controls only for that customer's authorized use.
 
-7. WARRANTY DISCLAIMER
+4. Restrictions
 
-THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL getfluxo.io BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-ARISING FROM THE USE OF OR INABILITY TO USE THE SOFTWARE.
+Without prior written permission from fluxo / getfluxo.io, you may not:
 
-8. LIMITATION OF LIABILITY
+- copy, publish, mirror, disclose or distribute this repository or any part of it;
+- resell, sublicense, lease, rent or provide the software to third parties;
+- use the software to build or operate a competing product or service;
+- remove or alter copyright, proprietary, trademark or attribution notices;
+- reverse engineer, decompile, disassemble or extract source code, algorithms,
+  rules, schemas, scoring logic, financial models or trade secrets;
+- bypass tenant isolation, access controls, usage limits, audit logs or security
+  controls;
+- train, fine-tune or evaluate external AI systems on private source code,
+  product logic, customer data or confidential documentation without explicit
+  authorization;
+- use the software in a way that violates financial, data-protection, AML,
+  sanctions, consumer-protection or payment-system laws.
 
-In no event shall getfluxo.io's total liability exceed the fees paid for the
-Software in the preceding 12 months. Some jurisdictions do not allow the
-limitation of liability, so this limitation may not apply to you.
+5. Intellectual Property
 
-9. TERMINATION
+All rights, title and interest in the software, platform architecture, source
+code, documentation, product names, modules, designs, APIs, workflows, databases,
+schemas, financial calculations, rule engines and related materials are owned by
+fluxo / getfluxo.io or its licensors.
 
-This license is effective until terminated. Your rights under this license will
-terminate automatically without notice from getfluxo.io if you fail to comply with
-any terms of this license. Upon termination, you shall cease all use of the
-Software and destroy all copies in your possession.
+The names "fluxo", "getfluxo.io", "fengine", "fwallet", "fwallet-mobile",
+"fpay" and "fxAI" and related marks are product and service identifiers of
+fluxo / getfluxo.io. No trademark license is granted by this file.
 
-10. GOVERNING LAW
+6. Data Ownership
 
-This license is governed by the laws of the jurisdiction where getfluxo.io is
-incorporated, without regard to its conflict of law principles.
+Institutions retain ownership of their own institutional, customer, account,
+transaction, loan, payment and operational data, subject to the applicable
+commercial agreement and law.
 
-11. COMPLIANCE & REGULATIONS
+fluxo / getfluxo.io provides technology, processing, storage, security,
+monitoring, support and operational services. Customer data may not be resold or
+monetized by fluxo / getfluxo.io except as expressly permitted by contract and
+law.
 
-The Software complies with applicable financial services regulations in the SADC
-region, including but not limited to KYC/AML, data protection laws, and
-anti-money laundering directives. Usage must comply with all local and
-international regulations.
+7. Compliance
 
-12. CONTRIBUTOR LICENSE AGREEMENT (CLA)
+The platform is designed to support financial-service operations in Mozambique
+and the SADC region, including compliance-oriented workflows for onboarding,
+AML/PLD-CFT, audit trails, reporting, tenant isolation and mobile-money
+operations.
 
-By contributing to this project, you agree to assign all intellectual property
-rights to getfluxo.io. Contributions are accepted under the terms of this
-proprietary license.
+This license is not legal, regulatory, accounting or financial advice.
+Institutions remain responsible for obtaining and maintaining all licenses,
+approvals and regulatory permissions required for their business unless a signed
+agreement states otherwise.
 
-================================================================================
+8. Contributions
 
-SOURCE FILE HEADER FORMAT
+By submitting code, documentation, designs, issues, ideas or other contributions
+to this repository, you represent that you have the right to submit them and you
+assign to fluxo / getfluxo.io all rights necessary for fluxo / getfluxo.io to
+use, modify, commercialize, sublicense, protect and enforce those contributions
+as part of the platform.
 
-Each source file should include the following header:
+If a separate written contributor agreement exists, that agreement controls.
 
-For TypeScript/JavaScript:
+9. Confidentiality
 
-/\*
+This repository and its contents are confidential. Authorized users must protect
+the repository, credentials, customer information, architecture, product strategy
+and non-public operational details from unauthorized access or disclosure.
 
-- getfluxo.io - [Module/Package Name]
-- Copyright (c) 2026 getfluxo.io
--
-- Author: [Author Name] <[Email]>
-- License: Proprietary - See LICENSE file
--
-- [Brief description of module]
-  \*/
+10. Warranty Disclaimer
 
-For Python:
+Except as expressly provided in a signed agreement, the software is provided
+"AS IS" and "AS AVAILABLE", without warranties of any kind, whether express,
+implied, statutory or otherwise, including warranties of merchantability, fitness
+for a particular purpose, non-infringement, availability, accuracy, security or
+regulatory suitability.
 
-# getfluxo.io - [Module/Package Name]
+11. Limitation Of Liability
 
-# Copyright (c) 2026 getfluxo.io
+To the maximum extent permitted by law, fluxo / getfluxo.io will not be liable
+for indirect, incidental, special, consequential, punitive or exemplary damages,
+or for lost profits, lost revenue, loss of data, interruption of business,
+security incidents or regulatory penalties arising from unauthorized use of this
+software.
 
-# Author: [Author Name] <[Email]>
+For authorized commercial customers, liability is governed by the signed
+commercial agreement.
 
-# License: Proprietary
+12. Termination
 
-For Shell/Bash:
+Any rights granted under this license terminate immediately if you breach these
+terms or exceed your authorization. Upon termination, you must stop using the
+software and delete or return all copies, credentials, documentation and
+confidential materials in your possession or control.
 
-#!/usr/bin/env bash
+13. Governing Law
 
-# getfluxo.io - [Module/Package Name]
+Unless a signed agreement states otherwise, this license is governed by the laws
+of the Republic of Mozambique, without regard to conflict-of-law principles.
 
-# Copyright (c) 2026 getfluxo.io
+===============================================================================
 
-# Author: [Author Name] <[Email]>
+Notices:
 
-================================================================================
+Legal: legal@getfluxo.io
+Security: security@getfluxo.io
+Support: support@getfluxo.io
 
-For legal inquiries, contact: legal@getfluxo.io
-For security issues, contact: security@getfluxo.io
-For support, contact: support@getfluxo.io
-
-Last Updated: 2026-05-11
+Last updated: 2026-05-24

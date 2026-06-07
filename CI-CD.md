@@ -1,94 +1,61 @@
-# getfluxo.io - CI/CD Pipeline Architecture
+# getfluxo.io CI/CD And Operations
 
-**Author**: Estandar Mustaq <mustaqueestandarjunior@gmail.com>  
-**Copyright**: (c) 2026 getfluxo.io - All Rights Reserved  
-**Document Version**: 1.0.0
+This document is the single operational reference for build, test, deployment, infrastructure and runbook workflows.
 
----
+## Toolchain
 
-## 1. Pipeline Overview
+Required versions:
 
-```
-┌────────────────────────────────────────────────────────────────────┐
-│                        GitHub Event Triggers                        │
-├────────────────────────────────────────────────────────────────────┤
-│  • Push to main/develop → Automatic build & test                   │
-│  • PR merge to main → Build + deploy to staging                   │
-│  • Tag release/* → Build + deploy to production                    │
-│  • Manual workflow_dispatch → Deploy to environment               │
-└────────────────────────────────────────────────────────────────────┘
-         │
-         ▼
-┌────────────────────────────────────────────────────────────────────┐
-│                    GitHub Actions Workflows                         │
-├────────────────────────────────────────────────────────────────────┤
-│                                                                    │
-│  1️⃣  CI_BUILD_TEST.yml                                            │
-│      • Trigger: push, pull_request                                 │
-│      • Checkout submodules (recursive)                             │
-│      • Install dependencies (pnpm)                                 │
-│      • Run lint, typecheck, test                                   │
-│      • Build packages (fengine, fpay, fagent, fwk)                │
-│      • Coverage reports                                             │
-│      • Slack notification (failure)                                │
-│      Status: ✅ All tests pass → proceed                          │
-│                                                                    │
-│  2️⃣  SECURITY_SCAN.yml                                            │
-│      • Trigger: push to main                                       │
-│      • SAST: SonarQube scan                                        │
-│      • Dependency check: npm audit                                 │
-│      • Container scan: Trivy                                       │
-│      • Secrets scan: git-secrets                                   │
-│      • DAST: Run on staging                                        │
-│      Status: ✅ No critical issues → proceed                      │
-│                                                                    │
-│  3️⃣  BUILD_CONTAINERS.yml                                         │
-│      • Trigger: CI_BUILD_TEST success + tag release               │
-│      • Build images (with submodule commits)                      │
-│      • Tag: getfluxo/fengine:1.2.3                                 │
-│      • Push to ECR (AWS)                                           │
-│      • Sign images (Cosign)                                        │
-│      • Generate SBOM                                               │
-│      Status: ✅ Images in registry → proceed                      │
-│                                                                    │
-│  4️⃣  DEPLOY_STAGING.yml                                           │
-│      • Trigger: PR merge to main                                   │
-│      • Pull images from ECR                                        │
-│      • Apply K8s manifests (staging namespace)                     │
-│      • Run smoke tests                                             │
-│      • Slack notification (deployed)                               │
-│      Status: ✅ Staging live → ready for testing                  │
-│                                                                    │
-│  5️⃣  DEPLOY_PRODUCTION.yml                                        │
-│      • Trigger: Manual or tag release/v*                          │
-│      • Approval gate (Slack, email)                                │
-│      • Blue-green deployment                                       │
-│      • Canary rollout (10% → 50% → 100%)                         │
-│      • Monitoring checks                                           │
-│      • Auto-rollback on errors                                     │
-│      Status: ✅ Production live + monitored                       │
-│                                                                    │
-│  6️⃣  INFRASTRUCTURE.yml                                           │
-│      • Trigger: Manual                                             │
-│      • Terraform plan (development)                                │
-│      • Review & approval                                           │
-│      • Terraform apply                                             │
-│      • Update DNS, LB configs                                      │
-│      Status: ✅ Infrastructure updated                            │
-│                                                                    │
-└────────────────────────────────────────────────────────────────────┘
+- Node `22.22.3`
+- pnpm `10.33.0`
+- Docker `24+`
+- Kubernetes CLI `1.28+`
+- Terraform `1.4+`
+
+Workspace commands:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm build
+pnpm test
+pnpm --filter @getfluxo/fengine build
+pnpm --filter @getfluxo/fengine test
+pnpm --filter @getfluxo/fengine test:e2e
+pnpm --filter @getfluxo/finfra docker:build
+pnpm --filter @getfluxo/finfra deploy:staging
+pnpm --filter @getfluxo/finfra deploy:production
 ```
 
----
+## Pipeline Overview
 
-## 2. GitHub Actions Workflow Files
+```
+push / pull_request
+  -> install dependencies
+  -> lint and typecheck
+  -> unit and integration tests
+  -> build packages
+  -> security scans
+  -> build container images
+  -> deploy staging
+  -> smoke tests and health checks
+  -> approved production rollout
+```
 
-### 2.1 CI_BUILD_TEST.yml
+Required GitHub Actions workflows:
 
-Located: `.github/workflows/ci-build-test.yml`
+- `ci.yml`: install, lint, typecheck, test and build.
+- `security.yml`: dependency audit, secret scan, SAST and container scan.
+- `containers.yml`: build and push images to registry.
+- `deploy-staging.yml`: deploy main branch to staging.
+- `deploy-production.yml`: approved release deployment with rollback.
+- `infra.yml`: Terraform plan/apply with manual approval.
+
+## CI Workflow
+
+Recommended `ci.yml` shape:
 
 ```yaml
-name: CI - Build & Test
+name: CI
 
 on:
   push:
@@ -97,465 +64,248 @@ on:
     branches: [main, develop]
 
 jobs:
-  setup:
+  build-test:
     runs-on: ubuntu-latest
-    outputs:
-      node-version: ${{ steps.versions.outputs.node }}
-      pnpm-version: ${{ steps.versions.outputs.pnpm }}
-    steps:
-      - name: Determine versions
-        id: versions
-        run: |
-          echo "node=20.10.0" >> $GITHUB_OUTPUT
-          echo "pnpm=8.15.0" >> $GITHUB_OUTPUT
-
-  build-and-test:
-    needs: setup
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package: [fengine, fwallet, fpay, fwk, fxAI, fagent]
-
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
         with:
-          version: ${{ needs.setup.outputs.pnpm-version }}
+          version: 10.33.0
 
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ needs.setup.outputs.node-version }}
-          cache: 'pnpm'
+          node-version: 22.22.3
+          cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: pnpm --filter @getfluxo/${{ matrix.package }} lint
-
-      - name: Type check
-        run: pnpm --filter @getfluxo/${{ matrix.package }} typecheck
-
-      - name: Unit tests
-        run: pnpm --filter @getfluxo/${{ matrix.package }} test:unit
-
-      - name: Integration tests
-        run: pnpm --filter @getfluxo/${{ matrix.package }} test:integration
-
-      - name: Coverage report
-        run: pnpm --filter @getfluxo/${{ matrix.package }} test:coverage
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./packages/${{ matrix.package }}/coverage/coverage-final.json
-
-  security-checks:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: SonarQube scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: npm audit
-        run: npm audit --production --audit-level=moderate
-
-      - name: Git secrets scan
-        run: |
-          git clone https://github.com/gitleaks/gitleaks-action.git
-          bash gitleaks-action/gitleaks-action
-
-  notify:
-    if: failure()
-    needs: [build-and-test, security-checks]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Slack notification
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
-          payload: |
-            {
-              "text": "❌ CI Pipeline Failed",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Build failed* in ${{ github.repository }}\nCommit: <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>\nAuthor: ${{ github.actor }}"
-                  }
-                }
-              ]
-            }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @getfluxo/fengine build
+      - run: pnpm --filter @getfluxo/fengine test
+      - run: pnpm --filter @getfluxo/fengine test:e2e
 ```
 
-### 2.2 BUILD_CONTAINERS.yml
+Add matrix entries as each module becomes real:
 
-Located: `.github/workflows/build-containers.yml`
+- `@getfluxo/fwallet`
+- `@getfluxo/fwallet-mobile`
+- `@getfluxo/fwk`
+- `@getfluxo/fxAI`
+- `@getfluxo/fpay`
+- `@getfluxo/fdocs`
 
-```yaml
-name: Build Containers
+## Local Development Services
 
-on:
-  workflow_run:
-    workflows: ['CI - Build & Test']
-    types: [completed]
-    branches: [main]
-  push:
-    tags:
-      - 'release/v*'
-
-jobs:
-  build-images:
-    if: github.event.workflow_run.conclusion == 'success' || startsWith(github.ref, 'refs/tags/release/')
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        service: [fengine, fpay, fagent, fwk]
-
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to ECR
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Generate image tag
-        id: tags
-        run: |
-          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == refs/tags/release/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/release/}
-          else
-            VERSION=sha-${GITHUB_SHA::7}
-          fi
-          REGISTRY=${{ secrets.AWS_REGISTRY }}
-          echo "tag=${REGISTRY}/getfluxo/${{ matrix.service }}:${VERSION}" >> $GITHUB_OUTPUT
-          echo "latest=${REGISTRY}/getfluxo/${{ matrix.service }}:latest" >> $GITHUB_OUTPUT
-
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: ./packages/${{ matrix.service }}
-          push: true
-          tags: |
-            ${{ steps.tags.outputs.tag }}
-            ${{ steps.tags.outputs.latest }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ steps.tags.outputs.tag }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-      - name: Sign image
-        run: |
-          cosign sign --key ${{ secrets.COSIGN_KEY }} ${{ steps.tags.outputs.tag }}
-```
-
-### 2.3 DEPLOY_PRODUCTION.yml
-
-Located: `.github/workflows/deploy-production.yml`
-
-```yaml
-name: Deploy to Production
-
-on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        type: choice
-        options:
-          - staging
-          - canary
-          - production
-      version:
-        description: 'Version to deploy (tag name)'
-        required: true
-
-jobs:
-  approval:
-    runs-on: ubuntu-latest
-    environment:
-      name: production-approval
-    steps:
-      - name: Manual approval required
-        run: echo "Deployment requires manual approval"
-
-  deploy:
-    needs: approval
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.event.inputs.environment }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure kubectl
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
-          kubectl version
-
-      - name: Update Kubernetes manifests
-        run: |
-          kubectl set image deployment/fengine-api \
-            fengine=${{ secrets.AWS_REGISTRY }}/getfluxo/fengine:${{ github.event.inputs.version }} \
-            -n getflux-${{ github.event.inputs.environment }}
-
-      - name: Monitor rollout
-        run: |
-          kubectl rollout status deployment/fengine-api \
-            -n getflux-${{ github.event.inputs.environment }} \
-            --timeout=10m
-
-      - name: Health checks
-        run: |
-          bash packages/finfra/scripts/health-check.sh ${{ github.event.inputs.environment }}
-
-      - name: Slack notification
-        if: success()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
-          payload: |
-            {
-              "text": "✅ Deployment Successful",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Production Deployed*\nVersion: ${{ github.event.inputs.version }}\nEnvironment: ${{ github.event.inputs.environment }}"
-                  }
-                }
-              ]
-            }
-
-      - name: Auto-rollback on failure
-        if: failure()
-        run: |
-          echo "Rolling back to previous version..."
-          kubectl rollout undo deployment/fengine-api -n getflux-${{ github.event.inputs.environment }}
-```
-
----
-
-## 3. Deployment Environments
-
-### 3.1 Staging Environment
-
-**Purpose**: Pre-production testing, feature validation  
-**Infrastructure**: 3-node EKS cluster (t3.medium)  
-**Database**: PostgreSQL RDS (db.t3.small)  
-**Retention**: 30 days logs, 7 days backups  
-**Cost**: ~$300/month
-
-**Deployment**:
+PostgreSQL and Redis are Docker images during platform development:
 
 ```bash
-# Auto-deployed on PR merge to main
-git merge origin/main
-# Triggers: Build → Push ECR → Deploy K8s → Smoke tests
+pnpm dev:services:up
+pnpm dev:services:ps
+pnpm dev:services:logs
+pnpm dev:services:down
 ```
 
-### 3.2 Production Environment
+Services:
 
-**Purpose**: Live customer data, production workloads  
-**Infrastructure**: 5-node EKS cluster (t3.large + spot instances)  
-**Database**: PostgreSQL RDS (db.r5.large, Multi-AZ)  
-**Retention**: 90 days logs, 30 days backups + PITR  
-**Cost**: ~$2,500/month
+- PostgreSQL: `postgres:16-alpine`, exposed on `localhost:15432`
+- Redis: `redis:7-alpine`, exposed on `localhost:16379`
 
-**Deployment**:
+Development environment:
 
 ```bash
-# Manual trigger with approval
-git tag release/v1.2.3
-git push --tags
-# Triggers: Security scan → Build → Manual approval → Blue-green deploy → Canary rollout
+export DATABASE_URL="postgresql://fengine_app:fengine_dev@localhost:15432/getfluxo?schema=public"
+export REDIS_URL="redis://localhost:16379"
 ```
 
----
+Local schema administration uses `postgresql://getfluxo:getfluxo_dev@localhost:15432/getfluxo?schema=public`; application and tests use `fengine_app` so PostgreSQL RLS is enforced.
 
-## 4. Monitoring & Observability
+## Security Gates
 
-### 4.1 Stack
+Minimum gates before deploy:
 
-```
-Application Logs (JSON)
-         ↓
-    [Promtail] ←── Kubernetes
-         ↓
-    [Loki]  ←── Log aggregation
-         ↓
-    [Grafana] ←── Visualization + Dashboards
-         ↓
-    [PagerDuty] ←── Alerting
+- TypeScript build must pass.
+- Unit and integration tests must pass.
+- `npm audit` or equivalent dependency audit has no critical production issue.
+- Secret scanning finds no committed credentials.
+- Container image scan has no critical exploitable issue.
+- Migration scripts are reviewed for locking and rollback behavior.
 
-Application Metrics
-         ↓
-    [Prometheus Exporter] ←── Node, Container, App metrics
-         ↓
-    [Prometheus] ←── Metrics scraping (15s interval)
-         ↓
-    [Grafana] ←── Dashboards
-         ↓
-    [PagerDuty] ←── Alerts (SLA violations)
+Financial correctness gates:
 
-Application Traces
-         ↓
-    [OpenTelemetry] ←── Instrumentation
-         ↓
-    [Jaeger] ←── Trace backend
-         ↓
-    [Grafana] ←── Visualization
-```
+- All journal entries balance debits and credits.
+- Payment allocation order is fees -> interest -> principal.
+- Tenant isolation tests pass.
+- Audit events exist for configuration changes, loan decisions, transaction postings and workflow execution.
 
-### 4.2 Key Metrics & Alerts
+## Container Workflow
 
-| Metric                   | Threshold   | Severity |
-| ------------------------ | ----------- | -------- |
-| API Response Time (p99)  | > 500ms     | Warning  |
-| API Response Time (p99)  | > 1s        | Critical |
-| Error Rate               | > 1%        | Warning  |
-| Error Rate               | > 5%        | Critical |
-| Pod CPU                  | > 80%       | Warning  |
-| Pod Memory               | > 90%       | Critical |
-| Database Connections     | > 80 of 100 | Warning  |
-| Database Replication Lag | > 5s        | Critical |
-| Disk Usage               | > 85%       | Warning  |
-
----
-
-## 5. Rollback Strategy
-
-### 5.1 Automatic Rollback
-
-**Triggers**:
-
-- Pod CrashLoopBackOff detected
-- Health check failures (3 consecutive)
-- Error rate > 10% for 5 minutes
-- Response time p99 > 2 seconds for 5 minutes
-
-**Action**:
+Current finfra scripts:
 
 ```bash
-kubectl rollout undo deployment/fengine-api -n getfluxo-prod
+pnpm --filter @getfluxo/finfra docker:build
+pnpm --filter @getfluxo/finfra docker:push
 ```
 
-### 5.2 Manual Rollback
+Default image variables:
+
+- `IMAGE_NAME=getfluxio/fengine`
+- `IMAGE_TAG=latest`
+- `DOCKERFILE=packages/fengine/Dockerfile`
+- `CONTEXT_DIR=packages`
+
+Production image tags should use immutable tags:
 
 ```bash
-# View rollout history
-kubectl rollout history deployment/fengine-api -n getfluxo-prod
-
-# Rollback to previous revision
-kubectl rollout undo deployment/fengine-api -n getfluxo-prod --to-revision=5
-
-# Verify
-kubectl rollout status deployment/fengine-api -n getfluxo-prod
+IMAGE_TAG=sha-${GITHUB_SHA::7} pnpm --filter @getfluxo/finfra docker:build
+IMAGE_TAG=v1.0.0 pnpm --filter @getfluxo/finfra docker:push
 ```
 
----
+## Kubernetes Deployment
 
-## 6. Compliance & Auditing
+Current manifests:
 
-### 6.1 Deployment Audit Trail
+- `packages/finfra/kubernetes/namespace.yaml`
+- `packages/finfra/kubernetes/deployment-fengine.yaml`
+- `packages/finfra/kubernetes/service-fengine.yaml`
+- `packages/finfra/kubernetes/fengine-secret.yaml`
+- `packages/finfra/kubernetes/secrets-external.yaml`
+- `packages/finfra/kubernetes/monitoring-fengine.yaml`
 
-All deployments logged:
+Deploy commands:
 
-- Who: GitHub actor
-- What: Commit SHA, image tag, version
-- When: Timestamp
-- Where: Environment, region
-- Why: Commit message, approval reason
-- Approval: Manual or automated
-
-**Audit Log Location**: `s3://getfluxo-audit-logs/deployments/`
-
-### 6.2 Security Scanning Results
-
-- **SAST**: SonarQube (code quality, vulnerabilities)
-- **Dependency Check**: npm audit (package vulnerabilities)
-- **Container Scan**: Trivy (image vulnerabilities)
-- **Secrets**: git-secrets (hardcoded credentials)
-
-All scan results retained for 1 year (regulatory compliance).
-
----
-
-## 7. Version Control & Tagging
-
-### 7.1 Git Workflow
-
-```
-main branch
-├── Protected (requires PR + review)
-├── Always deployable
-├── Tags: release/v1.2.3
-│
-develop branch
-├── Working branch
-├── Merge PRs from feature branches
-└── Nightly builds
-
-feature branches
-├── Created from: develop
-├── Naming: feat/tenant-config, fix/auth-bug
-├── Reviewed before merge to develop
-└── Auto-deleted after merge
+```bash
+cd packages/finfra
+KUBE_CONTEXT=staging pnpm run deploy:staging
+KUBE_CONTEXT=production pnpm run deploy:prod
+NAMESPACE=getfluxo APP_LABEL=fengine pnpm run health:check
 ```
 
-### 7.2 Semantic Versioning
+Before production, parameterize the manifests through Helm, Kustomize or environment-specific overlays. Do not ship production with `latest` image tags or plaintext secrets.
 
-**Format**: `major.minor.patch-prerelease+build`
+## Terraform
 
-- **Major**: Breaking changes (schema migrations, API incompatible)
-- **Minor**: New features (backward compatible)
-- **Patch**: Bug fixes
-- **Prerelease**: alpha, beta, rc (e.g., 1.2.0-beta.1)
-- **Build**: Metadata (e.g., +build.20250120)
+Current Terraform is a starter baseline for AWS provider, VPC and EKS module. Required expansion:
 
-**Examples**:
+- Public and private subnets across availability zones.
+- NAT gateways and route tables.
+- EKS managed node groups.
+- RDS PostgreSQL with backups, encryption and parameter groups.
+- Redis/ElastiCache.
+- ECR repositories for service images.
+- IAM roles for service accounts.
+- Security groups and network policies.
+- Remote Terraform state with locking.
 
-- `release/v1.0.0` - First production release
-- `release/v1.1.0` - New features, backward compatible
-- `release/v1.1.1` - Bug fix
-- `release/v2.0.0` - Major breaking change
+Commands:
 
----
+```bash
+pnpm --filter @getfluxo/finfra tf:init
+pnpm --filter @getfluxo/finfra tf:plan
+pnpm --filter @getfluxo/finfra tf:apply
+```
 
-**Last Updated**: 2025-01-20  
-**Next Review**: 2025-02-20
+Production `tf:apply` requires human approval and a reviewed plan artifact.
+
+## Database And Tenant Migrations
+
+Tenant migration principles:
+
+- Create schema first, then migrate data in batches.
+- Add nullable columns, backfill, validate, then enforce constraints.
+- Use `CREATE INDEX CONCURRENTLY` for large PostgreSQL tables.
+- Add foreign keys as `NOT VALID`, then validate separately.
+- Keep old and new paths available during cutover.
+- Verify counts and financial balances before deleting old data.
+
+Available scripts:
+
+```bash
+bash packages/fengine/scripts/create_tenant.sh
+bash packages/fengine/scripts/migrate-tenant.sh
+pnpm --filter @getfluxo/finfra migrate:schema
+pnpm --filter @getfluxo/finfra backup:db
+```
+
+Production migration checklist:
+
+- Snapshot or point-in-time restore available.
+- Dry run completed on staging copy.
+- Locking behavior reviewed.
+- Rollback plan written.
+- Tenant-level reconciliation completed after cutover.
+
+## Deployment Runbooks
+
+### Staging
+
+1. Merge to `main`.
+2. CI passes.
+3. Build immutable image.
+4. Deploy to staging namespace.
+5. Run health checks.
+6. Run smoke test for health, metrics, auth and loan lifecycle.
+
+### Production
+
+1. Cut release tag.
+2. Confirm CI, security and staging results.
+3. Review Terraform or Kubernetes diff.
+4. Approve production deployment.
+5. Roll out canary or blue-green.
+6. Watch metrics, logs and error budgets.
+7. Promote to 100 percent or roll back.
+
+### Rollback
+
+1. Identify last known-good image tag.
+2. Reapply deployment with the previous tag.
+3. Confirm pods are ready.
+4. Run health and smoke checks.
+5. Confirm no irreversible migration is pending.
+
+## Observability
+
+Required signals:
+
+- `/health` for service liveness.
+- `/metrics` for Prometheus scraping.
+- Request count, latency, status code and tenant labels where safe.
+- Loan lifecycle counters by phase.
+- Transaction posting success/failure.
+- Journal imbalance attempts.
+- Rule evaluation pass/fail.
+- Workflow execution success/failure.
+
+Alert examples:
+
+- fengine pod crash loop.
+- p95 latency over threshold.
+- Payment posting failure rate above threshold.
+- Any unbalanced journal entry error.
+- Database connection pool exhaustion.
+- Tenant isolation guard failure.
+
+## Secrets
+
+Use a managed secret store:
+
+- AWS Secrets Manager or HashiCorp Vault.
+- External Secrets Operator for Kubernetes sync.
+- Short-lived credentials where possible.
+- Rotated JWT signing keys and API keys.
+- No production `.env` files in Git.
+
+Required secret categories:
+
+- `DATABASE_URL`
+- JWT private/public keys or shared signing secret
+- payment provider keys
+- webhook signing secrets
+- Redis URL
+- object storage credentials
+- observability tokens
+
+## Verification Status
+
+Local workstation runs should prepend `/home/estandarmustaq/.local/share/pnpm` to PATH so `/home/estandarmustaq/.local/share/pnpm/node` resolves to Node `22.22.3`.
