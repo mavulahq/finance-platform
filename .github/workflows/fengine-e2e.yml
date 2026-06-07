@@ -5,40 +5,62 @@ on:
   push:
     paths:
       - 'packages/fengine/**'
+      - '.github/workflows/fengine-e2e.yml'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15
+        image: postgres:16-alpine
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: getfluxo
+          POSTGRES_PASSWORD: getfluxo_dev
           POSTGRES_DB: getfluxo
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d getfluxo" --health-interval=10s --health-timeout=5s --health-retries=5
+          --health-cmd "pg_isready -U getfluxo -d getfluxo" --health-interval=10s --health-timeout=5s --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-      - name: Install pnpm
-        run: npm i -g pnpm@8
+          node-version: 22.22.3
+          cache: pnpm
+
       - name: Wait for Postgres
         run: |
-          for i in {1..30}; do pg_isready -h 127.0.0.1 -p 5432 && break || sleep 2; done
+          for i in {1..30}; do pg_isready -h 127.0.0.1 -p 5432 -U getfluxo -d getfluxo && break || sleep 2; done
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Set DATABASE_URL
-        run: echo "DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/getfluxo" >> $GITHUB_ENV
-      - name: Generate prisma client
-        run: pnpm --filter @getfluxo/fengine prisma:generate
-        working-directory: ./packages/fengine
+
+      - name: Build fengine
+        run: pnpm --filter @getfluxo/fengine build
+
+      - name: Sync database schema
+        run: pnpm --filter @getfluxo/fengine exec prisma db push --skip-generate
+        env:
+          DATABASE_URL: postgresql://getfluxo:getfluxo_dev@127.0.0.1:5432/getfluxo?schema=public
+
       - name: Run e2e tests
         run: pnpm --filter @getfluxo/fengine test:e2e
         env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
+          DATABASE_URL: postgresql://getfluxo:getfluxo_dev@127.0.0.1:5432/getfluxo?schema=public
+          REDIS_URL: redis://127.0.0.1:6379
