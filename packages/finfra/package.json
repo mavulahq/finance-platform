@@ -8,6 +8,10 @@
   "scripts": {
     "docker:build": "bash docker/build.sh",
     "docker:push": "bash docker/push.sh",
+    "dev:services:up": "docker compose --project-directory ../.. up -d postgres redis",
+    "dev:services:down": "docker compose --project-directory ../.. down",
+    "dev:services:logs": "docker compose --project-directory ../.. logs -f postgres redis",
+    "dev:services:ps": "docker compose --project-directory ../.. ps",
     "k8s:apply": "bash kubernetes/apply.sh",
     "k8s:delete": "bash kubernetes/delete.sh",
     "tf:init": "terraform -chdir=terraform init",
@@ -21,11 +25,11 @@
     "migrate:schema": "bash scripts/migrate-schema.sh"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^22.0.0",
     "dotenv": "^16.3.1"
   },
   "engines": {
-    "node": "24.15.0",
+    "node": "22.22.3",
     "pnpm": "10.33.0",
     "docker": ">=24.0.0",
     "kubernetes": ">=1.28.0"

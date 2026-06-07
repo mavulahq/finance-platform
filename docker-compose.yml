@@ -1,0 +1,39 @@
+name: getfluxo-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: getfluxo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: getfluxo
+      POSTGRES_PASSWORD: getfluxo_dev
+      POSTGRES_DB: getfluxo
+    ports:
+      - "15432:5432"
+    volumes:
+      - getfluxo-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U getfluxo -d getfluxo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: getfluxo-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "16379:6379"
+    volumes:
+      - getfluxo-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  getfluxo-postgres-data:
+  getfluxo-redis-data:

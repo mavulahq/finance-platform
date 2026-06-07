@@ -12,11 +12,6 @@ dist/
 build/
 .turbo/
 
-# Lock files (each package manages its own)
-pnpm-lock.yaml
-yarn.lock
-package-lock.json
-
 # =============================================================================
 # Build outputs
 # =============================================================================
@@ -167,9 +162,13 @@ packages/finfra/terraform.tfvars
 # =============================================================================
 # Development
 # =============================================================================
+.agents/
+.codex/
 .history/
 *.orig
 .backup/
+backups/
+.resume.codex
 
 # =============================================================================
 # Allowed exceptions (use git add -f to override)

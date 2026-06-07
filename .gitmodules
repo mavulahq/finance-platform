@@ -10,10 +10,6 @@ url = git@github.com:getfluxo/fwallet.git
 path = packages/fwallet-mobile
 url = git@github.com:getfluxo/fwallet-mobile.git
 	branch = main
-[submodule "packages/fagent"]
-path = packages/fagent
-url = git@github.com:getfluxo/fagent.git
-	branch = main
 [submodule "packages/fwk"]
 path = packages/fwk
 url = git@github.com:getfluxo/fwk.git
