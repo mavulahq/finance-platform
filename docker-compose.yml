@@ -34,6 +34,27 @@ services:
       timeout: 5s
       retries: 5
 
+  fwk:
+    build:
+      context: .
+      dockerfile: packages/fwk/Dockerfile
+    container_name: getfluxo-fwk
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3010
+      DATABASE_URL: postgresql://getfluxo:getfluxo_dev@postgres:5432/getfluxo?schema=public
+      REDIS_URL: redis://redis:6379
+      FWK_WORKER_ENABLED: "true"
+      FWK_QUEUES: payments,platform
+    ports:
+      - "13010:3010"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   getfluxo-postgres-data:
   getfluxo-redis-data:
