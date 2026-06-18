@@ -130,6 +130,18 @@ pnpm --filter @getfluxo/finfra docker:build
 pnpm --filter @getfluxo/finfra health:check
 ```
 
+For a complete local Kubernetes environment, use Minikube. The deploy command starts the `getfluxo` profile, builds immutable local images, provisions PostgreSQL and Redis with persistent volumes, applies the Prisma schema and deploys `fengine` and `fwk`:
+
+```bash
+pnpm --filter @getfluxo/finfra minikube:deploy
+pnpm --filter @getfluxo/finfra minikube:status
+kubectl --context getfluxo port-forward -n getfluxo service/fengine 13000:80
+kubectl --context getfluxo port-forward -n getfluxo service/fwk 13011:80
+pnpm --filter @getfluxo/finfra minikube:stop
+```
+
+Use `minikube:delete` to remove the cluster and its local persistent volumes. Port `13011` avoids the Docker Compose `fwk` port `13010` when both environments are running.
+
 This repository is pinned to Node `22.22.3` via `.node-version`, `.nvmrc`, `.npmrc`, package `engines` and Docker images. On this workstation, the expected Node binary is `/home/estandarmustaq/.local/share/pnpm/node`.
 
 ## fengine Quick Flow

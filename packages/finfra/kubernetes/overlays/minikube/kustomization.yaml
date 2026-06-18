@@ -1,0 +1,56 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: getfluxo
+resources:
+  - ../../namespace.yaml
+  - ../../service-fengine.yaml
+  - ../../service-fwk.yaml
+  - ../../deployment-fengine.yaml
+  - ../../deployment-fwk.yaml
+  - postgres.yaml
+  - redis.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+secretGenerator:
+  - name: fengine-secrets
+    literals:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgresql://getfluxo:getfluxo_dev@postgres:5432/getfluxo?schema=public
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=minikube-development-secret-change-before-production
+  - name: fwk-secrets
+    literals:
+      - NODE_ENV=development
+      - PORT=3010
+      - DATABASE_URL=postgresql://getfluxo:getfluxo_dev@postgres:5432/getfluxo?schema=public
+      - REDIS_URL=redis://redis:6379
+      - FWK_WORKER_ENABLED=true
+      - FWK_SCHEDULER_ENABLED=true
+      - FWK_QUEUES=payments,platform
+images:
+  - name: getfluxio/fengine
+    newTag: minikube
+  - name: getfluxio/fwk
+    newTag: minikube
+patches:
+  - target:
+      kind: Deployment
+      name: fengine
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
+  - target:
+      kind: Deployment
+      name: fwk
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent

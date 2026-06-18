@@ -171,6 +171,10 @@ Current manifests:
 - `packages/finfra/kubernetes/fengine-secret.yaml`
 - `packages/finfra/kubernetes/secrets-external.yaml`
 - `packages/finfra/kubernetes/monitoring-fengine.yaml`
+- `packages/finfra/kubernetes/deployment-fwk.yaml`
+- `packages/finfra/kubernetes/service-fwk.yaml`
+- `packages/finfra/kubernetes/monitoring-fwk.yaml`
+- `packages/finfra/kubernetes/overlays/minikube/`
 
 Deploy commands:
 
@@ -180,6 +184,15 @@ KUBE_CONTEXT=staging pnpm run deploy:staging
 KUBE_CONTEXT=production pnpm run deploy:prod
 NAMESPACE=getfluxo APP_LABEL=fengine pnpm run health:check
 ```
+
+Local Minikube deployment:
+
+```bash
+pnpm --filter @getfluxo/finfra minikube:deploy
+pnpm --filter @getfluxo/finfra minikube:status
+```
+
+The local overlay uses development-only secrets, persistent PostgreSQL and Redis StatefulSets, immutable per-deploy image tags and automatic Prisma schema synchronization. It is not a production secrets or migration strategy.
 
 Before production, parameterize the manifests through Helm, Kustomize or environment-specific overlays. Do not ship production with `latest` image tags or plaintext secrets.
 
