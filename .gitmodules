@@ -14,6 +14,10 @@ url = git@github.com:getfluxo/fwallet-mobile.git
 path = packages/fwk
 url = git@github.com:getfluxo/fwk.git
 	branch = main
+[submodule "packages/finfra"]
+path = packages/finfra
+url = git@github.com:getfluxo/finfra.git
+	branch = main
 [submodule "packages/fxAI"]
 path = packages/fxAI
 url = git@github.com:getfluxo/fxAI.git

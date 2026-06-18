@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fwk
+  namespace: getfluxo
+  labels:
+    app: fwk
+spec:
+  selector:
+    app: fwk
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3010
+    - name: metrics
+      protocol: TCP
+      port: 9090
+      targetPort: 3010
+  type: ClusterIP

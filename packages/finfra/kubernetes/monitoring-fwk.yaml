@@ -1,0 +1,43 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: fwk-metrics
+  namespace: getfluxo
+  labels:
+    app: fwk
+spec:
+  selector:
+    matchLabels:
+      app: fwk
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /api/metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: fwk-alerts
+  namespace: getfluxo
+spec:
+  groups:
+    - name: fwk
+      interval: 30s
+      rules:
+        - alert: FwkWorkerDown
+          expr: fwk_worker_running == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "fwk worker is down"
+            description: "Worker runtime has not reported a running state for 5 minutes."
+
+        - alert: FwkDeadLetterBacklog
+          expr: fwk_queue_dead_letter > 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "fwk dead-letter queue has jobs"
+            description: "Dead-letter jobs require operator review."

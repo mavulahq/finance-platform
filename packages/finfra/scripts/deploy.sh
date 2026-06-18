@@ -23,11 +23,18 @@ elif ! "${KUBECTL[@]}" get secret fengine-secrets -n getfluxo >/dev/null 2>&1; t
   echo "Warning: fengine-secrets not found. Run scripts/setup-secrets.sh or set APPLY_EXTERNAL_SECRETS=true."
 fi
 
+if ! "${KUBECTL[@]}" get secret fwk-secrets -n getfluxo >/dev/null 2>&1; then
+  "${KUBECTL[@]}" apply -f "$ROOT_DIR/kubernetes/fwk-secret.yaml"
+fi
+
 "${KUBECTL[@]}" apply -f "$ROOT_DIR/kubernetes/service-fengine.yaml"
+"${KUBECTL[@]}" apply -f "$ROOT_DIR/kubernetes/service-fwk.yaml"
 "${KUBECTL[@]}" apply -f "$ROOT_DIR/kubernetes/deployment-fengine.yaml"
+"${KUBECTL[@]}" apply -f "$ROOT_DIR/kubernetes/deployment-fwk.yaml"
 
 if [ "$APPLY_MONITORING" = "true" ]; then
   "${KUBECTL[@]}" apply -f "$ROOT_DIR/kubernetes/monitoring-fengine.yaml"
+  "${KUBECTL[@]}" apply -f "$ROOT_DIR/kubernetes/monitoring-fwk.yaml"
 fi
 
 echo "Kubernetes manifests applied. To provision cloud infra, run:"

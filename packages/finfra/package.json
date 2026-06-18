@@ -2,7 +2,7 @@
   "name": "@getfluxo/finfra",
   "version": "1.0.0",
   "description": "getfluxo.io Infrastructure Package - Docker, Kubernetes, Terraform, CI/CD",
-  "author": "Estandar Mustaq <estandarmustaq@getflux.io>",
+  "author": "Estandar Mustaq <estandarmustaq@getfluxo.io>",
   "license": "PROPRIETARY",
   "private": true,
   "scripts": {
@@ -14,6 +14,8 @@
     "dev:services:ps": "docker compose --project-directory ../.. ps",
     "k8s:apply": "bash kubernetes/apply.sh",
     "k8s:delete": "bash kubernetes/delete.sh",
+    "k3s:deploy": "bash scripts/k3s-deploy.sh",
+    "k3s:status": "NAMESPACE=getfluxo APP_LABEL=fwk bash scripts/health-check.sh",
     "tf:init": "terraform -chdir=terraform init",
     "tf:plan": "terraform -chdir=terraform plan",
     "tf:apply": "terraform -chdir=terraform apply",
