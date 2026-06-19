@@ -2,7 +2,7 @@
 
 **Modern financial infrastructure, built in Mozambique.**
 
-Fluxo is a configurable B2B financial platform for Mozambican microfinance institutions, credit cooperatives, fintechs, and future Banking as a Service providers. Institutions configure products, rules, fees, workflows, and channels; their customers use the institution's branded web, mobile, and API experiences.
+Fluxo is a configurable Banking as a Service (BaaS) platform for Mozambican microfinance institutions, credit cooperatives, fintechs, and banking partners. Institutions configure products, rules, fees, workflows, and channels; their customers use the institution's branded web, mobile, and API experiences.
 
 Copyright (c) 2026 getfluxo.io. Proprietary software. See [LICENSE](LICENSE).
 
