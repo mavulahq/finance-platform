@@ -50,6 +50,7 @@ getfluxo/
 ├── README.md                 Product, architecture, and development guide
 ├── ROADMAP.md                Delivery status and next implementation phases
 ├── CI-CD.md                  Build, deployment, and operations reference
+├── .gitmodules               Versioned package repository mappings
 ├── docker-compose.yml        Local PostgreSQL, Redis, fengine, and fwk
 ├── package.json              Monorepo commands and pinned toolchain
 └── packages/
@@ -58,7 +59,7 @@ getfluxo/
     └── finfra/               Docker, Kubernetes, Terraform, and runbooks
 ```
 
-The workspace reserves names for `fwallet`, `fwallet-mobile`, `fpay`, `fxAI`, and `fdocs`. These modules are planned and do not yet exist as implemented packages.
+`fengine`, `fwk`, and `finfra` are maintained as private submodules under the `getfluxo-io` GitHub organisation. The workspace reserves names for `fwallet`, `fwallet-mobile`, `fpay`, `fxAI`, and `fdocs`; these modules are planned and do not yet exist as implemented packages.
 
 ## Implementation Status
 
@@ -155,11 +156,24 @@ Required tools:
 - Terraform `1.4+` only for infrastructure planning
 
 The repository pins Node and pnpm through package metadata, `.node-version`, `.nvmrc`, and container images.
+Ensure the `node` and `pnpm` executables are available in your `PATH`.
 
 ### Install and test
 
+Clone the private repository and its package repositories with an SSH identity authorised for the `getfluxo-io` organisation:
+
 ```bash
-export PATH=/home/estandarmustaq/.local/share/pnpm:$PATH
+git clone --recurse-submodules git@github.com:getfluxo-io/getfluxo.git
+cd getfluxo
+```
+
+For an existing clone, synchronise and initialise the recorded submodule commits before installing dependencies:
+
+```bash
+pnpm submodules:init
+```
+
+```bash
 pnpm install --frozen-lockfile
 pnpm --filter @getfluxo/fengine build
 pnpm --filter @getfluxo/fengine test:all

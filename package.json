@@ -17,7 +17,7 @@
     "pnpm": "10.33.0"
   },
   "scripts": {
-    "prepare": "git submodule update --init --recursive",
+    "submodules:init": "git submodule sync --recursive && git submodule update --init --recursive",
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",
@@ -26,7 +26,7 @@
     "typecheck": "pnpm -r typecheck",
     "format": "pnpm -r format",
     "format:check": "pnpm -r format:check",
-    "ci:submodule:sync": "git submodule foreach --recursive 'git fetch origin && git checkout $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo main)'",
+    "ci:submodule:sync": "git submodule sync --recursive && git submodule update --init --recursive",
     "dev:services:up": "docker compose up -d postgres redis",
     "dev:services:down": "docker compose down",
     "dev:services:logs": "docker compose logs -f postgres redis",

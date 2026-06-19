@@ -19,7 +19,9 @@ This document describes the automation that exists today and the controls still 
 | Minikube | Current local development profile |
 | Terraform | `1.4+` |
 
-The repository pins Node and pnpm in package metadata and container images. On the current development workstation, prepend `/home/estandarmustaq/.local/share/pnpm` to `PATH`.
+The repository pins Node and pnpm in package metadata and container images. Ensure the `node` and `pnpm` executables are available in the runner's `PATH`.
+
+The root repository and its `fengine`, `fwk`, and `finfra` submodules are private. Local development and CI require an SSH identity with read access to all four repositories.
 
 ## Current Automation
 
@@ -44,7 +46,7 @@ The repository pins Node and pnpm in package metadata and container images. On t
 Install and build:
 
 ```bash
-export PATH=/home/estandarmustaq/.local/share/pnpm:$PATH
+pnpm submodules:init
 pnpm install --frozen-lockfile
 pnpm --filter @getfluxo/fengine build
 pnpm --filter @getfluxo/fwk build
@@ -80,12 +82,15 @@ pnpm --filter @getfluxo/finfra tf:plan
 
 `.github/workflows/fengine-e2e.yml` currently runs on relevant pushes and manual dispatch. It:
 
-1. Starts PostgreSQL `16-alpine` and Redis `7-alpine` service containers.
-2. Installs pnpm `10.33.0` and Node `22.22.3`.
-3. Installs dependencies from the frozen lockfile.
-4. Builds `fengine`.
-5. Synchronises the Prisma schema with the temporary PostgreSQL database.
-6. Runs the `fengine` e2e suite with PostgreSQL and Redis URLs.
+1. Checks out the root repository and its recorded submodule commits using `SUBMODULES_SSH_KEY`.
+2. Starts PostgreSQL `16-alpine` and Redis `7-alpine` service containers.
+3. Installs pnpm `10.33.0` and Node `22.22.3`.
+4. Installs dependencies from the frozen lockfile.
+5. Builds `fengine`.
+6. Synchronises the Prisma schema with the temporary PostgreSQL database.
+7. Runs the `fengine` e2e suite with PostgreSQL and Redis URLs.
+
+`SUBMODULES_SSH_KEY` must contain a private machine-user key whose GitHub account has read access to `getfluxo`, `fengine`, `fwk`, and `finfra`. Rotate this credential through GitHub Actions secrets; never commit it.
 
 This workflow does not currently run `fengine` unit/integration suites, `fwk` tests, container builds, security scans, or deployments.
 

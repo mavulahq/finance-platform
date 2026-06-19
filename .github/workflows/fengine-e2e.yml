@@ -4,6 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     paths:
+      - 'packages/fengine'
       - 'packages/fengine/**'
       - '.github/workflows/fengine-e2e.yml'
       - 'pnpm-lock.yaml'
@@ -32,6 +33,9 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          ssh-key: ${{ secrets.SUBMODULES_SSH_KEY }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
