@@ -1,136 +1,189 @@
-# getfluxo.io
+# Fluxo by getfluxo.io
 
-Digital core banking SaaS for financial institutions in Mozambique and the SADC region. getfluxo.io is a B2B platform: institutions configure products, workflows, fees and channels; their customers consume the institution's branded experience through web, mobile and API channels.
+**Modern financial infrastructure, built in Mozambique.**
 
-Copyright (c) 2026 getfluxo.io. Proprietary. See [LICENSE](/home/estandarmustaq/dev_0/getfluxo/LICENSE).
+Fluxo is a configurable B2B financial platform for Mozambican microfinance institutions, credit cooperatives, fintechs, and future Banking as a Service providers. Institutions configure products, rules, fees, workflows, and channels; their customers use the institution's branded web, mobile, and API experiences.
+
+Copyright (c) 2026 getfluxo.io. Proprietary software. See [LICENSE](LICENSE).
+
+## Mission
+
+Fluxo exists to reduce the cost and complexity of financial digitalisation in Mozambique. The platform replaces rigid, difficult-to-integrate foundations with modular services that institutions can adapt to their operating model and customers.
+
+The initial product direction is shaped by local requirements:
+
+- Financial inclusion and services that remain usable under variable connectivity.
+- Products and accounting flows denominated in Mozambican meticais.
+- Integration paths for local institutions, fintechs, mobile money, and banking partners.
+- Auditability, tenant isolation, and controls suitable for Banco de Moçambique regulatory expectations.
+- API-first configuration so institutions can launch and change products without replacing their core.
 
 ## Platform Model
 
-```
-getfluxo.io / fluxo
-  -> sells financial technology to institutions
-Institution
-  -> configures and operates products under its own brand
-End customer
-  -> uses the institution's wallet, mobile app, accounts, loans and payments
+```text
+Fluxo by getfluxo.io
+  -> provides configurable financial infrastructure
+
+Financial institution
+  -> configures products, rules, fees, workflows, and channels
+  -> operates under its own brand and compliance responsibilities
+
+Institution customer
+  -> accesses accounts, loans, payments, and support through branded channels
 ```
 
-The platform is not a software-house project template. The financial engine is the source of truth for balances, loans, rules, ledger postings, tenant configuration and audit trails.
+Fluxo is a product platform, not a software-house project template. `fengine` is the source of truth for financial configuration and posting. `fwk` executes durable asynchronous work. `finfra` provisions and operates their runtime dependencies.
 
-## Repository Layout
+## Design Principles
 
-```
+- **Built for Mozambique:** local institutions, operating constraints, financial inclusion, and regulatory direction are first-class concerns.
+- **API first:** configuration and financial capabilities are exposed through service APIs.
+- **Configurable:** products, rules, schemas, and workflows are tenant-defined rather than hard-coded per institution.
+- **Composable:** the engine, workers, channels, payments, documents, and intelligence modules evolve behind explicit contracts.
+- **Cloud native:** containers, Kubernetes, health checks, metrics, queues, and managed secrets are part of the architecture.
+- **Financially rigorous:** Decimal.js money calculations, balanced ledger entries, idempotency, and audit trails protect financial correctness.
+
+## Repository
+
+```text
 getfluxo/
-├── README.md                 Repository, architecture and operating guide
-├── ROADMAP.md                Delivery plan, priorities and remaining modules
-├── CI-CD.md                  CI/CD, deployment, infrastructure and runbooks
-├── package.json              Workspace scripts
-├── pnpm-workspace.yaml       Workspace package map
+├── README.md                 Product, architecture, and development guide
+├── ROADMAP.md                Delivery status and next implementation phases
+├── CI-CD.md                  Build, deployment, and operations reference
+├── docker-compose.yml        Local PostgreSQL, Redis, fengine, and fwk
+├── package.json              Monorepo commands and pinned toolchain
 └── packages/
-    ├── fengine/              Core finance engine, NestJS, TypeScript
-    └── finfra/               Docker, Kubernetes, Terraform and ops scripts
+    ├── fengine/              Configurable core financial engine
+    ├── fwk/                  BullMQ worker runtime and platform status API
+    └── finfra/               Docker, Kubernetes, Terraform, and runbooks
 ```
 
-Planned workspace packages are already listed in `pnpm-workspace.yaml`: `fwallet`, `fwallet-mobile`, `fwk`, `fxAI`, `fpay` and `fdocs`. They should be added as implementation moves beyond the current foundation.
+The workspace reserves names for `fwallet`, `fwallet-mobile`, `fpay`, `fxAI`, and `fdocs`. These modules are planned and do not yet exist as implemented packages.
 
-## Current Implementation
+## Implementation Status
 
-### fengine
-
-`packages/fengine` contains the active core banking implementation:
-
-- Product configuration for checking, savings, loans and credit lines.
-- Financial calculations with Decimal.js for PMT, amortization, interest accrual, scenarios and payment allocation.
-- Ledger service with chart of accounts, balanced journal entries, trial balance and GL reporting.
-- Rules engine for eligibility, limits, fees, interest tiers, compliance and custom rules.
-- Transaction service for loan disbursement, loan payment posting, GL integration and audit events.
-- Loan service for application, approval, disbursement, active repayment and paid-up status.
-- Schema manager for tenant-defined entities, no-code forms and workflow execution.
-- In-memory `FengineStoreService` and `AuditTrailService` used as the current local persistence boundary while Prisma/PostgreSQL persistence is completed.
-- Auth, RBAC, CSRF, tenant middleware and Prometheus metrics endpoints.
-
-The OODA lifecycle is explicit across services:
-
-- `OBSERVE`: capture application, tenant and transaction data.
-- `ORIENT`: evaluate rules, schemas, context and product constraints.
-- `DECIDE`: approve, reject, tier or block.
-- `ACT`: persist state, post ledger entries, audit and execute workflows.
-
-### finfra
-
-`packages/finfra` contains the infrastructure foundation:
-
-- Docker build and push scripts for `fengine`.
-- Kubernetes namespace, deployment, service, secrets and monitoring manifests.
-- Terraform starter for AWS VPC and EKS.
-- Deployment scripts for staging and production.
-- Health check, database backup, schema migration and secret setup scripts.
-
-The current Terraform is intentionally minimal and must be expanded before production to include subnets, node groups, RDS/PostgreSQL, Redis, ECR, IAM, external secrets, observability and backup policies.
+| Area | Status | Current capability |
+|---|---|---|
+| `fengine` core | Implemented | Products, rules, loans, transactions, ledger, schemas, workflows, audit, and metrics |
+| Persistence | Implemented foundation | Prisma/PostgreSQL repositories with memory fallback for isolated tests |
+| Worker runtime | Implemented | BullMQ workers, retries, backoff, schedules, dead-letter queues, and metrics |
+| Engine-worker integration | Implemented | Redis job publishing and authenticated callbacks to workflow triggers |
+| Local infrastructure | Implemented | Docker Compose and Minikube with persistent PostgreSQL and Redis |
+| Production infrastructure | Partial | Kubernetes and monitoring manifests exist; Terraform remains a starter |
+| Institution dashboard | Planned | `fwallet` |
+| External payment rails | Planned | `fpay` adapters and reconciliation |
+| Customer mobile application | Planned | `fwallet-mobile` |
+| Intelligence services | Planned | `fxAI` scoring, fraud detection, and automation |
 
 ## Architecture
 
-```
-Web / Mobile / API channels
-  -> API gateway, auth, tenant routing, rate limits
+```text
+Web, mobile, and partner API channels
+  -> authentication, tenant routing, and rate limits
   -> fengine
-       -> products and no-code schemas
-       -> rules engine
-       -> loans and accounts
-       -> transactions and ledger
-       -> audit trail and metrics
-  -> async workers, payment adapters, AI scoring and reconciliation
-  -> PostgreSQL tenant schemas, Redis, object storage, logs and metrics
+       -> products, accounts, and loans
+       -> rules and safe expression runtimes
+       -> transactions and double-entry ledger
+       -> tenant schemas and configurable workflows
+       -> Prisma/PostgreSQL persistence
+       -> BullMQ producer
+            -> Redis platform queue
+                 -> fwk workers
+                      -> authenticated fengine callback
+                      -> workflow-trigger execution
+                      -> retry, backoff, and dead-letter handling
+  -> Prometheus metrics and platform status
 ```
 
-Tenant isolation target:
+### fengine
 
-- Schema-per-tenant PostgreSQL model for regulated workloads.
-- RLS and tenant middleware as an additional guardrail.
-- Per-tenant config caching and audit trails.
-- Backup/restore and migration paths scoped to a tenant.
+`packages/fengine` currently provides:
+
+- Product configuration for current accounts, savings, loans, and credit lines.
+- Decimal.js calculations for repayment schedules, interest, fees, scenarios, and payment allocation.
+- Chart of accounts, balanced journal entries, trial balance, and general-ledger reporting.
+- Loan application, approval, disbursement, repayment, and paid-up transitions.
+- Idempotent disbursement and payment posting, plus transaction reversal at the service layer.
+- Safe rules and advanced arithmetic formulas without `eval` or `new Function`.
+- Tenant-defined entity schemas, forms, workflow definitions, and workflow execution.
+- REST controllers for accounts, products, rules, schemas, workflows, health, metrics, auth, and internal workers.
+- Prisma models and repository paths for tenants, accounts, products, loans, transactions, ledger, workflows, rules, and audit events.
+
+### fwk
+
+`packages/fwk` currently provides:
+
+- BullMQ consumers for payment and platform queues.
+- Exponential backoff, bounded attempts, failed-job retention, and dead-letter queues.
+- Scheduled jobs for fees, interest, payment reconciliation, and reports.
+- Authenticated dispatch of engine events to configurable `fengine` workflow triggers.
+- Public health, dependency status, queue status, schedule status, and Prometheus metrics.
+- Dependency monitoring for PostgreSQL, Redis, and `fengine`.
+
+### finfra
+
+`packages/finfra` currently provides:
+
+- Multi-stage Node `22.22.3` container builds with cached pnpm stores.
+- Kubernetes deployments and services for `fengine` and `fwk`.
+- Minikube PostgreSQL and Redis StatefulSets with persistent volumes.
+- Readiness, liveness, dependency init containers, ServiceMonitors, and alert rules.
+- Local schema synchronisation, health checks, backup scripts, and secret templates.
+- External Secrets definitions and an initial AWS Terraform baseline.
+
+## Internal Worker Contract
+
+The asynchronous engine-worker path uses Redis rather than direct synchronous submission:
+
+1. `fengine` publishes a `FENGINE_EVENT` job to the BullMQ `platform` queue.
+2. `fwk` claims the job and processes it with configured attempts and backoff.
+3. `fwk` calls `POST /api/internal/worker/events` on `fengine`.
+4. `fengine` finds workflows whose trigger matches `event_type` and executes them.
+5. BullMQ records the result as completed or retries and eventually moves terminal failures to the dead-letter queue.
+
+Internal routes require the shared `INTERNAL_API_KEY` header. Kubernetes resolves the engine through `FENGINE_URL=http://fengine`.
 
 ## Local Development
 
-Required toolchain:
+Required tools:
 
 - Node `22.22.3`
 - pnpm `10.33.0`
 - Docker `24+`
 - Kubernetes CLI `1.28+`
-- Terraform `1.4+`
+- Minikube for the complete local cluster
+- Terraform `1.4+` only for infrastructure planning
 
-Local infrastructure uses Docker images:
+The repository pins Node and pnpm through package metadata, `.node-version`, `.nvmrc`, and container images.
 
-- `postgres:16-alpine` on `localhost:15432`
-- `redis:7-alpine` on `localhost:16379`
-
-Development connection strings:
-
-```bash
-export DATABASE_URL="postgresql://fengine_app:fengine_dev@localhost:15432/getfluxo?schema=public"
-export REDIS_URL="redis://localhost:16379"
-```
-
-Use the superuser URL `postgresql://getfluxo:getfluxo_dev@localhost:15432/getfluxo?schema=public` only for local schema administration such as `prisma db push` and RLS setup.
-
-Common commands:
+### Install and test
 
 ```bash
 export PATH=/home/estandarmustaq/.local/share/pnpm:$PATH
-node --version
-pnpm install
-pnpm dev:services:up
+pnpm install --frozen-lockfile
 pnpm --filter @getfluxo/fengine build
-pnpm --filter @getfluxo/fengine test
-pnpm --filter @getfluxo/fengine test:e2e
-pnpm dev:services:logs
-pnpm dev:services:down
-pnpm --filter @getfluxo/finfra docker:build
-pnpm --filter @getfluxo/finfra health:check
+pnpm --filter @getfluxo/fengine test:all
+pnpm --filter @getfluxo/fwk build
+pnpm --filter @getfluxo/fwk test:all
 ```
 
-For a complete local Kubernetes environment, use Minikube. The deploy command starts the `getfluxo` profile, builds immutable local images, provisions PostgreSQL and Redis with persistent volumes, applies the Prisma schema and deploys `fengine` and `fwk`:
+### Docker Compose
+
+```bash
+docker compose up -d postgres redis fengine fwk
+docker compose ps
+docker compose logs -f fengine fwk
+docker compose down
+```
+
+Local ports:
+
+- PostgreSQL: `localhost:15432`
+- Redis: `localhost:16379`
+- `fengine`: `http://localhost:13000/api/health`
+- `fwk`: `http://localhost:13010/api/status`
+
+### Minikube
 
 ```bash
 pnpm --filter @getfluxo/finfra minikube:deploy
@@ -140,50 +193,23 @@ kubectl --context getfluxo port-forward -n getfluxo service/fwk 13011:80
 pnpm --filter @getfluxo/finfra minikube:stop
 ```
 
-Use `minikube:delete` to remove the cluster and its local persistent volumes. Port `13011` avoids the Docker Compose `fwk` port `13010` when both environments are running.
+`minikube:deploy` builds immutable local image tags, provisions PostgreSQL and Redis, synchronises the Prisma schema, and waits for healthy application rollouts. `minikube:delete` removes the cluster and its persistent local data.
 
-This repository is pinned to Node `22.22.3` via `.node-version`, `.nvmrc`, `.npmrc`, package `engines` and Docker images. On this workstation, the expected Node binary is `/home/estandarmustaq/.local/share/pnpm/node`.
+## Security and Regulatory Direction
 
-## fengine Quick Flow
+The repository contains engineering foundations, not a claim of regulatory certification or production authorisation. Before a regulated launch in Mozambique, the platform still requires:
 
-```typescript
-const loan = await loanService.applyForLoan(tenantId, {
-  customer_id: customerId,
-  product_id: productId,
-  loan_type: LoanType.PERSONAL,
-  requested_amount: 25000,
-  requested_term_months: 12,
-  metadata: {},
-});
+- Formal alignment with Banco de Moçambique licensing, reporting, outsourcing, and data requirements.
+- Institution KYB and customer KYC/AML evidence workflows.
+- Production-grade identity, credential rotation, access reviews, and incident response.
+- PCI-DSS scope definition for card or payment-provider integrations.
+- Independent penetration testing and vulnerability management.
+- Tested backup restoration, retention, deletion, and disaster-recovery procedures.
+- Legal agreements, data-processing terms, service levels, and institution go-live controls.
 
-await loanService.approveLoan(tenantId, loan, {
-  credit_score: 650,
-  income: 120000,
-  employment_years: 5,
-});
-
-await loanService.disburseLoan(tenantId, loan);
-await loanService.processLoanPayment(tenantId, loan, 2500);
-```
-
-Payment allocation is fees -> interest -> principal in both transaction posting and loan balance updates.
-
-## Security And Compliance Baseline
-
-Required before regulated production:
-
-- Secrets in AWS Secrets Manager, External Secrets Operator or equivalent vault.
-- JWT/API key rotation and incident response process.
-- PCI-DSS scope decision for payment processing.
-- AML/KYC/KYB workflow and evidence collection.
-- Per-tenant access logs for personal and financial data.
-- Third-party penetration testing and vulnerability management.
-- Backup, restore, retention and data deletion policies.
+Mozambique is the launch market and product focus. Expansion into the SADC region is a future option after local product, regulatory, and operational maturity.
 
 ## Documentation
 
-Documentation is intentionally consolidated:
-
-- [README.md](/home/estandarmustaq/dev_0/getfluxo/README.md): architecture, package guide and development commands.
-- [ROADMAP.md](/home/estandarmustaq/dev_0/getfluxo/ROADMAP.md): delivery order, module scope and acceptance criteria.
-- [CI-CD.md](/home/estandarmustaq/dev_0/getfluxo/CI-CD.md): pipeline, deployment, infrastructure and operational runbooks.
+- [ROADMAP.md](ROADMAP.md): verified delivery status and remaining modules.
+- [CI-CD.md](CI-CD.md): current automation, deployment procedures, and production gaps.

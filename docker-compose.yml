@@ -34,6 +34,27 @@ services:
       timeout: 5s
       retries: 5
 
+  fengine:
+    build:
+      context: .
+      dockerfile: packages/fengine/Dockerfile
+    container_name: getfluxo-fengine
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://getfluxo:getfluxo_dev@postgres:5432/getfluxo?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: docker-development-secret
+      INTERNAL_API_KEY: docker-internal-api-key
+    ports:
+      - "13000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   fwk:
     build:
       context: .
@@ -47,6 +68,8 @@ services:
       REDIS_URL: redis://redis:6379
       FWK_WORKER_ENABLED: "true"
       FWK_QUEUES: payments,platform
+      FENGINE_URL: http://fengine:3000
+      INTERNAL_API_KEY: docker-internal-api-key
     ports:
       - "13010:3010"
     depends_on:
@@ -54,6 +77,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      fengine:
+        condition: service_started
 
 volumes:
   getfluxo-postgres-data:

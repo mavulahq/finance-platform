@@ -1,168 +1,180 @@
-# getfluxo.io Roadmap
+# Fluxo Delivery Roadmap
 
-This roadmap uses the OODA model as the product and engineering delivery loop: observe the current state, orient around risk and market needs, decide the next scope, act with shippable modules.
+This roadmap tracks the implementation of Fluxo by getfluxo.io as configurable financial infrastructure for Mozambican institutions.
 
-## Current State
+## Status Legend
 
-Foundation work is concentrated in `fengine` and `finfra`.
+- ✅ **Complete:** implemented in the repository and validated by build, tests, or a working local deployment.
+- 🟡 **Partial:** a usable foundation exists, but the stated production or product scope is incomplete.
+- ⬜ **Planned:** no complete implementation exists yet.
 
-Completed or materially implemented:
+Status applies to the specific line item, not to regulatory approval or general production readiness.
 
-- NestJS `fengine` application shell with auth, health, metrics, tenant middleware and RBAC.
-- Product configuration engine for standard account, savings, loan and credit-line products.
-- Financial calculation primitives for PMT, amortization, interest accrual, scenarios and payment allocation.
-- General ledger service with SADC-oriented chart of accounts, journal posting, trial balance and GL reports.
-- Rules engine with default eligibility, limit, fee, interest and compliance rules.
-- Transaction service for loan disbursement, payment allocation, settlement records and GL posting.
-- Loan service for application, approval, disbursement, payment and paid-up lifecycle.
-- Schema manager for no-code entity schemas and workflow automation.
-- Shared in-memory store and audit trail services registered in the Nest dependency graph.
-- Local development PostgreSQL and Redis run through Docker Compose images.
-- `finfra` Docker, Kubernetes, Terraform starter, deployment and operational scripts.
-- Documentation consolidated into `README.md`, `ROADMAP.md` and `CI-CD.md`.
+## Current Baseline
 
-Important implementation correction now applied:
+### Core Financial Engine
 
-- Duplicate workflow executor removed from `SchemaManagerService`.
-- Rule creation audit now uses a valid OODA phase.
-- Shared store and audit providers registered for app and integration tests.
-- Loan balance payment allocation now mirrors transaction allocation: fees -> interest -> principal.
+- ✅ NestJS service, health endpoint, Prometheus metrics, tenant middleware, auth foundation, and RBAC primitives.
+- ✅ Decimal.js financial calculations for payments, amortisation, interest, fees, and scenarios.
+- ✅ Product configuration for current accounts, savings, loans, and credit lines.
+- ✅ Rules engine with safe conditions, eligibility, limits, fees, interest tiers, and compliance rules.
+- ✅ Loan lifecycle for application, approval, disbursement, partial repayment, and paid-up state.
+- ✅ Transaction posting with fees-first allocation, settlement metadata, and idempotency keys.
+- ✅ Double-entry ledger, chart of accounts, journal validation, trial balance, and reports.
+- ✅ Transaction reversal at the service layer with audit recording.
+- ✅ Tenant-defined schemas, forms, workflow definitions, and safe arithmetic formulas.
+- ✅ REST controllers for products, rules, schemas, workflows, accounts, health, metrics, and internal workers.
+- ✅ Prisma/PostgreSQL persistence paths for the implemented financial and configuration entities.
+- ✅ Unit, integration, financial-lifecycle, and e2e test suites.
+- 🟡 Authentication credential validation, role enforcement across every controller, and production identity integration.
+- 🟡 Account APIs: create and list exist; balance, statement, freeze, close, and status-transition contracts remain incomplete.
+- 🟡 Request DTO coverage and global runtime validation across all public APIs.
+- 🟡 Reversal and correction APIs, approval controls, and operator-facing workflows.
+- 🟡 Durable idempotency for every workflow side effect, not only queue and transaction entry points.
 
-## Phase 1: Foundation Closeout
+### Tenant Isolation and Data
 
-Target: make `fengine` and `finfra` reliable enough to support the remaining modules.
+- ✅ Tenant identifiers are propagated through HTTP and persistence service boundaries.
+- ✅ PostgreSQL RLS definitions and a non-bypass application role exist.
+- ✅ Prisma models cover tenants, accounts, products, loans, transactions, ledger, rules, workflows, and audit events.
+- 🟡 RLS application is not yet automatic in every deployment and migration path.
+- 🟡 Tenant-context enforcement must be bound transactionally to pooled database connections.
+- 🟡 Schema-per-tenant tooling is experimental and not the production migration strategy.
+- ⬜ Automated cross-tenant isolation tests for every repository and API path.
 
-### fengine
+### Worker Runtime
 
-Scope:
+- ✅ BullMQ workers backed by Redis.
+- ✅ Bounded retries and exponential backoff.
+- ✅ Dead-letter queues and terminal-failure metrics.
+- ✅ Scheduled jobs for fees, interest, reconciliation, and reports.
+- ✅ Public status API for platform, dependencies, queues, schedules, and worker metrics.
+- ✅ `fengine` job producer and authenticated `fwk` callback contract.
+- ✅ Workflow execution from asynchronous `event_type` triggers.
+- ✅ Startup dependency checks for PostgreSQL, Redis, and `fengine`.
+- ✅ Migration of the legacy reconciliation schedule from `payments` to `platform`.
+- 🟡 Durable workflow-level deduplication for side effects after process restarts.
 
-- Replace in-memory store paths with Prisma/PostgreSQL repositories behind the same service boundaries.
-- Keep Decimal.js for all money math and prevent float-only balance updates.
-- Add durable tenant schemas, RLS policies and migration scripts to the runtime path.
-- Add account APIs for create, read, balance, statement and status transitions.
-- Add product, rule, schema and workflow controllers.
-- Add idempotency keys for disbursement and payment posting.
-- Add transaction reversal and correction workflows with audit events.
-- Add API contracts with request validation DTOs.
+### Local and Kubernetes Infrastructure
+
+- ✅ Docker Compose services for PostgreSQL, Redis, `fengine`, and `fwk`.
+- ✅ Multi-stage Node `22.22.3` container builds with a shared BuildKit pnpm cache.
+- ✅ Minikube overlay with persistent PostgreSQL and Redis StatefulSets.
+- ✅ Immutable local application image tags and automated Prisma schema synchronisation.
+- ✅ Kubernetes deployments, services, liveness probes, readiness probes, and dependency init containers.
+- ✅ ServiceMonitor and PrometheusRule definitions for `fengine` and `fwk`.
+- ✅ Local database backup and deployment health-check scripts.
+- 🟡 External Secrets resources exist but require a valid operator, workload identity, and managed secret values.
+- 🟡 k3s deployment script exists but has not been validated as the primary local runtime.
+- 🟡 Kubernetes manifests still need environment parameterisation and immutable production image policy.
+- ⬜ Horizontal Pod Autoscalers, PodDisruptionBudgets, NetworkPolicies, and ingress/API gateway.
+- ⬜ Tested database restore and disaster-recovery automation.
+
+## Phase 1: Engine Closeout
+
+Goal: make `fengine` safe and complete enough to support institution-facing operations.
+
+- 🟡 Complete account lifecycle APIs and DTO validation.
+- 🟡 Expose reversal and correction workflows with approval and audit controls.
+- 🟡 Make RLS setup part of repeatable migrations and CI isolation tests.
+- 🟡 Add durable deduplication receipts for financial workflow side effects.
+- ⬜ Publish versioned OpenAPI contracts for public and partner APIs.
+- ⬜ Add customer, institution, branch, and operator domain models.
+- ⬜ Add regulatory reporting data contracts required for the Mozambican launch scope.
 
 Acceptance criteria:
 
-- `pnpm --filter @getfluxo/fengine build` passes.
-- Unit, integration and e2e tests pass in CI.
-- Loan lifecycle test covers apply -> approve -> disburse -> partial payment -> paid-up.
-- GL trial balance remains balanced after every transaction test.
-- Tenant A cannot access Tenant B data in API, Prisma queries or logs.
+- ⬜ All public write APIs use validated DTOs and explicit authorisation.
+- ⬜ Tenant A cannot access Tenant B through HTTP, Prisma, jobs, logs, or exports.
+- ⬜ Every financial mutation is idempotent, auditable, and reversible through controlled workflows.
+- ⬜ Trial balance remains balanced across lifecycle, retry, reversal, and concurrency tests.
 
-### finfra
-
-Scope:
-
-- Expand Terraform from placeholder to deployable AWS baseline: VPC, public/private subnets, EKS node groups, RDS/PostgreSQL, Redis, ECR, IAM and security groups.
-- Add External Secrets Operator or equivalent secret sync.
-- Parameterize Kubernetes image, tag, namespace, replicas and resource limits.
-- Add readiness probes, HPA, pod disruption budgets and network policies.
-- Add Prometheus scraping, Grafana dashboards and log aggregation.
-- Add backup and restore workflow for PostgreSQL and tenant schemas.
-
-Acceptance criteria:
-
-- Staging deploy is reproducible from a clean cluster.
-- `health:check` confirms rollout status and service availability.
-- Terraform plan is reviewable and environment-specific.
-- Production deploy requires approval and supports rollback.
-- Secrets are never committed or injected from plaintext manifests.
-
-## Phase 2: Operating Surfaces
-
-Target: turn the engine into usable financial operations.
+## Phase 2: Institution Operations
 
 ### fwallet
 
-Institution web dashboard:
-
-- Tenant login and role-based navigation.
-- Customer and account management.
-- Loan origination and review screens.
-- Payments, transaction history and reconciliation views.
-- No-code product, schema, rule and workflow configuration.
-- Audit and compliance views.
+- ⬜ Institution login and role-based operator navigation.
+- ⬜ Customer and account management.
+- ⬜ Loan origination, review, approval, and collections views.
+- ⬜ Transaction history, payment operations, and reconciliation views.
+- ⬜ No-code product, rule, schema, and workflow configuration.
+- ⬜ Audit, compliance, and operational reporting views.
 
 ### fdocs
 
-Developer and operator documentation:
+- ⬜ Generated OpenAPI reference.
+- ⬜ Institution onboarding and sandbox guides.
+- ⬜ Partner integration examples and webhook documentation.
+- ⬜ Operator runbooks generated from the operational source of truth.
 
-- OpenAPI specs from fengine controllers.
-- Tenant onboarding guide.
-- Runbooks generated from `CI-CD.md`.
-- API examples for institutions and partners.
+Acceptance criteria:
 
-## Phase 3: Payments And Workers
+- ⬜ An institution can configure and operate a loan product without direct database access.
+- ⬜ Operator actions are authorised, tenant-scoped, and auditable.
 
-Target: connect transaction processing to real external rails and async operations.
+## Phase 3: Payments
 
 ### fpay
 
-Payment gateway module:
+- ⬜ Payment-provider adapter contract.
+- ⬜ M-Pesa and e-Mola integrations for the initial Mozambique scope.
+- ⬜ Bank-transfer and settlement-file adapters.
+- ⬜ Webhook signature verification and replay protection.
+- ⬜ Payment state machine, reconciliation, disputes, and exception handling.
+- ⬜ PCI-DSS scope decision and provider-tokenisation strategy.
 
-- Adapter pattern for M-Pesa, e-Mola, Paystack, Stripe and bank rails.
-- Webhook verification and replay protection.
-- Settlement files and reconciliation reports.
-- PCI-DSS scope minimization.
+Acceptance criteria:
 
-### fwk
+- ⬜ Provider callbacks are authenticated, idempotent, and fully auditable.
+- ⬜ Settlement totals reconcile with ledger postings and provider records.
+- ⬜ Provider outages retry safely without duplicate customer charges.
 
-Worker framework:
-
-- Bull/BullMQ queue workers.
-- Retry, backoff and dead-letter queues.
-- Scheduled jobs for fees, interest, reconciliation and reports.
-- Worker health metrics.
-
-## Phase 4: Mobile And Intelligence
-
-Target: add high-value channels and automation.
+## Phase 4: Customer Channels and Intelligence
 
 ### fwallet-mobile
 
-White-label mobile app:
-
-- Institution-branded customer experience.
-- Account overview, loan status and repayment flows.
-- Push notifications and biometric auth.
-- Offline-tolerant UX where possible.
+- ⬜ Institution-branded mobile application.
+- ⬜ Account overview, loan status, repayment, and transaction history.
+- ⬜ Push notifications, device security, and biometric authentication.
+- ⬜ Offline-tolerant read experiences for variable connectivity.
 
 ### fxAI
 
-AI services:
+- ⬜ Affordability and credit-risk scoring services.
+- ⬜ Fraud and anomaly detection.
+- ⬜ Collections prioritisation and operational assistance.
+- ⬜ Model versioning, explainability, monitoring, and human review.
 
-- Credit scoring and affordability scoring.
-- Fraud/anomaly detection.
-- Collections prioritization.
-- Model versioning, monitoring and explainability reports.
+## Phase 5: Production and Commercial Readiness
 
-## Phase 5: Production Readiness
+### Security and Compliance
 
-Target: close enterprise and regulated-finance gaps.
+- ⬜ Formal Banco de Moçambique regulatory gap assessment.
+- ⬜ Institution KYB and customer KYC/AML evidence workflows.
+- ⬜ Penetration test, dependency governance, and vulnerability remediation process.
+- ⬜ Key rotation, privileged-access reviews, incident response, and audit export.
+- ⬜ Data retention, deletion, privacy, and processing agreements.
 
-Security and compliance:
+### Infrastructure and Reliability
 
-- KYB onboarding for institutions.
-- AML/KYC evidence workflows.
-- PCI-DSS decision and controls.
-- Penetration testing, vulnerability tracking and incident process.
-- Data retention, deletion and DPA templates.
+- 🟡 AWS Terraform contains provider, VPC, and EKS starter definitions.
+- ⬜ Production VPC topology, private subnets, routing, and NAT.
+- ⬜ Managed Kubernetes node groups and workload identity.
+- ⬜ Managed PostgreSQL, Redis, container registry, backups, and encryption.
+- ⬜ Central logs, dashboards, traces, alert routing, and on-call procedures.
+- ⬜ Tested recovery objectives and multi-environment promotion.
 
-Operational targets:
+### Commercial Operations
 
-- p99 API latency under 200ms for common read paths.
-- No unbalanced journal postings.
-- Staging deploy under 5 minutes after image build.
-- Recovery time objective under 1 hour for critical data.
-- Recovery point objective aligned to customer tier.
+- ⬜ Institution sandbox provisioning.
+- ⬜ Customer implementation and go-live checklist.
+- ⬜ Service tiers, support model, service levels, and usage metering.
+- ⬜ Billing, contract, and customer-success operations.
 
-Commercial readiness:
+## Immediate Delivery Order
 
-- Starter, Professional and Enterprise plan boundaries.
-- Sandbox tenant provisioning.
-- Customer go-live checklist.
-- SLA and support model per plan.
+1. Complete engine API validation, authorisation, RLS enforcement, and durable idempotency.
+2. Build `fwallet` as the institution operating surface.
+3. Implement `fpay` with the first local payment adapters and reconciliation.
+4. Expand CI security gates and production infrastructure.
+5. Add customer mobile and intelligence modules after core operating flows are stable.

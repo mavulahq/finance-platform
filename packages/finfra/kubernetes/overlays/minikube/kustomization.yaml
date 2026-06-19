@@ -19,6 +19,7 @@ secretGenerator:
       - DATABASE_URL=postgresql://getfluxo:getfluxo_dev@postgres:5432/getfluxo?schema=public
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=minikube-development-secret-change-before-production
+      - INTERNAL_API_KEY=minikube-internal-api-key-change-before-production
   - name: fwk-secrets
     literals:
       - NODE_ENV=development
@@ -28,6 +29,7 @@ secretGenerator:
       - FWK_WORKER_ENABLED=true
       - FWK_SCHEDULER_ENABLED=true
       - FWK_QUEUES=payments,platform
+      - INTERNAL_API_KEY=minikube-internal-api-key-change-before-production
 images:
   - name: getfluxio/fengine
     newTag: minikube

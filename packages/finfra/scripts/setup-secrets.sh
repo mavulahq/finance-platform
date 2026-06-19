@@ -75,8 +75,35 @@ spec:
     - secretKey: COOKIE_DOMAIN
       remoteRef:
         key: getfluxo/cookie_domain
+    - secretKey: INTERNAL_API_KEY
+      remoteRef:
+        key: getfluxo/internal_api_key
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: fwk-secrets
+  namespace: $NAMESPACE
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: SecretStore
+  target:
+    name: fwk-secrets
+    creationPolicy: Owner
+  data:
+    - secretKey: DATABASE_URL
+      remoteRef:
+        key: getfluxo/fengine/database_url
+    - secretKey: REDIS_URL
+      remoteRef:
+        key: getfluxo/redis_url
+    - secretKey: INTERNAL_API_KEY
+      remoteRef:
+        key: getfluxo/internal_api_key
 EOF
 
 echo "Secrets management configured. Verify in AWS Secrets Manager and k8s:"
 echo "  aws secretsmanager list-secrets --region $AWS_REGION --filters Key=name,Values=getfluxo"
-echo "  kubectl get secret -n $NAMESPACE fengine-secrets"
+echo "  kubectl get secret -n $NAMESPACE fengine-secrets fwk-secrets"
