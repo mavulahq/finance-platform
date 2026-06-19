@@ -90,7 +90,7 @@ pnpm --filter @getfluxo/finfra tf:plan
 6. Synchronises the Prisma schema with the temporary PostgreSQL database.
 7. Runs the `fengine` e2e suite with PostgreSQL and Redis URLs.
 
-`SUBMODULES_SSH_KEY` must contain a private machine-user key whose GitHub account has read access to `fengine`, `fwk`, and `finfra`. The root repository uses its scoped `GITHUB_TOKEN`; the SSH key is written to a temporary file only for `git submodule update`, uses strict host checking, and is removed immediately afterward. Rotate this credential through GitHub Actions secrets; never commit it.
+`SUBMODULES_SSH_KEY` must contain a dedicated CI private key registered to a GitHub account with read access to `fengine`, `fwk`, and `finfra`. The root repository uses its scoped `GITHUB_TOKEN`; the SSH key is written to a temporary file only for `git submodule update`, uses strict host checking, and is removed immediately afterward. Rotate this credential through GitHub Actions secrets; never commit it.
 
 This workflow does not currently run `fengine` unit/integration suites, `fwk` tests, container builds, security scans, or deployments.
 
