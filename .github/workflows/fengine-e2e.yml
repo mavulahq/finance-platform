@@ -11,6 +11,9 @@ on:
       - 'pnpm-workspace.yaml'
       - 'package.json'
 
+permissions:
+  contents: read
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
@@ -32,10 +35,21 @@ jobs:
         options: >-
           --health-cmd "redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
-      - uses: actions/checkout@v4
+      - name: Verify submodule credentials
+        env:
+          SUBMODULES_SSH_KEY: ${{ secrets.SUBMODULES_SSH_KEY }}
+        run: |
+          if [ -z "$SUBMODULES_SSH_KEY" ]; then
+            echo "SUBMODULES_SSH_KEY is required to clone private submodules." >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
           ssh-key: ${{ secrets.SUBMODULES_SSH_KEY }}
+          ssh-strict: true
+          persist-credentials: false
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -43,7 +57,7 @@ jobs:
           version: 10.33.0
 
       - name: Use Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22.22.3
           cache: pnpm

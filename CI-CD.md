@@ -82,7 +82,7 @@ pnpm --filter @getfluxo/finfra tf:plan
 
 `.github/workflows/fengine-e2e.yml` currently runs on relevant pushes and manual dispatch. It:
 
-1. Checks out the root repository and its recorded submodule commits using `SUBMODULES_SSH_KEY`.
+1. Verifies `SUBMODULES_SSH_KEY` and checks out the root repository and its recorded submodule commits with `actions/checkout@v6`.
 2. Starts PostgreSQL `16-alpine` and Redis `7-alpine` service containers.
 3. Installs pnpm `10.33.0` and Node `22.22.3`.
 4. Installs dependencies from the frozen lockfile.
@@ -90,7 +90,7 @@ pnpm --filter @getfluxo/finfra tf:plan
 6. Synchronises the Prisma schema with the temporary PostgreSQL database.
 7. Runs the `fengine` e2e suite with PostgreSQL and Redis URLs.
 
-`SUBMODULES_SSH_KEY` must contain a private machine-user key whose GitHub account has read access to `getfluxo`, `fengine`, `fwk`, and `finfra`. Rotate this credential through GitHub Actions secrets; never commit it.
+`SUBMODULES_SSH_KEY` must contain a private machine-user key whose GitHub account has read access to `getfluxo`, `fengine`, `fwk`, and `finfra`. The workflow fails before checkout when this secret is missing, enforces strict SSH host checking, and removes checkout credentials after use. Rotate this credential through GitHub Actions secrets; never commit it.
 
 This workflow does not currently run `fengine` unit/integration suites, `fwk` tests, container builds, security scans, or deployments.
 
