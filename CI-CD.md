@@ -32,6 +32,7 @@ The root repository and its `fengine`, `fwk`, and `finfra` submodules are privat
 - ✅ Always-run GitHub Actions workflow `.github/workflows/required-ci.yml`.
 - ✅ PostgreSQL and Redis service containers in the required CI workflow.
 - ✅ Complete builds and test suites for `fengine` and `fwk` on every pull request.
+- ✅ Architecture contract validation inside the required CI workflow when contract files exist.
 - ✅ Versioned pre-push hook, controlled squash-merge command, and direct-push audit.
 - ✅ Dockerfiles for `fengine` and `fwk`.
 - ✅ Docker Compose development environment.
@@ -76,6 +77,13 @@ pnpm pr:merge -- <number> --check-only
 pnpm pr:merge -- <number>
 ```
 
+Architecture contracts:
+
+```bash
+pnpm contracts:check
+pnpm exec prettier --check 'docs/architecture/**/*.md' 'contracts/domain-events/**/*.json' 'scripts/validate-domain-contracts*.mjs'
+```
+
 Infrastructure:
 
 ```bash
@@ -89,7 +97,7 @@ pnpm --filter @getfluxo/finfra tf:plan
 
 ## GitHub Actions
 
-### Implemented workflow
+### Implemented workflows
 
 `.github/workflows/required-ci.yml` runs as the stable `required` check on every pull request, every push to `main`, and manual dispatch. It:
 
@@ -144,6 +152,7 @@ Every pull request currently validates:
 - Financial lifecycle and balanced-ledger invariants.
 - Payment allocation order: fees, then interest, then principal.
 - Idempotency, retry, reversal, and concurrency scenarios.
+- Valid domain event schemas, unique type/version pairs, and catalogued examples.
 - Tenant-isolation tests for API, database, queues, and exports.
 
 The following dedicated gates remain planned:
