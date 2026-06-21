@@ -1,21 +1,23 @@
-name: fengine E2E
+name: Required CI
 
 on:
-  workflow_dispatch: {}
+  pull_request: {}
   push:
-    paths:
-      - 'packages/fengine'
-      - 'packages/fengine/**'
-      - '.github/workflows/fengine-e2e.yml'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
-      - 'package.json'
+    branches:
+      - main
+  workflow_dispatch: {}
 
 permissions:
   contents: read
+  pull-requests: read
+
+concurrency:
+  group: required-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  e2e:
+  required:
+    name: required
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -34,7 +36,28 @@ jobs:
           - 6379:6379
         options: >-
           --health-cmd "redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    env:
+      DATABASE_URL: postgresql://getfluxo:getfluxo_dev@127.0.0.1:5432/getfluxo?schema=public
+      REDIS_URL: redis://127.0.0.1:6379
     steps:
+      - name: Audit main update
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          response=$(curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls")
+
+          if ! jq -e --arg sha "$GITHUB_SHA" \
+            'any(.[]; .merged_at != null and .base.ref == "main" and .merge_commit_sha == $sha)' \
+            <<<"$response" >/dev/null; then
+            echo "::error::main was updated without an associated merged pull request. This update is recorded as a policy violation."
+            exit 1
+          fi
+
       - name: Verify submodule credentials
         env:
           SUBMODULES_SSH_KEY: ${{ secrets.SUBMODULES_SSH_KEY }}
@@ -73,23 +96,27 @@ jobs:
           node-version: 22.22.3
           cache: pnpm
 
-      - name: Wait for Postgres
-        run: |
-          for i in {1..30}; do pg_isready -h 127.0.0.1 -p 5432 -U getfluxo -d getfluxo && break || sleep 2; done
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build fengine
-        run: pnpm --filter @getfluxo/fengine build
+      - name: Validate architecture contracts
+        run: |
+          if [ -f scripts/validate-domain-contracts.mjs ]; then
+            pnpm contracts:check
+          else
+            echo "Architecture contract validator is not present on this revision."
+          fi
+
+      - name: Build implemented services
+        run: |
+          pnpm --filter @getfluxo/fengine build
+          pnpm --filter @getfluxo/fwk build
 
       - name: Sync database schema
         run: pnpm --filter @getfluxo/fengine exec prisma db push --skip-generate
-        env:
-          DATABASE_URL: postgresql://getfluxo:getfluxo_dev@127.0.0.1:5432/getfluxo?schema=public
 
-      - name: Run e2e tests
-        run: pnpm --filter @getfluxo/fengine test:e2e
-        env:
-          DATABASE_URL: postgresql://getfluxo:getfluxo_dev@127.0.0.1:5432/getfluxo?schema=public
-          REDIS_URL: redis://127.0.0.1:6379
+      - name: Test fengine
+        run: pnpm --filter @getfluxo/fengine test:all
+
+      - name: Test fwk
+        run: pnpm --filter @getfluxo/fwk test:all
