@@ -63,18 +63,18 @@ getfluxo/
 
 ## Implementation Status
 
-| Area | Status | Current capability |
-|---|---|---|
-| `fengine` core | Implemented | Products, rules, loans, transactions, ledger, schemas, workflows, audit, and metrics |
-| Persistence | Implemented foundation | Prisma/PostgreSQL repositories with memory fallback for isolated tests |
-| Worker runtime | Implemented | BullMQ workers, retries, backoff, schedules, dead-letter queues, and metrics |
-| Engine-worker integration | Implemented | Redis job publishing and authenticated callbacks to workflow triggers |
-| Local infrastructure | Implemented | Docker Compose and Minikube with persistent PostgreSQL and Redis |
-| Production infrastructure | Partial | Kubernetes and monitoring manifests exist; Terraform remains a starter |
-| Institution dashboard | Planned | `fwallet` |
-| External payment rails | Planned | `fpay` adapters and reconciliation |
-| Customer mobile application | Planned | `fwallet-mobile` |
-| Intelligence services | Planned | `fxAI` scoring, fraud detection, and automation |
+| Area                        | Status                 | Current capability                                                                   |
+| --------------------------- | ---------------------- | ------------------------------------------------------------------------------------ |
+| `fengine` core              | Implemented            | Products, rules, loans, transactions, ledger, schemas, workflows, audit, and metrics |
+| Persistence                 | Implemented foundation | Prisma/PostgreSQL repositories with memory fallback for isolated tests               |
+| Worker runtime              | Implemented            | BullMQ workers, retries, backoff, schedules, dead-letter queues, and metrics         |
+| Engine-worker integration   | Implemented            | Redis job publishing and authenticated callbacks to workflow triggers                |
+| Local infrastructure        | Implemented            | Docker Compose and Minikube with persistent PostgreSQL and Redis                     |
+| Production infrastructure   | Partial                | Kubernetes and monitoring manifests exist; Terraform remains a starter               |
+| Institution dashboard       | Planned                | `fwallet`                                                                            |
+| External payment rails      | Planned                | `fpay` adapters and reconciliation                                                   |
+| Customer mobile application | Planned                | `fwallet-mobile`                                                                     |
+| Intelligence services       | Planned                | `fxAI` scoring, fraud detection, and automation                                      |
 
 ## Architecture
 
@@ -171,6 +171,7 @@ For an existing clone, synchronise and initialise the recorded submodule commits
 
 ```bash
 pnpm submodules:init
+pnpm git:hooks:install
 ```
 
 ```bash
@@ -180,6 +181,19 @@ pnpm --filter @getfluxo/fengine test:all
 pnpm --filter @getfluxo/fwk build
 pnpm --filter @getfluxo/fwk test:all
 ```
+
+### Contribution workflow
+
+All changes to `main` must pass through a pull request. The versioned pre-push hook blocks accidental direct pushes after `pnpm git:hooks:install`; `Required CI` then builds and runs the complete `fengine` and `fwk` suites for every pull request.
+
+After CI succeeds, validate or merge an eligible pull request with:
+
+```bash
+pnpm pr:merge -- <number> --check-only
+pnpm pr:merge -- <number>
+```
+
+The merge command rejects drafts, conflicts, requested changes, pending checks, and any PR without a successful `required` check. It uses squash merge and deletes the source branch. Because the private organisation repository currently uses GitHub Free, these controls reduce accidental or non-compliant changes but cannot prevent an administrator from bypassing local hooks or pushing directly. Remote enforcement will move to a GitHub ruleset when GitHub Team is available.
 
 ### Docker Compose
 

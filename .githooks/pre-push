@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  if [[ "$remote_ref" == "refs/heads/main" ]]; then
+    cat >&2 <<'EOF'
+Direct pushes to main are blocked by getfluxo.io repository policy.
+Push a feature branch, open a pull request, wait for Required CI, then use:
+  pnpm pr:merge -- <number>
+EOF
+    exit 1
+  fi
+done

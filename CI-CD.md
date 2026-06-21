@@ -10,14 +10,14 @@ This document describes the automation that exists today and the controls still 
 
 ## Toolchain
 
-| Tool | Required version |
-|---|---|
-| Node.js | `22.22.3` |
-| pnpm | `10.33.0` |
-| Docker | `24+` |
-| Kubernetes CLI | `1.28+` |
-| Minikube | Current local development profile |
-| Terraform | `1.4+` |
+| Tool           | Required version                  |
+| -------------- | --------------------------------- |
+| Node.js        | `22.22.3`                         |
+| pnpm           | `10.33.0`                         |
+| Docker         | `24+`                             |
+| Kubernetes CLI | `1.28+`                           |
+| Minikube       | Current local development profile |
+| Terraform      | `1.4+`                            |
 
 The repository pins Node and pnpm in package metadata and container images. Ensure the `node` and `pnpm` executables are available in the runner's `PATH`.
 
@@ -29,15 +29,17 @@ The root repository and its `fengine`, `fwk`, and `finfra` submodules are privat
 - ✅ TypeScript builds for `fengine` and `fwk`.
 - ✅ Unit and integration tests for both implemented services.
 - ✅ e2e test suites for `fengine` and `fwk`.
-- ✅ GitHub Actions workflow `.github/workflows/fengine-e2e.yml`.
-- ✅ PostgreSQL and Redis service containers in the `fengine` e2e workflow.
+- ✅ Always-run GitHub Actions workflow `.github/workflows/required-ci.yml`.
+- ✅ PostgreSQL and Redis service containers in the required CI workflow.
+- ✅ Complete builds and test suites for `fengine` and `fwk` on every pull request.
+- ✅ Versioned pre-push hook, controlled squash-merge command, and direct-push audit.
 - ✅ Dockerfiles for `fengine` and `fwk`.
 - ✅ Docker Compose development environment.
 - ✅ Minikube build, schema sync, deployment, and rollout validation.
 - ✅ Kubernetes health checks, metrics resources, and deployment scripts.
 - 🟡 Staging and production shell entry points exist but depend on preconfigured external clusters and secrets.
 - 🟡 Terraform is a starter and cannot provision the full production platform.
-- ⬜ Repository-wide CI workflow covering every package and quality gate.
+- 🟡 Repository-wide CI covers every implemented service; planned modules and security gates remain outstanding.
 - ⬜ Automated container publishing, staging promotion, and approved production release.
 - ⬜ Automated SAST, dependency policy, secret scan, SBOM, and container vulnerability gates.
 
@@ -63,6 +65,15 @@ pnpm --filter @getfluxo/fwk test
 pnpm --filter @getfluxo/fwk test:e2e
 pnpm --filter @getfluxo/fwk test:all
 pnpm test
+pnpm test:guardrails
+```
+
+Repository controls:
+
+```bash
+pnpm git:hooks:install
+pnpm pr:merge -- <number> --check-only
+pnpm pr:merge -- <number>
 ```
 
 Infrastructure:
@@ -80,23 +91,42 @@ pnpm --filter @getfluxo/finfra tf:plan
 
 ### Implemented workflow
 
-`.github/workflows/fengine-e2e.yml` currently runs on relevant pushes and manual dispatch. It:
+`.github/workflows/required-ci.yml` runs as the stable `required` check on every pull request, every push to `main`, and manual dispatch. It:
 
-1. Verifies `SUBMODULES_SSH_KEY`, checks out the root repository with `actions/checkout@v6`, and then checks out the recorded submodule commits through an isolated SSH command.
-2. Starts PostgreSQL `16-alpine` and Redis `7-alpine` service containers.
-3. Installs pnpm `10.33.0` and Node `22.22.3`.
-4. Installs dependencies from the frozen lockfile.
-5. Builds `fengine`.
-6. Synchronises the Prisma schema with the temporary PostgreSQL database.
-7. Runs the `fengine` e2e suite with PostgreSQL and Redis URLs.
+1. Audits a `main` update and fails when the commit is not associated with a merged pull request targeting `main`.
+2. Verifies `SUBMODULES_SSH_KEY`, checks out the root repository with `actions/checkout@v6`, and then checks out the recorded submodule commits through an isolated SSH command.
+3. Starts PostgreSQL `16-alpine` and Redis `7-alpine` service containers.
+4. Installs pnpm `10.33.0` and Node `22.22.3`.
+5. Installs dependencies from the frozen lockfile.
+6. Runs architecture contract validation when the validator is present on the revision.
+7. Builds `fengine` and `fwk`.
+8. Synchronises the Prisma schema with the temporary PostgreSQL database.
+9. Runs the complete unit, integration, and e2e suites for `fengine` and `fwk`.
 
 `SUBMODULES_SSH_KEY` must contain a dedicated CI private key registered to a GitHub account with read access to `fengine`, `fwk`, and `finfra`. The root repository uses its scoped `GITHUB_TOKEN`; the SSH key is written to a temporary file only for `git submodule update`, uses strict host checking, and is removed immediately afterward. Rotate this credential through GitHub Actions secrets; never commit it.
 
-This workflow does not currently run `fengine` unit/integration suites, `fwk` tests, container builds, security scans, or deployments.
+This workflow does not build containers, run dedicated security scans, or deploy environments.
+
+### Interim main-branch controls
+
+The private repository is on GitHub Free. GitHub does not provide enforceable protected branches or rulesets for private organisation repositories on this plan, so the warning that `main` is unprotected remains valid.
+
+The interim policy is:
+
+1. Run `pnpm git:hooks:install` after cloning. The tracked `.githooks/pre-push` rejects direct updates to `refs/heads/main`.
+2. Push a feature branch and open a pull request targeting `main`.
+3. Wait for the stable `required` check to succeed.
+4. Resolve conflicts and requested changes.
+5. Use `pnpm pr:merge -- <number>` to validate policy, squash-merge, and delete the source branch.
+6. Treat a failed `Audit main update` step as a policy violation requiring review, because it identifies a direct update after the push has already occurred.
+
+These controls are intentionally transparent about their boundary: administrators can bypass a local hook with `--no-verify`, and CI can only detect a direct push after GitHub accepts it. New contributors therefore receive read-only access to core repositories until GitHub Team enables remote enforcement.
+
+When GitHub Team becomes available, replace this interim layer with an active ruleset requiring pull requests, the `required` status check, resolved conversations, linear history, and blocks on force pushes and branch deletion. Keep the workflow and merge command because they remain useful automation after enforcement moves server-side.
 
 ### Target workflow set
 
-- ⬜ `ci.yml`: builds and tests every implemented package.
+- ✅ `required-ci.yml`: builds and tests every implemented service.
 - ⬜ `security.yml`: dependency policy, secret scanning, SAST, SBOM, and container scanning.
 - ⬜ `containers.yml`: builds and publishes immutable images with provenance.
 - ⬜ `deploy-staging.yml`: deploys a reviewed main-branch artifact and runs smoke tests.
@@ -105,19 +135,23 @@ This workflow does not currently run `fengine` unit/integration suites, `fwk` te
 
 ## Required CI Gates
 
-Every pull request should eventually enforce:
+Every pull request currently validates:
 
 - TypeScript build success.
 - Unit, integration, and e2e test success.
+- Architecture contracts when the validator is present.
 - Financial lifecycle and balanced-ledger invariants.
 - Payment allocation order: fees, then interest, then principal.
 - Idempotency, retry, reversal, and concurrency scenarios.
 - Tenant-isolation tests for API, database, queues, and exports.
+
+The following dedicated gates remain planned:
+
 - No critical exploitable dependency or container finding.
 - No committed credentials or private keys.
 - Reviewed migration and rollback behaviour.
 
-Only build and test gates are currently exercised locally; the dedicated CI security and release gates remain planned.
+Build and test gates run both locally and in GitHub Actions; dedicated security and release gates remain planned.
 
 ## Local Docker Environment
 
@@ -351,7 +385,8 @@ Production signals should cover:
 - ✅ Engine-worker communication is authenticated and observable.
 - 🟡 Kubernetes and secret-management foundations exist.
 - 🟡 Backup creation exists; restoration automation does not.
-- 🟡 Only `fengine` e2e currently runs in GitHub Actions.
+- ✅ `fengine` and `fwk` complete suites run in GitHub Actions for every pull request.
+- 🟡 `main` is protected operationally while server-side enforcement awaits GitHub Team.
 - ⬜ Complete CI, security, artifact, staging, and production workflows.
 - ⬜ Production infrastructure, managed data services, and disaster recovery.
 - ⬜ Regulatory, security, and operational approval for a Mozambican launch.
