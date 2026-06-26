@@ -56,10 +56,11 @@ getfluxo/
 └── packages/
     ├── fengine/              Configurable core financial engine
     ├── fwk/                  BullMQ worker runtime and platform status API
+    ├── fpay/                 Payment adapter contracts and local rails
     └── finfra/               Docker, Kubernetes, Terraform, and runbooks
 ```
 
-`fengine`, `fwk`, and `finfra` are maintained as private submodules under the `getfluxo-io` GitHub organisation. The workspace reserves names for `fwallet`, `fwallet-mobile`, `fpay`, `fxAI`, and `fdocs`; these modules are planned and do not yet exist as implemented packages.
+`fengine`, `fwk`, `fpay`, and `finfra` are maintained as private submodules under the `getfluxo-io` GitHub organisation. The `fpay` package is sourced from the `getfluxo-io/fpay-adapter` repository but is mounted as the original module path `packages/fpay` and package name `@getfluxo/fpay`. The workspace still reserves names for `fwallet`, `fwallet-mobile`, `fxAI`, and `fdocs`; these modules are planned and do not yet exist as implemented packages.
 
 ## Implementation Status
 
@@ -69,10 +70,10 @@ getfluxo/
 | Persistence                 | Implemented foundation | Prisma/PostgreSQL repositories with memory fallback for isolated tests               |
 | Worker runtime              | Implemented            | BullMQ workers, retries, backoff, schedules, dead-letter queues, and metrics         |
 | Engine-worker integration   | Implemented            | Redis job publishing and authenticated callbacks to workflow triggers                |
+| External payment rails      | Implemented foundation | `fpay` adapter contracts, review policy, and initial payment request validation      |
 | Local infrastructure        | Implemented            | Docker Compose and Minikube with persistent PostgreSQL and Redis                     |
 | Production infrastructure   | Partial                | Kubernetes and monitoring manifests exist; Terraform remains a starter               |
 | Institution dashboard       | Planned                | `fwallet`                                                                            |
-| External payment rails      | Planned                | `fpay` adapters and reconciliation                                                   |
 | Customer mobile application | Planned                | `fwallet-mobile`                                                                     |
 | Intelligence services       | Planned                | `fxAI` scoring, fraud detection, and automation                                      |
 
