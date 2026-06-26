@@ -99,11 +99,12 @@ pnpm --filter @getfluxo/finfra tf:plan
 4. Installs pnpm `10.33.0` and Node `22.22.3`.
 5. Installs dependencies from the frozen lockfile.
 6. Runs architecture contract validation when the validator is present on the revision.
-7. Builds `fengine` and `fwk`.
-8. Synchronises the Prisma schema with the temporary PostgreSQL database.
-9. Runs the complete unit, integration, and e2e suites for `fengine` and `fwk`.
+7. Builds `fpay`, `fengine`, and `fwk`.
+8. Runs the `fpay` test suite.
+9. Synchronises the Prisma schema with the temporary PostgreSQL database.
+10. Runs the complete unit, integration, and e2e suites for `fengine` and `fwk`.
 
-`SUBMODULES_SSH_KEY` must contain a dedicated CI private key registered to a GitHub account with read access to `fengine`, `fwk`, and `finfra`. The root repository uses its scoped `GITHUB_TOKEN`; the SSH key is written to a temporary file only for `git submodule update`, uses strict host checking, and is removed immediately afterward. Rotate this credential through GitHub Actions secrets; never commit it.
+`SUBMODULES_SSH_KEY` must contain a dedicated CI private key registered to a GitHub account with read access to `fengine`, `fwk`, `fpay-adapter`, and `finfra`. The root repository uses its scoped `GITHUB_TOKEN`; the SSH key is written to a temporary file only for `git submodule update`, uses strict host checking, and is removed immediately afterward. Rotate this credential through GitHub Actions secrets; never commit it.
 
 This workflow does not build containers, run dedicated security scans, or deploy environments.
 

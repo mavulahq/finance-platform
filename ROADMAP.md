@@ -116,7 +116,7 @@ Acceptance criteria:
 
 ### fpay
 
-- ⬜ Payment-provider adapter contract.
+- ✅ Payment-provider adapter contract foundation.
 - ⬜ M-Pesa and e-Mola integrations for the initial Mozambique scope.
 - ⬜ Bank-transfer and settlement-file adapters.
 - ⬜ Webhook signature verification and replay protection.

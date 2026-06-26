@@ -10,3 +10,7 @@
 	path = packages/finfra
 	url = git@github.com:getfluxo-io/finfra.git
 	branch = main
+[submodule "packages/fpay"]
+	path = packages/fpay
+	url = git@github.com:getfluxo-io/fpay-adapter.git
+	branch = main

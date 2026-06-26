@@ -109,8 +109,12 @@ jobs:
 
       - name: Build implemented services
         run: |
+          pnpm --filter @getfluxo/fpay build
           pnpm --filter @getfluxo/fengine build
           pnpm --filter @getfluxo/fwk build
+
+      - name: Test fpay
+        run: pnpm --filter @getfluxo/fpay test
 
       - name: Sync database schema
         run: pnpm --filter @getfluxo/fengine exec prisma db push --skip-generate
