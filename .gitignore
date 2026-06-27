@@ -168,8 +168,6 @@ packages/finfra/terraform.tfvars
 *.orig
 .backup/
 backups/
-.resume.codex
-
 # =============================================================================
 # Allowed exceptions (use git add -f to override)
 # =============================================================================

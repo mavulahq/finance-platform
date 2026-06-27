@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://getfluxo.io/contracts/domain-events/payloads/lending.payment_posted.v1.schema.json",
+  "title": "lending.payment_posted.v1 payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["transaction_id", "source_account_id", "money", "allocation", "balance_after"],
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "source_account_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "money": {
+      "$ref": "#/$defs/money"
+    },
+    "allocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal", "interest", "fees"],
+      "properties": {
+        "principal": {
+          "$ref": "#/$defs/non_negative_decimal"
+        },
+        "interest": {
+          "$ref": "#/$defs/non_negative_decimal"
+        },
+        "fees": {
+          "$ref": "#/$defs/non_negative_decimal"
+        }
+      }
+    },
+    "balance_after": {
+      "$ref": "#/$defs/non_negative_decimal"
+    }
+  },
+  "$defs": {
+    "non_negative_decimal": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+    },
+    "money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/non_negative_decimal"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    }
+  }
+}

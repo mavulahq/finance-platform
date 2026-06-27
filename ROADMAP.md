@@ -59,7 +59,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 
 - ✅ RFC-0001 Phase 1 accepted: bounded contexts, ownership, invariants, CQRS, Outbox/Inbox, versioning, event envelope, and catalog are defined.
 - ✅ JSON Schema validation and CI checks exist for the envelope, catalog, and examples.
-- ✅ RFC-0001 Phase 2 started with the active `lending.loan_disbursed` vertical slice: payload schema, Outbox producer, BullMQ transport adapter, Inbox consumer, and tests.
+- ✅ RFC-0001 Phase 2 has active Lending vertical slices for `lending.loan_disbursed` and `lending.payment_posted`: payload schemas, Outbox producers, BullMQ transport adapter, Inbox consumer, and tests.
 - ⬜ Activate the next event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - ⬜ Add read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
