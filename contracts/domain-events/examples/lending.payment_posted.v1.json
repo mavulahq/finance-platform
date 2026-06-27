@@ -30,6 +30,6 @@
     "producer": "fengine",
     "data_classification": "restricted",
     "trace_id": "trace_01JY7K35SSAXXKCK4V7NMFPRCM",
-    "schema_uri": "contracts/domain-events/payloads/lending.payment_posted.v1.schema.json"
+    "schema_uri": "contracts/domain-events/event-envelope.schema.json"
   }
 }
