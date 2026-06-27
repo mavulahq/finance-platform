@@ -24,6 +24,6 @@
     "producer": "fengine",
     "data_classification": "restricted",
     "trace_id": "trace_01JY6M4R4H95QFM1VXEZKCWVDN",
-    "schema_uri": "contracts/domain-events/payloads/lending.loan_disbursed.v1.schema.json"
+    "schema_uri": "contracts/domain-events/event-envelope.schema.json"
   }
 }

@@ -117,3 +117,41 @@ test("rejects examples that violate an active payload schema", () => {
       assert.throws(() => validateContracts(contractsDir), /Invalid payload/),
   );
 });
+
+test("rejects examples whose schema_uri points to a payload schema", () => {
+  withContractCopy(
+    (contractsDir) => {
+      const examplePath = path.join(
+        contractsDir,
+        "examples",
+        "lending.loan_disbursed.v1.json",
+      );
+      const example = readJson(examplePath);
+      example.metadata.schema_uri =
+        "contracts/domain-events/payloads/lending.loan_disbursed.v1.schema.json";
+      writeJson(examplePath, example);
+    },
+    (contractsDir) =>
+      assert.throws(
+        () => validateContracts(contractsDir),
+        /must point to the event envelope schema/,
+      ),
+  );
+});
+
+test("rejects zero-value active monetary movement examples", () => {
+  withContractCopy(
+    (contractsDir) => {
+      const examplePath = path.join(
+        contractsDir,
+        "examples",
+        "lending.loan_disbursed.v1.json",
+      );
+      const example = readJson(examplePath);
+      example.payload.money.amount = "0.00";
+      writeJson(examplePath, example);
+    },
+    (contractsDir) =>
+      assert.throws(() => validateContracts(contractsDir), /Invalid payload/),
+  );
+});

@@ -117,6 +117,12 @@ export function validateContracts(contractsDir = defaultContractsDir) {
     ) {
       fail(`Data classification mismatch for ${fileName}`);
     }
+    if (
+      example.metadata.schema_uri
+      && example.metadata.schema_uri !== "contracts/domain-events/event-envelope.schema.json"
+    ) {
+      fail(`Schema URI for ${fileName} must point to the event envelope schema`);
+    }
     const validatePayload = payloadValidators.get(contractId);
     if (validatePayload && !validatePayload(example.payload)) {
       fail(
