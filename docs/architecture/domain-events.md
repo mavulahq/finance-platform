@@ -6,7 +6,7 @@ Decisão: 2026-06-27
 
 RFC: [RFC-0001](https://github.com/orgs/getfluxo-io/discussions/1)
 
-Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Esta fase define linguagem e contratos; nenhum evento do catálogo é considerado publicado enquanto estiver com estado `proposed`.
+Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Eventos com estado `proposed` continuam sendo linguagem de arquitetura, não contratos publicados. A primeira fatia ativa da Fase 2 é `lending.loan_disbursed`.
 
 ## Evento, comando e job
 
@@ -38,7 +38,7 @@ O envelope JSON exige:
 - metadata com producer e classificação dos dados;
 - `idempotency_key` quando existe uma identidade de negócio adicional ao `event_id`.
 
-O schema rejeita campos desconhecidos no envelope. O payload é evoluído pelo owner e ganhará schema específico antes de um evento mudar para `active`.
+O schema rejeita campos desconhecidos no envelope. O payload é evoluído pelo owner e precisa ter schema específico antes de um evento mudar para `active`.
 
 ## Evolução
 
@@ -59,3 +59,7 @@ O schema rejeita campos desconhecidos no envelope. O payload é evoluído pelo o
 ## Ativação de um evento
 
 Um evento só muda de `proposed` para `active` quando possui payload schema versionado, producer implementado com Outbox, consumidor idempotente quando aplicável, testes de compatibilidade e observabilidade operacional.
+
+## Evento ativo
+
+`lending.loan_disbursed` v1 está ativo como primeira fatia vertical da Fase 2. O `fengine` grava o evento numa Outbox após desembolso aprovado; o publisher envia o envelope ao `fwk` pela queue `platform`; o `fwk` chama o endpoint interno de domain events; e o `fengine` registra Inbox por consumidor antes de disparar workflows.

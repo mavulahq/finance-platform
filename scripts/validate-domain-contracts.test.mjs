@@ -100,3 +100,20 @@ test("rejects examples that violate the envelope", () => {
       assert.throws(() => validateContracts(contractsDir), /Invalid example/),
   );
 });
+
+test("rejects examples that violate an active payload schema", () => {
+  withContractCopy(
+    (contractsDir) => {
+      const examplePath = path.join(
+        contractsDir,
+        "examples",
+        "lending.loan_disbursed.v1.json",
+      );
+      const example = readJson(examplePath);
+      example.payload.money.amount = -25000;
+      writeJson(examplePath, example);
+    },
+    (contractsDir) =>
+      assert.throws(() => validateContracts(contractsDir), /Invalid payload/),
+  );
+});

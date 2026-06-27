@@ -19,6 +19,6 @@ A decisão é independente de broker. BullMQ permanece a queue atual de jobs e p
 
 ## Consequências
 
-- A Fase 2 precisa definir tabelas, leasing, publisher, retenção, Inbox e recuperação de falhas.
+- A Fase 2 define tabelas, leasing, publisher, Inbox e recuperação de falhas inicialmente para `lending.loan_disbursed`.
 - Exactly-once não será prometido; efeitos efetivamente únicos dependem de idempotência e deduplicação.
 - Lag, retries, idade do Outbox e DLQ tornam-se sinais operacionais obrigatórios.
