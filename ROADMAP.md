@@ -55,6 +55,13 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ Migration of the legacy reconciliation schedule from `payments` to `platform`.
 - 🟡 Durable workflow-level deduplication for side effects after process restarts.
 
+### Domain Architecture and Contracts
+
+- ✅ RFC-0001 Phase 1 accepted: bounded contexts, ownership, invariants, CQRS, Outbox/Inbox, versioning, event envelope, and catalog are defined.
+- ✅ JSON Schema validation and CI checks exist for the envelope, catalog, and examples.
+- ⬜ Activate event payload contracts and implement the first Transactional Outbox/Inbox vertical slice.
+- ⬜ Add read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
+
 ### Local and Kubernetes Infrastructure
 
 - ✅ Docker Compose services for PostgreSQL, Redis, `fengine`, and `fwk`.

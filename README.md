@@ -50,6 +50,8 @@ getfluxo/
 ├── README.md                 Product, architecture, and development guide
 ├── ROADMAP.md                Delivery status and next implementation phases
 ├── CI-CD.md                  Build, deployment, and operations reference
+├── contracts/                Versioned cross-module domain contracts
+├── docs/architecture/        Context map, invariants, and ADRs
 ├── .gitmodules               Versioned package repository mappings
 ├── docker-compose.yml        Local PostgreSQL, Redis, fengine, and fwk
 ├── package.json              Monorepo commands and pinned toolchain
@@ -95,6 +97,20 @@ Web, mobile, and partner API channels
                       -> workflow-trigger execution
                       -> retry, backoff, and dead-letter handling
   -> Prometheus metrics and platform status
+```
+
+### Architecture contracts
+
+[RFC-0001](https://github.com/orgs/getfluxo-io/discussions/1) accepted the Phase 1 language and contract foundation on 2026-06-27 for explicit bounded contexts, selective CQRS, and domain events. The accepted artifacts are versioned in the repository:
+
+- [Context map](docs/architecture/context-map.md) and [invariants](docs/architecture/invariants-and-ownership.md).
+- [Domain event contract](docs/architecture/domain-events.md) and machine-validatable [event catalog](contracts/domain-events/event-catalog.json).
+- ADRs for [selective CQRS](docs/architecture/adr/0001-selective-cqrs.md), [Transactional Outbox/Inbox](docs/architecture/adr/0002-transactional-outbox-inbox.md), and [event versioning](docs/architecture/adr/0003-event-versioning.md).
+
+These artifacts define contracts and architectural language. They do not claim that Outbox, Inbox, or catalog events are active in the runtime. Catalog events remain `proposed` until a later vertical slice implements producer, Outbox, consumer idempotency, tests, and observability. Validate the contracts with:
+
+```bash
+pnpm contracts:check
 ```
 
 ### fengine

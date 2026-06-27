@@ -1,0 +1,78 @@
+{
+  "$schema": "./event-catalog.schema.json",
+  "schema_version": 1,
+  "events": [
+    {
+      "event_type": "products.configuration_published",
+      "event_version": 1,
+      "owner_context": "product_configuration",
+      "producer": "fengine",
+      "aggregate_type": "product_configuration",
+      "status": "proposed",
+      "data_classification": "internal",
+      "description": "Uma nova versão de configuração de produto foi publicada para utilização financeira.",
+      "ordering_key": "tenant_id:aggregate.id",
+      "consumers": ["fengine", "fwallet", "fdocs"]
+    },
+    {
+      "event_type": "ledger.journal_posted",
+      "event_version": 1,
+      "owner_context": "accounts_ledger",
+      "producer": "fengine",
+      "aggregate_type": "journal_entry",
+      "status": "proposed",
+      "data_classification": "restricted",
+      "description": "Um journal entry balanceado foi publicado no ledger.",
+      "ordering_key": "tenant_id:aggregate.id",
+      "consumers": ["fdocs"]
+    },
+    {
+      "event_type": "lending.loan_approved",
+      "event_version": 1,
+      "owner_context": "lending",
+      "producer": "fengine",
+      "aggregate_type": "loan",
+      "status": "proposed",
+      "data_classification": "restricted",
+      "description": "Uma candidatura de empréstimo foi aprovada pelo contexto Lending.",
+      "ordering_key": "tenant_id:aggregate.id",
+      "consumers": ["fwk", "fwallet", "fdocs"]
+    },
+    {
+      "event_type": "lending.loan_disbursed",
+      "event_version": 1,
+      "owner_context": "lending",
+      "producer": "fengine",
+      "aggregate_type": "loan",
+      "status": "proposed",
+      "data_classification": "restricted",
+      "description": "O principal aprovado de um empréstimo foi desembolsado e contabilizado.",
+      "ordering_key": "tenant_id:aggregate.id",
+      "consumers": ["fwk", "fwallet", "fdocs"]
+    },
+    {
+      "event_type": "lending.payment_posted",
+      "event_version": 1,
+      "owner_context": "lending",
+      "producer": "fengine",
+      "aggregate_type": "loan",
+      "status": "proposed",
+      "data_classification": "restricted",
+      "description": "Um pagamento de empréstimo foi alocado e publicado no ledger.",
+      "ordering_key": "tenant_id:aggregate.id",
+      "consumers": ["fwallet", "fdocs"]
+    },
+    {
+      "event_type": "payments.settlement_completed",
+      "event_version": 1,
+      "owner_context": "payments",
+      "producer": "fpay",
+      "aggregate_type": "settlement",
+      "status": "proposed",
+      "data_classification": "restricted",
+      "description": "Uma liquidação externa foi reconciliada e concluída pelo contexto Payments.",
+      "ordering_key": "tenant_id:aggregate.id",
+      "consumers": ["fengine", "fwallet", "fdocs"]
+    }
+  ]
+}

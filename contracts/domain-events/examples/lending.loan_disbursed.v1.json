@@ -1,0 +1,29 @@
+{
+  "event_id": "evt_6b2f87a4-0d49-4a1e-9e13-75ca45d6301b",
+  "event_type": "lending.loan_disbursed",
+  "event_version": 1,
+  "occurred_at": "2026-06-20T10:00:00.000Z",
+  "tenant_id": "tenant_maputo_001",
+  "aggregate": {
+    "type": "loan",
+    "id": "loan_01JY6M46BN7MYS2GQ6MJ6QW5ZV",
+    "version": 7
+  },
+  "correlation_id": "corr_01JY6M3ZVDQFKXDWSB7XAK8GVS",
+  "causation_id": "cmd_01JY6M41PWTH56Q7HMGJ7DNP8T",
+  "idempotency_key": "tenant_maputo_001:loan_01JY6M46BN7MYS2GQ6MJ6QW5ZV:disbursement:1",
+  "payload": {
+    "transaction_id": "txn_01JY6M4GWRD2YBSBGN78WWYB4Y",
+    "destination_account_id": "account_01JY6M4M0W47MZRYK2VJT3R8A3",
+    "money": {
+      "amount": "25000.00",
+      "currency": "MZN"
+    }
+  },
+  "metadata": {
+    "producer": "fengine",
+    "data_classification": "restricted",
+    "trace_id": "trace_01JY6M4R4H95QFM1VXEZKCWVDN",
+    "schema_uri": "contracts/domain-events/event-envelope.schema.json"
+  }
+}
