@@ -44,10 +44,11 @@
       "owner_context": "lending",
       "producer": "fengine",
       "aggregate_type": "loan",
-      "status": "proposed",
+      "status": "active",
       "data_classification": "restricted",
       "description": "O principal aprovado de um empréstimo foi desembolsado e contabilizado.",
       "ordering_key": "tenant_id:aggregate.id",
+      "payload_schema": "payloads/lending.loan_disbursed.v1.schema.json",
       "consumers": ["fwk", "fwallet", "fdocs"]
     },
     {

@@ -52,14 +52,6 @@
     "prettier": "^3.1.0",
     "typescript": "^5.3.3"
   },
-  "pnpm": {
-    "peerDependencyRules": {
-      "ignoreMissing": [
-        "react",
-        "react-dom"
-      ]
-    }
-  },
   "workspaces": [
     "packages/fengine",
     "packages/fwallet",

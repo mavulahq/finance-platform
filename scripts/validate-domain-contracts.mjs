@@ -37,6 +37,7 @@ export function validateContracts(contractsDir = defaultContractsDir) {
 
   const validateEnvelope = ajv.compile(envelopeSchema);
   const validateCatalog = ajv.compile(catalogSchema);
+  const payloadValidators = new Map();
 
   if (!validateCatalog(catalog)) {
     fail(`Invalid event catalog: ${formatErrors(validateCatalog.errors)}`);
@@ -68,7 +69,10 @@ export function validateContracts(contractsDir = defaultContractsDir) {
           `Payload schema for ${contractId} does not exist: ${event.payload_schema}`,
         );
       }
-      ajv.compile(readJson(payloadSchemaPath));
+      payloadValidators.set(
+        contractId,
+        ajv.compile(readJson(payloadSchemaPath)),
+      );
     }
 
     catalogByContract.set(contractId, event);
@@ -112,6 +116,12 @@ export function validateContracts(contractsDir = defaultContractsDir) {
       catalogEntry.data_classification !== example.metadata.data_classification
     ) {
       fail(`Data classification mismatch for ${fileName}`);
+    }
+    const validatePayload = payloadValidators.get(contractId);
+    if (validatePayload && !validatePayload(example.payload)) {
+      fail(
+        `Invalid payload for ${fileName}: ${formatErrors(validatePayload.errors)}`,
+      );
     }
   }
 
