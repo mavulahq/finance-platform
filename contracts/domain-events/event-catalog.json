@@ -57,11 +57,12 @@
       "owner_context": "lending",
       "producer": "fengine",
       "aggregate_type": "loan",
-      "status": "proposed",
+      "status": "active",
       "data_classification": "restricted",
       "description": "Um pagamento de empréstimo foi alocado e publicado no ledger.",
       "ordering_key": "tenant_id:aggregate.id",
-      "consumers": ["fwallet", "fdocs"]
+      "payload_schema": "payloads/lending.payment_posted.v1.schema.json",
+      "consumers": ["fwk", "fwallet", "fdocs"]
     },
     {
       "event_type": "payments.settlement_completed",
