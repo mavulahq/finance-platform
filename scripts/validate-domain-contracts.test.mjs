@@ -33,7 +33,7 @@ function withContractCopy(mutate, verify) {
 }
 
 test("accepts the canonical catalog and examples", () => {
-  assert.deepEqual(validateContracts(), { contractCount: 6, exampleCount: 2 });
+  assert.deepEqual(validateContracts(), { contractCount: 6, exampleCount: 3 });
 });
 
 test("rejects event names outside the canonical pattern", () => {
@@ -74,6 +74,7 @@ test("rejects active events without a payload schema", () => {
       const catalogPath = path.join(contractsDir, "event-catalog.json");
       const catalog = readJson(catalogPath);
       catalog.events[0].status = "active";
+      delete catalog.events[0].payload_schema;
       writeJson(catalogPath, catalog);
     },
     (contractsDir) =>

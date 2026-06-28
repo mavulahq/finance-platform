@@ -56,4 +56,4 @@ As setas representam integração por contrato, não permissão de escrita diret
 
 - `fengine` continua a coordenar transações de desembolso e pagamento até `fpay` possuir o seu modelo e adapters. A extração não pode transferir ownership do ledger.
 - `fengine` possui definições de workflow; `fwk` possui apenas o estado operacional de jobs. Um job BullMQ não é um evento de domínio.
-- O audit trail registra ações atuais. A Fase 2 introduz vertical slices de domain events para `lending.loan_disbursed` e `lending.payment_posted`; os demais eventos continuam propostos até terem implementação equivalente.
+- O audit trail registra ações atuais. A Fase 2 introduz vertical slices de domain events para `products.configuration_published`, `lending.loan_disbursed` e `lending.payment_posted`; os demais eventos continuam propostos até terem implementação equivalente.
