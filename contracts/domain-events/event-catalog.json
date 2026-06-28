@@ -8,10 +8,11 @@
       "owner_context": "product_configuration",
       "producer": "fengine",
       "aggregate_type": "product_configuration",
-      "status": "proposed",
+      "status": "active",
       "data_classification": "internal",
       "description": "Uma nova versão de configuração de produto foi publicada para utilização financeira.",
       "ordering_key": "tenant_id:aggregate.id",
+      "payload_schema": "payloads/products.configuration_published.v1.schema.json",
       "consumers": ["fengine", "fwallet", "fdocs"]
     },
     {

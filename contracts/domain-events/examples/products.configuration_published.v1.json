@@ -1,0 +1,28 @@
+{
+  "event_id": "evt_9c153ffe-8bb8-4076-8895-f7b4dcd94447",
+  "event_type": "products.configuration_published",
+  "event_version": 1,
+  "occurred_at": "2026-06-28T10:00:00.000Z",
+  "tenant_id": "tenant_maputo_001",
+  "aggregate": {
+    "type": "product_configuration",
+    "id": "prod_loan_001",
+    "version": 2
+  },
+  "correlation_id": "corr_prod_loan_001_2",
+  "causation_id": "tenant_maputo_001:prod_loan_001:configuration:2",
+  "idempotency_key": "tenant_maputo_001:prod_loan_001:configuration:2",
+  "payload": {
+    "product_id": "prod_loan_001",
+    "product_type": "LOAN",
+    "name": "Personal Loan",
+    "enabled": true,
+    "configuration_version": 2
+  },
+  "metadata": {
+    "producer": "fengine",
+    "data_classification": "internal",
+    "trace_id": "trace_01JYSW73HAH6S0P66YC3H1T7AT",
+    "schema_uri": "contracts/domain-events/event-envelope.schema.json"
+  }
+}

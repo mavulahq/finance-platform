@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://getfluxo.io/contracts/domain-events/payloads/products.configuration_published.v1.schema.json",
+  "title": "products.configuration_published.v1 payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["product_id", "product_type", "name", "enabled", "configuration_version"],
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "product_type": {
+      "type": "string",
+      "enum": ["CHECKING", "SAVINGS", "LOAN", "CREDIT_LINE"]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "configuration_version": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}
