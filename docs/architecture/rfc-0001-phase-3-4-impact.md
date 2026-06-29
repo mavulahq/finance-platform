@@ -6,7 +6,7 @@ Date: 2026-06-29
 
 RFC: [RFC-0001](https://github.com/orgs/getfluxo-io/discussions/1)
 
-This document records the implementation impact of the next RFC-0001 stages before code changes start. It separates the RFC stages from the product roadmap stages:
+This document records the implementation impact of the next RFC-0001 stages. It separates the RFC stages from the product roadmap stages:
 
 - RFC-0001 Phase 3: read models and projections.
 - RFC-0001 Phase 4: cross-context processes and process managers.
@@ -26,12 +26,18 @@ These events have versioned contracts, Outbox producers, BullMQ transport throug
 
 `payments.settlement_completed` remains `proposed`. It belongs to the Payments bounded context, and its producer is `fpay`. It must not be treated as delivered by `fengine`.
 
+RFC-0001 Phase 3 has an initial implementation for the existing modules:
+
+- `fengine` stores tenant-scoped projections for `loan_activity`, `ledger_activity`, and `product_publication`.
+- `fengine` exposes projection list, detail, status, and internal rebuild APIs.
+- `fwk` includes `fengine` projection status in the platform dependency status when enabled.
+
 ## Module impact
 
 | Module | Current responsibility | Phase 3 impact | Phase 4 impact |
 | --- | --- | --- | --- |
-| `fengine` | Financial source of truth, ledger, lending, product configuration, audit trail, Outbox/Inbox. | Owns initial projections for financial read use cases. Projections must be rebuildable and tenant-scoped. | Participates as command owner for ledger and lending effects. It must not delegate financial invariants to workflow jobs. |
-| `fwk` | Worker runtime, BullMQ transport, retries, schedules, DLQ, public platform status. | Exposes projection lag and worker health signals when projection consumers are implemented. | Runs jobs for process steps but does not own business state or decide financial outcomes. |
+| `fengine` | Financial source of truth, ledger, lending, product configuration, audit trail, Outbox/Inbox. | Owns initial projections for financial read use cases. Projections are rebuildable and tenant-scoped. | Participates as command owner for ledger and lending effects. It must not delegate financial invariants to workflow jobs. |
+| `fwk` | Worker runtime, BullMQ transport, retries, schedules, DLQ, public platform status. | Exposes `fengine` projection status with dependency health and worker metrics. | Runs jobs for process steps but does not own business state or decide financial outcomes. |
 | `fpay` | Payment adapter contract foundation. | No read model should depend on `payments.settlement_completed` until `fpay` has payment state and Outbox support. | Owns payment settlement facts, webhook idempotency, reconciliation and provider-facing process state. |
 | `finfra` | Local and Kubernetes platform infrastructure. | Provides PostgreSQL, Redis, observability and deployment support for projection consumers. | Provides runtime support for process-manager workers, metrics and alerts. |
 | `fwallet` | Planned institution operating surface. | Consumes read models for operator screens. It should not compute balances or financial state directly. | Surfaces process state and exception handling, but does not own process invariants. |
@@ -43,13 +49,13 @@ These events have versioned contracts, Outbox producers, BullMQ transport throug
 
 Read models are allowed only when they improve query safety, operator performance or integration clarity. They must not become the source of truth for financial invariants.
 
-Initial candidates:
+Implemented initial scope:
 
 | Read model | Owner | Source events | Freshness | Rebuild | Fallback |
 | --- | --- | --- | --- | --- | --- |
-| Loan activity view | `fengine` | `lending.loan_disbursed`, `lending.payment_posted`, current loan store. | Eventually consistent for operator views. | Rebuild from active events and current loan records. | Read canonical loan state when a synchronous decision is required. |
-| Ledger activity view | `fengine` | `ledger.journal_posted`. | Eventually consistent for reporting and audit navigation. | Rebuild from journal entries and event history. | Read ledger tables for accounting decisions. |
-| Product publication view | `fengine` | `products.configuration_published`. | Eventually consistent for configuration history. | Rebuild from product versions and event history. | Read product configuration tables for command validation. |
+| Loan activity view | `fengine` | `lending.loan_disbursed`, `lending.payment_posted`. | Eventually consistent for operator views. | Rebuild from active Outbox event history. | Read canonical loan state when a synchronous decision is required. |
+| Ledger activity view | `fengine` | `ledger.journal_posted`. | Eventually consistent for reporting and audit navigation. | Rebuild from active Outbox event history. | Read ledger tables for accounting decisions. |
+| Product publication view | `fengine` | `products.configuration_published`. | Eventually consistent for configuration history. | Rebuild from active Outbox event history. | Read product configuration tables for command validation. |
 
 Deferred candidates:
 
@@ -103,7 +109,7 @@ Minimum implementation requirements:
 
 4. **Which read model brings the largest initial benefit with low financial risk?**
 
-   The first read model should be a loan activity view or ledger activity view for operator and audit navigation. It must be eventually consistent and must not be used for command-side financial decisions.
+   The initial implementation delivers loan activity, ledger activity, and product publication projections. They support operator navigation, audit navigation and configuration history. They are eventually consistent and must not be used for command-side financial decisions.
 
 5. **Where is eventual consistency acceptable and where is it prohibited?**
 
@@ -119,8 +125,8 @@ Minimum implementation requirements:
 
 ## Recommended implementation order
 
-1. Add a minimal projection runtime in `fengine` for one read model.
-2. Expose projection status and lag through `fwk` or `fengine` status endpoints.
+1. Add a minimal projection runtime in `fengine` for one read model. Implemented for three initial projections.
+2. Expose projection status and lag through `fwk` or `fengine` status endpoints. Implemented through `fengine` projection status and `fwk` dependency status.
 3. Document freshness, rebuild and fallback for the first read model in `fdocs` when that module exists.
 4. Implement `fpay` payment state, webhook verification and Outbox before activating `payments.settlement_completed`.
 5. Introduce process managers only after a real cross-context payment settlement flow exists.
