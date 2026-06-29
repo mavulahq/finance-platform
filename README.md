@@ -105,6 +105,7 @@ Web, mobile, and partner API channels
 
 - [Context map](docs/architecture/context-map.md) and [invariants](docs/architecture/invariants-and-ownership.md).
 - [Domain event contract](docs/architecture/domain-events.md) and machine-validatable [event catalog](contracts/domain-events/event-catalog.json).
+- [RFC-0001 Phase 3 and 4 impact analysis](docs/architecture/rfc-0001-phase-3-4-impact.md) for read models and process managers.
 - ADRs for [selective CQRS](docs/architecture/adr/0001-selective-cqrs.md), [Transactional Outbox/Inbox](docs/architecture/adr/0002-transactional-outbox-inbox.md), and [event versioning](docs/architecture/adr/0003-event-versioning.md).
 
 RFC-0001 Phase 2 activates runtime vertical slices for `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, and `lending.payment_posted`: each active event has a versioned payload schema, is written to a PostgreSQL-backed Outbox by `fengine`, is published through the BullMQ-backed `fwk` platform queue, and is consumed through a persistent Inbox for idempotent workflow dispatch when applicable. Other catalog events remain `proposed` until their own producer, payload schema, idempotent consumer, tests, and observability are implemented. Validate the contracts with:
