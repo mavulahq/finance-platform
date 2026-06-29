@@ -21,10 +21,11 @@
       "owner_context": "accounts_ledger",
       "producer": "fengine",
       "aggregate_type": "journal_entry",
-      "status": "proposed",
+      "status": "active",
       "data_classification": "restricted",
       "description": "Um journal entry balanceado foi publicado no ledger.",
       "ordering_key": "tenant_id:aggregate.id",
+      "payload_schema": "payloads/ledger.journal_posted.v1.schema.json",
       "consumers": ["fdocs"]
     },
     {

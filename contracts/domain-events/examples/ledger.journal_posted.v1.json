@@ -1,0 +1,48 @@
+{
+  "event_id": "evt_0c544c5b-20fe-4d3f-9c1f-4892ce37cf5b",
+  "event_type": "ledger.journal_posted",
+  "event_version": 1,
+  "occurred_at": "2026-06-29T10:00:00.000Z",
+  "tenant_id": "tenant_maputo_001",
+  "aggregate": {
+    "type": "journal_entry",
+    "id": "je_txn_01JZ0NQ3R8CX96HPAQK6XK9G4E",
+    "version": 1
+  },
+  "correlation_id": "corr_txn_01JZ0NQ3R8CX96HPAQK6XK9G4E",
+  "causation_id": "txn_01JZ0NQ3R8CX96HPAQK6XK9G4E",
+  "idempotency_key": "tenant_maputo_001:je_txn_01JZ0NQ3R8CX96HPAQK6XK9G4E:journal_posted",
+  "payload": {
+    "journal_entry_id": "je_txn_01JZ0NQ3R8CX96HPAQK6XK9G4E",
+    "transaction_id": "txn_01JZ0NQ3R8CX96HPAQK6XK9G4E",
+    "posted_at": "2026-06-29T10:00:00.000Z",
+    "line_count": 2,
+    "totals": [
+      {
+        "currency": "MZN",
+        "debit": "2500.00",
+        "credit": "2500.00"
+      }
+    ],
+    "lines": [
+      {
+        "account_code": "10010",
+        "currency": "MZN",
+        "debit": "2500.00",
+        "credit": "0.00"
+      },
+      {
+        "account_code": "11100",
+        "currency": "MZN",
+        "debit": "0.00",
+        "credit": "2500.00"
+      }
+    ]
+  },
+  "metadata": {
+    "producer": "fengine",
+    "data_classification": "restricted",
+    "trace_id": "trace_01JZ0NQH0CNB3RK0XT75VSWJ7Y",
+    "schema_uri": "contracts/domain-events/event-envelope.schema.json"
+  }
+}
