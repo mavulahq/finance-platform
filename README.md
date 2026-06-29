@@ -114,6 +114,8 @@ RFC-0001 Phase 2 activates runtime vertical slices for `products.configuration_p
 pnpm contracts:check
 ```
 
+RFC-0001 Phase 3 now has the initial read-model runtime for existing modules. `fengine` projects loan activity, ledger activity, and product publication views from active Outbox events. The projections are tenant-scoped, idempotent, rebuildable, and exposed through projection APIs. `fwk` includes projection health in platform dependency status.
+
 ### fengine
 
 `packages/fengine` currently provides:
@@ -127,7 +129,9 @@ pnpm contracts:check
 - Safe rules and advanced arithmetic formulas without `eval` or `new Function`.
 - Tenant-defined entity schemas, forms, workflow definitions, and workflow execution.
 - REST controllers for accounts, products, rules, schemas, workflows, health, metrics, auth, and internal workers.
+- Read projection APIs for loan activity, ledger activity, product publications, projection status, and internal rebuild.
 - Prisma models and repository paths for tenants, accounts, products, loans, transactions, ledger, workflows, rules, and audit events.
+- Prisma models for read projections and projection checkpoints.
 
 ### fwk
 
@@ -138,7 +142,7 @@ pnpm contracts:check
 - Scheduled jobs for fees, interest, payment reconciliation, and reports.
 - Authenticated dispatch of engine events to configurable `fengine` workflow triggers.
 - Public health, dependency status, queue status, schedule status, and Prometheus metrics.
-- Dependency monitoring for PostgreSQL, Redis, and `fengine`.
+- Dependency monitoring for PostgreSQL, Redis, `fengine`, and `fengine` projection status.
 
 ### finfra
 
