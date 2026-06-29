@@ -107,7 +107,7 @@ Web, mobile, and partner API channels
 - [Domain event contract](docs/architecture/domain-events.md) and machine-validatable [event catalog](contracts/domain-events/event-catalog.json).
 - ADRs for [selective CQRS](docs/architecture/adr/0001-selective-cqrs.md), [Transactional Outbox/Inbox](docs/architecture/adr/0002-transactional-outbox-inbox.md), and [event versioning](docs/architecture/adr/0003-event-versioning.md).
 
-RFC-0001 Phase 2 activates runtime vertical slices for `products.configuration_published`, `lending.loan_disbursed`, and `lending.payment_posted`: each active event has a versioned payload schema, is written to a PostgreSQL-backed Outbox by `fengine`, is published through the BullMQ-backed `fwk` platform queue, and is consumed through a persistent Inbox for idempotent workflow dispatch. Other catalog events remain `proposed` until their own producer, payload schema, idempotent consumer, tests, and observability are implemented. Validate the contracts with:
+RFC-0001 Phase 2 activates runtime vertical slices for `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, and `lending.payment_posted`: each active event has a versioned payload schema, is written to a PostgreSQL-backed Outbox by `fengine`, is published through the BullMQ-backed `fwk` platform queue, and is consumed through a persistent Inbox for idempotent workflow dispatch when applicable. Other catalog events remain `proposed` until their own producer, payload schema, idempotent consumer, tests, and observability are implemented. Validate the contracts with:
 
 ```bash
 pnpm contracts:check
@@ -122,7 +122,7 @@ pnpm contracts:check
 - Chart of accounts, balanced journal entries, trial balance, and general-ledger reporting.
 - Loan application, approval, disbursement, repayment, and paid-up transitions.
 - Idempotent disbursement and payment posting, plus transaction reversal at the service layer.
-- RFC-0001 Outbox/Inbox support for the active `products.configuration_published`, `lending.loan_disbursed`, and `lending.payment_posted` domain events.
+- RFC-0001 Outbox/Inbox support for the active `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, and `lending.payment_posted` domain events.
 - Safe rules and advanced arithmetic formulas without `eval` or `new Function`.
 - Tenant-defined entity schemas, forms, workflow definitions, and workflow execution.
 - REST controllers for accounts, products, rules, schemas, workflows, health, metrics, auth, and internal workers.

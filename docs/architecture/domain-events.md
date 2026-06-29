@@ -6,7 +6,7 @@ Decisão: 2026-06-27
 
 RFC: [RFC-0001](https://github.com/orgs/getfluxo-io/discussions/1)
 
-Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Eventos com estado `proposed` continuam sendo linguagem de arquitetura, não contratos publicados. As fatias ativas da Fase 2 são `products.configuration_published`, `lending.loan_disbursed` e `lending.payment_posted`.
+Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Eventos com estado `proposed` continuam sendo linguagem de arquitetura, não contratos publicados. As fatias ativas da Fase 2 são `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed` e `lending.payment_posted`.
 
 ## Evento, comando e job
 
@@ -63,6 +63,8 @@ Um evento só muda de `proposed` para `active` quando possui payload schema vers
 ## Eventos ativos
 
 `products.configuration_published` v1 está ativo como fatia de Product Configuration da Fase 2. O `fengine` grava o evento numa Outbox após criar ou atualizar uma configuração de produto, com versão explícita do agregado para consumers reconstruírem a sequência de publicações por tenant e produto.
+
+`ledger.journal_posted` v1 está ativo como fatia de Accounts & Ledger da Fase 2. O `fengine` grava o evento numa Outbox após validar e publicar um journal entry balanceado, com linhas e totais por moeda sem incluir descrição livre ou dados pessoais.
 
 `lending.loan_disbursed` v1 está ativo como primeira fatia vertical da Fase 2. O `fengine` grava o evento numa Outbox após desembolso aprovado; o publisher envia o envelope ao `fwk` pela queue `platform`; o `fwk` chama o endpoint interno de domain events; e o `fengine` registra Inbox por consumidor antes de disparar workflows.
 
