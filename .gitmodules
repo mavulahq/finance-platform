@@ -12,5 +12,5 @@
 	branch = main
 [submodule "packages/fpay"]
 	path = packages/fpay
-	url = git@github.com:getfluxo-io/fpay-adapter.git
+	url = git@github.com:getfluxo-io/fpay.git
 	branch = main
