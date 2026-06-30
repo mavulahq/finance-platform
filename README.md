@@ -62,7 +62,7 @@ getfluxo/
     └── finfra/               Docker, Kubernetes, Terraform, and runbooks
 ```
 
-`fengine`, `fwk`, `fpay`, and `finfra` are maintained as private submodules under the `getfluxo-io` GitHub organisation. The `fpay` package is sourced from the `getfluxo-io/fpay-adapter` repository but is mounted as the original module path `packages/fpay` and package name `@getfluxo/fpay`. The workspace still reserves names for `fwallet`, `fwallet-mobile`, `fxAI`, and `fdocs`; these modules are planned and do not yet exist as implemented packages.
+`fengine`, `fwk`, `fpay`, and `finfra` are maintained as private submodules under the `getfluxo-io` GitHub organisation. The `fpay` package is mounted at `packages/fpay` with package name `@getfluxo/fpay`. The workspace still reserves names for `fwallet`, `fwallet-mobile`, `fxAI`, and `fdocs`; these modules are planned and do not yet exist as implemented packages.
 
 ## Implementation Status
 
