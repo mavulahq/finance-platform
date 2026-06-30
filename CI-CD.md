@@ -127,7 +127,7 @@ The interim policy is:
 3. Wait for the stable `required` check to succeed.
 4. Resolve conflicts and requested changes.
 5. Use `pnpm pr:merge -- <number>` to validate policy, squash-merge, and delete the source branch.
-6. Treat a failed `Audit main update` step as a policy violation requiring review, because it identifies a direct update after the push has already occurred.
+6. Treat a failed `Audit main update` step as a policy violation requiring review, because it means CI could not confirm a merged pull request for the `main` update.
 
 These controls are intentionally transparent about their boundary: administrators can bypass a local hook with `--no-verify`, and CI can only detect a direct push after GitHub accepts it. New contributors therefore receive read-only access to core repositories until GitHub Team enables remote enforcement.
 
