@@ -51,9 +51,36 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls")
 
-          if ! jq -e --arg sha "$GITHUB_SHA" \
+          valid_main_update=false
+          if jq -e --arg sha "$GITHUB_SHA" \
             'any(.[]; .merged_at != null and .base.ref == "main" and .merge_commit_sha == $sha)' \
             <<<"$response" >/dev/null; then
+            valid_main_update=true
+          else
+            commit_response=$(curl --fail-with-body --silent --show-error \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA")
+            pr_number=$(jq -r \
+              'try (.commit.message | capture("\\(#(?<number>[0-9]+)\\)").number) catch empty' \
+              <<<"$commit_response")
+
+            if [ -n "$pr_number" ]; then
+              pull_response=$(curl --fail-with-body --silent --show-error \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pulls/$pr_number")
+              if jq -e --arg sha "$GITHUB_SHA" \
+                '.merged_at != null and .base.ref == "main" and .merge_commit_sha == $sha' \
+                <<<"$pull_response" >/dev/null; then
+                valid_main_update=true
+              fi
+            fi
+          fi
+
+          if [ "$valid_main_update" != "true" ]; then
             echo "::error::main was updated without an associated merged pull request. This update is recorded as a policy violation."
             exit 1
           fi
