@@ -62,6 +62,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ RFC-0001 Phase 2 has active Product Configuration, Ledger, and Lending vertical slices for `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, and `lending.payment_posted`: payload schemas, Outbox producers, BullMQ transport adapter, Inbox consumer where applicable, and tests.
 - ✅ RFC-0001 Phase 3/4 impact analysis documents read-model boundaries, process-manager prerequisites, affected modules, and answers to the open RFC questions.
 - ✅ RFC-0001 Phase 3 initial read projections exist for loan activity, ledger activity, and product publication, with tenant-scoped storage, idempotent consumers, rebuild support, and platform status exposure.
+- ✅ RFC-0001 Phase 4 foundation exists for `fpay` payment process state, webhook dedupe, reconciliation jobs, process metrics, and infrastructure alerts.
 - ⬜ Activate the next event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - 🟡 Add further read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
@@ -127,10 +128,11 @@ Acceptance criteria:
 ### fpay
 
 - ✅ Payment-provider adapter contract foundation.
+- ✅ Payment process state, webhook dedupe, reconciliation foundation, metrics, and disabled-by-default settlement outbox.
 - ⬜ M-Pesa and e-Mola integrations for the initial Mozambique scope.
 - ⬜ Bank-transfer and settlement-file adapters.
 - ⬜ Webhook signature verification and replay protection.
-- ⬜ Payment state machine, reconciliation, disputes, and exception handling.
+- 🟡 Payment disputes and exception handling.
 - ⬜ PCI-DSS scope decision and provider-tokenisation strategy.
 
 Acceptance criteria:
