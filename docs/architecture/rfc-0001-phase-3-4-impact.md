@@ -32,6 +32,13 @@ RFC-0001 Phase 3 has an initial implementation for the existing modules:
 - `fengine` exposes projection list, detail, status, and internal rebuild APIs.
 - `fwk` includes `fengine` projection status in the platform dependency status when enabled.
 
+RFC-0001 Phase 4 has a first foundation implementation for the existing modules:
+
+- `fpay` stores payment process state, webhook receipts and payment outbox rows in PostgreSQL.
+- `fwk` executes payment process and reconciliation jobs through `fpay` and exposes process metrics.
+- `fengine` keeps `payments.settlement_completed` outside active financial mutation paths.
+- `finfra` provides migration, runtime configuration and monitoring support for payment processes.
+
 ## Module impact
 
 | Module | Current responsibility | Phase 3 impact | Phase 4 impact |
@@ -79,7 +86,7 @@ Initial candidates:
 
 | Process | Owner | Trigger | Required contexts | Status |
 | --- | --- | --- | --- | --- |
-| External payment settlement reconciliation | `fpay` | Provider callback or settlement file. | Payments, Accounts & Ledger, Audit & Reporting. | Blocked until `fpay` has provider state, webhook idempotency and Outbox. |
+| External payment settlement reconciliation | `fpay` | Provider callback or settlement file. | Payments, Accounts & Ledger, Audit & Reporting. | Foundation implemented for process state, webhook idempotency, reconciliation and metrics. Settlement event activation remains blocked. |
 | Loan disbursement through external rail | `fengine` with `fpay` participation. | Approved loan command requiring external transfer. | Lending, Payments, Accounts & Ledger. | Deferred until Payments has a settlement contract. |
 | Failed settlement exception handling | `fpay` | Failed or mismatched provider settlement. | Payments, Workflow, Audit & Reporting. | Deferred until settlement state exists. |
 
@@ -128,5 +135,5 @@ Minimum implementation requirements:
 1. Add a minimal projection runtime in `fengine` for one read model. Implemented for three initial projections.
 2. Expose projection status and lag through `fwk` or `fengine` status endpoints. Implemented through `fengine` projection status and `fwk` dependency status.
 3. Document freshness, rebuild and fallback for the first read model in `fdocs` when that module exists.
-4. Implement `fpay` payment state, webhook verification and Outbox before activating `payments.settlement_completed`.
-5. Introduce process managers only after a real cross-context payment settlement flow exists.
+4. Implement `fpay` payment state, webhook verification and Outbox before activating `payments.settlement_completed`. Foundation implemented for state, webhook idempotency and outbox storage; provider signature verification remains pending.
+5. Introduce process managers only after a real cross-context payment settlement flow exists. Foundation implemented for the payment process runtime; cross-context settlement activation remains pending.

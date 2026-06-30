@@ -72,7 +72,7 @@ getfluxo/
 | Persistence                 | Implemented foundation | Prisma/PostgreSQL repositories with memory fallback for isolated tests               |
 | Worker runtime              | Implemented            | BullMQ workers, retries, backoff, schedules, dead-letter queues, and metrics         |
 | Engine-worker integration   | Implemented            | Redis job publishing and authenticated callbacks to workflow triggers                |
-| External payment rails      | Implemented foundation | `fpay` adapter contracts, review policy, and initial payment request validation      |
+| External payment rails      | Implemented foundation | `fpay` adapter contracts, payment process state, webhook dedupe, and reconciliation foundation |
 | Local infrastructure        | Implemented            | Docker Compose and Minikube with persistent PostgreSQL and Redis                     |
 | Production infrastructure   | Partial                | Kubernetes and monitoring manifests exist; Terraform remains a starter               |
 | Institution dashboard       | Planned                | `fwallet`                                                                            |
