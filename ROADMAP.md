@@ -62,8 +62,8 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ RFC-0001 Phase 2 has active Product Configuration, Ledger, and Lending vertical slices for `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, and `lending.payment_posted`: payload schemas, Outbox producers, BullMQ transport adapter, Inbox consumer where applicable, and tests.
 - ✅ RFC-0001 Phase 3/4 impact analysis documents read-model boundaries, process-manager prerequisites, affected modules, and answers to the open RFC questions.
 - ✅ RFC-0001 Phase 3 initial read projections exist for loan activity, ledger activity, and product publication, with tenant-scoped storage, idempotent consumers, rebuild support, and platform status exposure.
-- ✅ RFC-0001 Phase 4 foundation exists for `fpay` payment process state, webhook dedupe, reconciliation jobs, process metrics, and infrastructure alerts.
-- ⬜ Activate the next event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
+- ✅ RFC-0001 Phase 4 foundation exists for `fpay` payment process state, webhook dedupe, reconciliation jobs, process metrics, disabled-by-default settlement outbox, and infrastructure alerts.
+- ⬜ Activate `payments.settlement_completed` and other next event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - 🟡 Add further read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
 ### Local and Kubernetes Infrastructure
@@ -128,7 +128,8 @@ Acceptance criteria:
 ### fpay
 
 - ✅ Payment-provider adapter contract foundation.
-- ✅ Payment process state, webhook dedupe, reconciliation foundation, metrics, and disabled-by-default settlement outbox.
+- ✅ Payment process state, webhook receipt dedupe, reconciliation foundation, metrics, and disabled-by-default settlement outbox.
+- ⬜ `payments.settlement_completed` activation after approved payload contract, idempotent consumers, and observability.
 - ⬜ M-Pesa and e-Mola integrations for the initial Mozambique scope.
 - ⬜ Bank-transfer and settlement-file adapters.
 - ⬜ Webhook signature verification and replay protection.
