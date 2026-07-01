@@ -116,6 +116,8 @@ pnpm contracts:check
 
 RFC-0001 Phase 3 now has the initial read-model runtime for existing modules. `fengine` projects loan activity, ledger activity, and product publication views from active Outbox events. The projections are tenant-scoped, idempotent, rebuildable, and exposed through projection APIs. `fwk` includes projection health in platform dependency status.
 
+RFC-0001 Phase 4 now has the initial process-manager foundation for existing modules. `fpay` owns durable payment process state, webhook receipt dedupe, reconciliation candidates, and a disabled-by-default payment outbox. `fwk` executes payment jobs through `fpay` and reports process metrics. `fengine` remains the owner of financial invariants and does not activate effects from `payments.settlement_completed`; that event remains `proposed` until provider verification, settlement contracts, idempotent consumers, and observability are complete.
+
 ### fengine
 
 `packages/fengine` currently provides:
