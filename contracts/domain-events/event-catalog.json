@@ -72,10 +72,11 @@
       "owner_context": "payments",
       "producer": "fpay",
       "aggregate_type": "settlement",
-      "status": "proposed",
+      "status": "active",
       "data_classification": "restricted",
       "description": "Uma liquidação externa foi reconciliada e concluída pelo contexto Payments.",
       "ordering_key": "tenant_id:aggregate.id",
+      "payload_schema": "payloads/payments.settlement_completed.v1.schema.json",
       "consumers": ["fengine", "fwallet", "fdocs"]
     }
   ]

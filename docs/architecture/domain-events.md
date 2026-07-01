@@ -6,7 +6,7 @@ Decisão: 2026-06-27
 
 RFC: [RFC-0001](https://github.com/orgs/getfluxo-io/discussions/1)
 
-Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Eventos com estado `proposed` continuam sendo linguagem de arquitetura, não contratos publicados. As fatias ativas da Fase 2 são `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed` e `lending.payment_posted`.
+Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Eventos com estado `proposed` continuam sendo linguagem de arquitetura, não contratos publicados. As fatias ativas atuais são `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, `lending.payment_posted` e `payments.settlement_completed`.
 
 ## Evento, comando e job
 
@@ -40,6 +40,8 @@ O envelope JSON exige:
 
 O schema rejeita campos desconhecidos no envelope. O payload é evoluído pelo owner e precisa ter schema específico antes de um evento mudar para `active`.
 
+Este contrato usa Transactional Outbox/Inbox. Ele não transforma os agregados financeiros em Event Sourcing; PostgreSQL e ledger continuam fontes da verdade para comandos e invariantes.
+
 ## Evolução
 
 - Alterações aditivas e opcionais podem manter a versão.
@@ -69,3 +71,5 @@ Um evento só muda de `proposed` para `active` quando possui payload schema vers
 `lending.loan_disbursed` v1 está ativo como primeira fatia vertical da Fase 2. O `fengine` grava o evento numa Outbox após desembolso aprovado; o publisher envia o envelope ao `fwk` pela queue `platform`; o `fwk` chama o endpoint interno de domain events; e o `fengine` registra Inbox por consumidor antes de disparar workflows.
 
 `lending.payment_posted` v1 está ativo como segunda fatia vertical da Fase 2. O `fengine` grava o evento numa Outbox após um pagamento de empréstimo ser alocado em taxas, juros e principal, com saldo remanescente explícito no payload.
+
+`payments.settlement_completed` v1 está ativo como fatia de Payments da Fase 4. O `fpay` grava o evento numa Outbox após webhook de liquidação reconciliado; o publisher do `fwk` envia o envelope pela queue `platform`; e o `fengine` registra Inbox idempotente sem executar mutação financeira direta.
