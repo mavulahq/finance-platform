@@ -116,7 +116,9 @@ pnpm contracts:check
 
 RFC-0001 Phase 3 now has the initial read-model runtime for existing modules. `fengine` projects loan activity, ledger activity, and product publication views from active Outbox events. The projections are tenant-scoped, idempotent, rebuildable, and exposed through projection APIs. `fwk` includes projection health in platform dependency status.
 
-RFC-0001 Phase 4 now has the initial process-manager foundation for existing modules. `fpay` owns durable payment process state, webhook receipt dedupe, reconciliation candidates, and a disabled-by-default payment outbox. `fwk` executes payment jobs through `fpay` and reports process metrics. `fengine` remains the owner of financial invariants and does not activate effects from `payments.settlement_completed`; that event remains `proposed` until provider verification, settlement contracts, idempotent consumers, and observability are complete.
+RFC-0001 Phase 4 now has the initial process-manager foundation for existing modules. `fpay` owns durable payment process state, webhook receipt dedupe, reconciliation candidates, and a guarded payment outbox. `payments.settlement_completed` v1 is active as a Payments-owned domain event with a payload schema, `fpay` producer, `fwk` publisher, and `fengine` Inbox consumer. The `fengine` consumer records the event idempotently and does not post ledger or lending effects directly from this payment event. Runtime publication remains controlled by `FPAY_SETTLEMENT_OUTBOX_ENABLED` and `FPAY_OUTBOX_PUBLISHER_ENABLED`.
+
+This is Transactional Outbox/Inbox, not Event Sourcing. PostgreSQL records and the ledger remain the source of truth for command-side financial state.
 
 ### fengine
 
@@ -127,7 +129,7 @@ RFC-0001 Phase 4 now has the initial process-manager foundation for existing mod
 - Chart of accounts, balanced journal entries, trial balance, and general-ledger reporting.
 - Loan application, approval, disbursement, repayment, and paid-up transitions.
 - Idempotent disbursement and payment posting, plus transaction reversal at the service layer.
-- RFC-0001 Outbox/Inbox support for the active `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, and `lending.payment_posted` domain events.
+- RFC-0001 Outbox/Inbox support for the active `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, `lending.payment_posted`, and idempotent `payments.settlement_completed` domain event paths.
 - Safe rules and advanced arithmetic formulas without `eval` or `new Function`.
 - Tenant-defined entity schemas, forms, workflow definitions, and workflow execution.
 - REST controllers for accounts, products, rules, schemas, workflows, health, metrics, auth, and internal workers.
@@ -143,6 +145,7 @@ RFC-0001 Phase 4 now has the initial process-manager foundation for existing mod
 - Exponential backoff, bounded attempts, failed-job retention, and dead-letter queues.
 - Scheduled jobs for fees, interest, payment reconciliation, and reports.
 - Authenticated dispatch of engine events to configurable `fengine` workflow triggers.
+- Payment settlement outbox publisher for guarded `payments.settlement_completed` dispatch to the platform queue.
 - Public health, dependency status, queue status, schedule status, and Prometheus metrics.
 - Dependency monitoring for PostgreSQL, Redis, `fengine`, and `fengine` projection status.
 

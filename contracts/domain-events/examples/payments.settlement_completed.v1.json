@@ -1,0 +1,33 @@
+{
+  "event_id": "evt_7e2edbbb-9ea6-4d7d-85f0-098594d79e9b",
+  "event_type": "payments.settlement_completed",
+  "event_version": 1,
+  "occurred_at": "2026-06-30T10:00:00.000Z",
+  "tenant_id": "tenant_maputo_001",
+  "aggregate": {
+    "type": "settlement",
+    "id": "payproc_01JZ0F50T2J7XJM9SQZ7EHB1ZK",
+    "version": 1
+  },
+  "correlation_id": "corr_payment_01JZ0F4XG7E1GJQ8BPGE6E70QH",
+  "causation_id": "payproc_01JZ0F50T2J7XJM9SQZ7EHB1ZK:settled",
+  "idempotency_key": "tenant_maputo_001:payproc_01JZ0F50T2J7XJM9SQZ7EHB1ZK:payments.settlement_completed:v1",
+  "payload": {
+    "settlement_id": "payproc_01JZ0F50T2J7XJM9SQZ7EHB1ZK",
+    "payment_process_id": "payproc_01JZ0F50T2J7XJM9SQZ7EHB1ZK",
+    "provider_reference": "mpesa_ref_01JZ0F52T7X1E6P8W8HE7CMH2S",
+    "rail": "mpesa",
+    "money": {
+      "amount": "150.00",
+      "currency": "MZN"
+    },
+    "settled_at": "2026-06-30T10:00:00.000Z",
+    "reconciliation_status": "MATCHED"
+  },
+  "metadata": {
+    "producer": "fpay",
+    "data_classification": "restricted",
+    "trace_id": "trace_01JZ0F54T8NTKXTK6HBTE3Z1AH",
+    "schema_uri": "contracts/domain-events/event-envelope.schema.json"
+  }
+}

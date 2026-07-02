@@ -33,7 +33,7 @@ function withContractCopy(mutate, verify) {
 }
 
 test("accepts the canonical catalog and examples", () => {
-  assert.deepEqual(validateContracts(), { contractCount: 6, exampleCount: 4 });
+  assert.deepEqual(validateContracts(), { contractCount: 6, exampleCount: 5 });
 });
 
 test("rejects event names outside the canonical pattern", () => {
