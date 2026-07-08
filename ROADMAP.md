@@ -15,7 +15,7 @@ Infrastructure for the next generation of finance.
 - ✅ Trademark, brand, contribution and CLA policy documents exist in the repository.
 - ✅ Organization profile uses the MAVULA branding asset and professional badges.
 - ✅ GitHub organization slug and repository names use `mavulahq` and professional module names.
-- 🟡 Technical repositories are prepared for public visibility pending final secret and license scan.
+- ✅ Technical repositories are public under `mavulahq` after final secret and license scan.
 - ⬜ Legal review of the final open core policy, trademark policy and contribution process before public launch.
 - ⬜ CLA automation and public security policy.
 
@@ -212,7 +212,7 @@ Acceptance criteria:
 ## Immediate Delivery Order
 
 1. Complete engine API validation, authorisation, RLS enforcement, and durable idempotency.
-2. Complete the MAVULA open core transition: public repository visibility, legal review and CLA automation.
+2. Complete the MAVULA open core transition: legal review and CLA automation.
 3. Build `console` as the institution operating surface.
 4. Implement `settlements` with the first local payment adapters and reconciliation.
 5. Expand CI security gates and production infrastructure.
