@@ -4,7 +4,7 @@ Estado: **Accepted**
 
 Decisão: 2026-06-27
 
-RFC: [RFC-0001](https://github.com/orgs/mavula-io/discussions/1)
+RFC: [RFC-0001](https://github.com/orgs/mavulahq/discussions/1)
 
 Este documento define as fronteiras de negócio iniciais do MAVULA. As fronteiras são orientadas por linguagem, invariantes e ownership de dados; não reproduzem simplesmente a estrutura atual de pastas.
 

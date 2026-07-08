@@ -1,16 +1,16 @@
 [submodule "packages/ledger-core"]
 	path = packages/ledger-core
-	url = git@github.com:getfluxo-io/ledger-core.git
+	url = git@github.com:mavulahq/ledger-core.git
 	branch = main
 [submodule "packages/workbench"]
 	path = packages/workbench
-	url = git@github.com:getfluxo-io/workbench.git
+	url = git@github.com:mavulahq/workbench.git
 	branch = main
 [submodule "packages/operations"]
 	path = packages/operations
-	url = git@github.com:getfluxo-io/operations.git
+	url = git@github.com:mavulahq/operations.git
 	branch = main
 [submodule "packages/settlements"]
 	path = packages/settlements
-	url = git@github.com:getfluxo-io/settlements.git
+	url = git@github.com:mavulahq/settlements.git
 	branch = main

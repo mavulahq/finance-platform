@@ -4,7 +4,7 @@ Estado: **Accepted**
 
 Decisão: 2026-06-27
 
-RFC: [RFC-0001](https://github.com/orgs/mavula-io/discussions/1)
+RFC: [RFC-0001](https://github.com/orgs/mavulahq/discussions/1)
 
 Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Eventos com estado `proposed` continuam sendo linguagem de arquitetura, não contratos publicados. As fatias ativas atuais são `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, `lending.payment_posted` e `payments.settlement_completed`.
 

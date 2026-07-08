@@ -4,7 +4,7 @@ Status: **Updated**
 
 Date: 2026-07-01
 
-RFC: [RFC-0001](https://github.com/orgs/mavula-io/discussions/1)
+RFC: [RFC-0001](https://github.com/orgs/mavulahq/discussions/1)
 
 This document records the implementation impact of the next RFC-0001 stages. It separates the RFC stages from the product roadmap stages:
 
