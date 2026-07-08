@@ -21,7 +21,7 @@ function execute(command, args, options = {}) {
 test("pre-push blocks direct updates to main", () => {
   const result = execute(
     hook,
-    ["origin", "git@github.com:getfluxo-io/getfluxo.git"],
+    ["origin", "git@github.com:mavulahq/finance-platform.git"],
     {
       input: "refs/heads/main abc refs/heads/main def\n",
     },
@@ -34,7 +34,7 @@ test("pre-push blocks direct updates to main", () => {
 test("pre-push permits feature branches", () => {
   const result = execute("bash", [
     "-c",
-    'printf "refs/heads/codex/test abc refs/heads/codex/test 000\\n" | "$1" origin git@github.com:getfluxo-io/getfluxo.git',
+    'printf "refs/heads/codex/test abc refs/heads/codex/test 000\\n" | "$1" origin git@github.com:mavulahq/finance-platform.git',
     "guardrail-test",
     hook,
   ]);
@@ -62,7 +62,7 @@ function validPr(overrides = {}) {
     baseRefName: "main",
     mergeable: "MERGEABLE",
     reviewDecision: "",
-    url: "https://github.com/getfluxo-io/getfluxo/pull/42",
+    url: "https://github.com/mavulahq/finance-platform/pull/42",
     statusCheckRollup: [
       {
         __typename: "CheckRun",

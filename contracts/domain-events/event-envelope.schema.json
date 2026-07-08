@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://getfluxo.io/contracts/domain-events/event-envelope.schema.json",
-  "title": "Fluxo Domain Event Envelope",
+  "$id": "https://mavula.io/contracts/domain-events/event-envelope.schema.json",
+  "title": "MAVULA Domain Event Envelope",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -92,7 +92,7 @@
       "properties": {
         "producer": {
           "type": "string",
-          "enum": ["fengine", "fwk", "fpay"]
+          "enum": ["ledger-core", "workbench", "settlements", "fengine", "fwk", "fpay"]
         },
         "data_classification": {
           "type": "string",

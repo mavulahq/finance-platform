@@ -1,85 +1,101 @@
-name: getfluxo-dev
+name: mavula-dev
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: getfluxo-postgres
+    container_name: mavula-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: getfluxo
-      POSTGRES_PASSWORD: getfluxo_dev
-      POSTGRES_DB: getfluxo
+      POSTGRES_USER: mavula
+      POSTGRES_PASSWORD: mavula_dev
+      POSTGRES_DB: mavula
     ports:
       - "15432:5432"
     volumes:
-      - getfluxo-postgres-data:/var/lib/postgresql/data
+      - mavula-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U getfluxo -d getfluxo"]
+      test: ["CMD-SHELL", "pg_isready -U mavula -d mavula"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: getfluxo-redis
+    container_name: mavula-redis
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     ports:
       - "16379:6379"
     volumes:
-      - getfluxo-redis-data:/data
+      - mavula-redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  fengine:
+  ledger-core:
     build:
       context: .
-      dockerfile: packages/fengine/Dockerfile
-    container_name: getfluxo-fengine
+      dockerfile: packages/ledger-core/Dockerfile
+      target: dev
+    container_name: mavula-ledger-core
     restart: unless-stopped
+    working_dir: /usr/src/app
     environment:
       NODE_ENV: development
       PORT: 3000
-      DATABASE_URL: postgresql://getfluxo:getfluxo_dev@postgres:5432/getfluxo?schema=public
+      DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=public
       REDIS_URL: redis://redis:6379
       JWT_SECRET: docker-development-secret
       INTERNAL_API_KEY: docker-internal-api-key
+    command:
+      - sh
+      - -lc
+      - pnpm --filter @mavula/ledger-core start:dev
     ports:
       - "13000:3000"
+    volumes:
+      - ./packages/ledger-core/src:/usr/src/app/packages/ledger-core/src:Z
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
 
-  fwk:
+  workbench:
     build:
       context: .
-      dockerfile: packages/fwk/Dockerfile
-    container_name: getfluxo-fwk
+      dockerfile: packages/workbench/Dockerfile
+      target: dev
+    container_name: mavula-workbench
     restart: unless-stopped
+    working_dir: /usr/src/app
     environment:
       NODE_ENV: development
       PORT: 3010
-      DATABASE_URL: postgresql://getfluxo:getfluxo_dev@postgres:5432/getfluxo?schema=public
+      DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=public
       REDIS_URL: redis://redis:6379
-      FWK_WORKER_ENABLED: "true"
-      FWK_QUEUES: payments,platform
-      FENGINE_URL: http://fengine:3000
+      WORKBENCH_WORKER_ENABLED: "true"
+      WORKBENCH_QUEUES: payments,platform
+      LEDGER_CORE_URL: http://ledger-core:3000
       INTERNAL_API_KEY: docker-internal-api-key
+    command:
+      - sh
+      - -lc
+      - pnpm --filter @mavula/workbench start:dev
     ports:
       - "13010:3010"
+    volumes:
+      - ./packages/workbench/src:/usr/src/app/packages/workbench/src:Z
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-      fengine:
+      ledger-core:
         condition: service_started
 
 volumes:
-  getfluxo-postgres-data:
-  getfluxo-redis-data:
+  mavula-postgres-data:
+  mavula-redis-data:

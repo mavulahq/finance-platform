@@ -1,6 +1,6 @@
-# Fluxo CI/CD and Operations
+# MAVULA CI/CD and Operations
 
-This document describes the automation that exists today and the controls still required for production operation of Fluxo by getfluxo.io.
+This document describes the automation that exists today and the controls still required for production operation of MAVULA by mavula.io.
 
 ## Status Legend
 
@@ -21,20 +21,20 @@ This document describes the automation that exists today and the controls still 
 
 The repository pins Node and pnpm in package metadata and container images. Ensure the `node` and `pnpm` executables are available in the runner's `PATH`.
 
-The root repository and its `fengine`, `fwk`, and `finfra` submodules are private. Local development and CI require an SSH identity with read access to all four repositories.
+The root repository and its `ledger-core`, `workbench`, and `operations` submodules are private. Local development and CI require an SSH identity with read access to all four repositories.
 
 ## Current Automation
 
 - ✅ Monorepo dependency installation with a frozen pnpm lockfile.
-- ✅ TypeScript builds for `fengine` and `fwk`.
+- ✅ TypeScript builds for `ledger-core` and `workbench`.
 - ✅ Unit and integration tests for both implemented services.
-- ✅ e2e test suites for `fengine` and `fwk`.
+- ✅ e2e test suites for `ledger-core` and `workbench`.
 - ✅ Always-run GitHub Actions workflow `.github/workflows/required-ci.yml`.
 - ✅ PostgreSQL and Redis service containers in the required CI workflow.
-- ✅ Complete builds and test suites for `fengine` and `fwk` on every pull request.
+- ✅ Complete builds and test suites for `ledger-core` and `workbench` on every pull request.
 - ✅ Architecture contract validation inside the required CI workflow when contract files exist.
 - ✅ Versioned pre-push hook, controlled squash-merge command, and direct-push audit.
-- ✅ Dockerfiles for `fengine` and `fwk`.
+- ✅ Dockerfiles for `ledger-core` and `workbench`.
 - ✅ Docker Compose development environment.
 - ✅ Minikube build, schema sync, deployment, and rollout validation.
 - ✅ Kubernetes health checks, metrics resources, and deployment scripts.
@@ -51,20 +51,20 @@ Install and build:
 ```bash
 pnpm submodules:init
 pnpm install --frozen-lockfile
-pnpm --filter @getfluxo/fengine build
-pnpm --filter @getfluxo/fwk build
+pnpm --filter @mavula/ledger-core build
+pnpm --filter @mavula/workbench build
 pnpm build
 ```
 
 Tests:
 
 ```bash
-pnpm --filter @getfluxo/fengine test
-pnpm --filter @getfluxo/fengine test:e2e
-pnpm --filter @getfluxo/fengine test:all
-pnpm --filter @getfluxo/fwk test
-pnpm --filter @getfluxo/fwk test:e2e
-pnpm --filter @getfluxo/fwk test:all
+pnpm --filter @mavula/ledger-core test
+pnpm --filter @mavula/ledger-core test:e2e
+pnpm --filter @mavula/ledger-core test:all
+pnpm --filter @mavula/workbench test
+pnpm --filter @mavula/workbench test:e2e
+pnpm --filter @mavula/workbench test:all
 pnpm test
 pnpm test:guardrails
 ```
@@ -87,12 +87,12 @@ pnpm exec prettier --check 'docs/architecture/**/*.md' 'contracts/domain-events/
 Infrastructure:
 
 ```bash
-pnpm --filter @getfluxo/finfra docker:build
-pnpm --filter @getfluxo/finfra k8s:apply
-pnpm --filter @getfluxo/finfra health:check
-pnpm --filter @getfluxo/finfra minikube:deploy
-pnpm --filter @getfluxo/finfra minikube:status
-pnpm --filter @getfluxo/finfra tf:plan
+pnpm --filter @mavula/operations docker:build
+pnpm --filter @mavula/operations k8s:apply
+pnpm --filter @mavula/operations health:check
+pnpm --filter @mavula/operations minikube:deploy
+pnpm --filter @mavula/operations minikube:status
+pnpm --filter @mavula/operations tf:plan
 ```
 
 ## GitHub Actions
@@ -107,12 +107,12 @@ pnpm --filter @getfluxo/finfra tf:plan
 4. Installs pnpm `10.33.0` and Node `22.22.3`.
 5. Installs dependencies from the frozen lockfile.
 6. Runs architecture contract validation when the validator is present on the revision.
-7. Builds `fpay`, `fengine`, and `fwk`.
-8. Runs the `fpay` test suite.
+7. Builds `settlements`, `ledger-core`, and `workbench`.
+8. Runs the `settlements` test suite.
 9. Synchronises the Prisma schema with the temporary PostgreSQL database.
-10. Runs the complete unit, integration, and e2e suites for `fengine` and `fwk`.
+10. Runs the complete unit, integration, and e2e suites for `ledger-core` and `workbench`.
 
-`SUBMODULES_SSH_KEY` must contain a dedicated CI private key registered to a GitHub account with read access to `fengine`, `fwk`, `fpay`, and `finfra`. The root repository uses its scoped `GITHUB_TOKEN`; the SSH key is written to a temporary file only for `git submodule update`, uses strict host checking, and is removed immediately afterward. Rotate this credential through GitHub Actions secrets; never commit it.
+`SUBMODULES_SSH_KEY` must contain a dedicated CI private key registered to a GitHub account with read access to `ledger-core`, `workbench`, `settlements`, and `operations`. The root repository uses its scoped `GITHUB_TOKEN`; the SSH key is written to a temporary file only for `git submodule update`, uses strict host checking, and is removed immediately afterward. Rotate this credential through GitHub Actions secrets; never commit it.
 
 This workflow does not build containers, run dedicated security scans, or deploy environments.
 
@@ -168,18 +168,18 @@ Build and test gates run both locally and in GitHub Actions; dedicated security 
 Start the full local service set:
 
 ```bash
-docker compose up -d postgres redis fengine fwk
+docker compose up -d postgres redis ledger-core workbench
 docker compose ps
-docker compose logs -f fengine fwk
+docker compose logs -f ledger-core workbench
 ```
 
 Endpoints:
 
 - PostgreSQL: `localhost:15432`
 - Redis: `localhost:16379`
-- `fengine`: `http://localhost:13000/api/health`
-- `fwk` status: `http://localhost:13010/api/status`
-- `fwk` metrics: `http://localhost:13010/api/metrics`
+- `ledger-core`: `http://localhost:13000/api/health`
+- `workbench` status: `http://localhost:13010/api/status`
+- `workbench` metrics: `http://localhost:13010/api/metrics`
 
 Stop the environment:
 
@@ -191,68 +191,68 @@ Named volumes retain PostgreSQL and Redis data unless they are explicitly remove
 
 ## Minikube Environment
 
-The `getfluxo` profile is the validated complete local Kubernetes environment:
+The `getfluxo` profile remains the validated complete local Kubernetes environment:
 
 ```bash
-pnpm --filter @getfluxo/finfra minikube:deploy
-pnpm --filter @getfluxo/finfra minikube:status
+pnpm --filter @mavula/operations minikube:deploy
+pnpm --filter @mavula/operations minikube:status
 ```
 
 The deploy script:
 
 1. Starts Minikube when required.
-2. Builds uniquely tagged local `fengine` and `fwk` images.
+2. Builds uniquely tagged local `ledger-core` and `workbench` images.
 3. Loads the images into the Minikube runtime.
 4. Applies the local Kustomize overlay.
 5. Waits for PostgreSQL and Redis StatefulSets.
 6. Port-forwards PostgreSQL temporarily and applies the Prisma schema.
-7. Waits for healthy `fengine` and `fwk` rollouts.
+7. Waits for healthy `ledger-core` and `workbench` rollouts.
 
 Access services:
 
 ```bash
-kubectl --context getfluxo port-forward -n getfluxo service/fengine 13000:80
-kubectl --context getfluxo port-forward -n getfluxo service/fwk 13011:80
+kubectl --context getfluxo port-forward -n mavula service/ledger-core 13000:80
+kubectl --context getfluxo port-forward -n mavula service/workbench 13011:80
 ```
 
 Lifecycle commands:
 
 ```bash
-pnpm --filter @getfluxo/finfra minikube:stop
-pnpm --filter @getfluxo/finfra minikube:delete
+pnpm --filter @mavula/operations minikube:stop
+pnpm --filter @mavula/operations minikube:delete
 ```
 
 The Minikube overlay uses development-only credentials. It is not a production secret or migration strategy.
 
 ## Containers
 
-Current Docker build scripts default to `fengine`:
+Current Docker build scripts default to `ledger-core`:
 
 ```bash
-IMAGE_NAME=getfluxio/fengine \
+IMAGE_NAME=mavula/ledger-core \
 IMAGE_TAG=sha-local \
-DOCKERFILE=packages/fengine/Dockerfile \
-pnpm --filter @getfluxo/finfra docker:build
+DOCKERFILE=packages/ledger-core/Dockerfile \
+pnpm --filter @mavula/operations docker:build
 ```
 
-Build `fwk` by overriding the same variables:
+Build `workbench` by overriding the same variables:
 
 ```bash
-IMAGE_NAME=getfluxio/fwk \
+IMAGE_NAME=mavula/workbench \
 IMAGE_TAG=sha-local \
-DOCKERFILE=packages/fwk/Dockerfile \
-pnpm --filter @getfluxo/finfra docker:build
+DOCKERFILE=packages/workbench/Dockerfile \
+pnpm --filter @mavula/operations docker:build
 ```
 
 Production images must use immutable commit or release tags. The existing `docker:push` command pushes the selected image but does not implement registry authentication, signing, provenance, or promotion.
 
-Both Dockerfiles use multi-stage Node `22.22.3` builds and a locked BuildKit pnpm cache. `fengine` explicitly generates the Prisma client and installs the OpenSSL runtime required by Prisma.
+Both Dockerfiles use multi-stage Node `22.22.3` builds and a locked BuildKit pnpm cache. `ledger-core` explicitly generates the Prisma client and installs the OpenSSL runtime required by Prisma.
 
 ## Kubernetes
 
 Implemented resources include:
 
-- Namespace, deployments, and ClusterIP services for `fengine` and `fwk`.
+- Namespace, deployments, and ClusterIP services for `ledger-core` and `workbench`.
 - Liveness and readiness probes.
 - Init containers that wait for platform dependencies.
 - Local PostgreSQL and Redis StatefulSets and persistent volume claims.
@@ -262,8 +262,8 @@ Implemented resources include:
 Apply to a configured cluster:
 
 ```bash
-KUBE_CONTEXT=staging pnpm --filter @getfluxo/finfra deploy:staging
-KUBE_CONTEXT=production pnpm --filter @getfluxo/finfra deploy:prod
+KUBE_CONTEXT=staging pnpm --filter @mavula/operations deploy:staging
+KUBE_CONTEXT=production pnpm --filter @mavula/operations deploy:prod
 ```
 
 These commands assume that the context, namespace permissions, secrets, images, and required custom-resource operators already exist. They do not provision a complete environment.
@@ -280,28 +280,28 @@ Production Kubernetes still requires:
 
 Required configuration:
 
-- `REDIS_URL` in `fengine` and `fwk`.
-- `FENGINE_URL=http://fengine` in `fwk` inside Kubernetes.
+- `REDIS_URL` in `ledger-core` and `workbench`.
+- `LEDGER_CORE_URL=http://ledger-core` in `workbench` inside Kubernetes.
 - The same `INTERNAL_API_KEY` in both services.
 
 Operational flow:
 
 ```text
-fengine producer
+ledger-core producer
   -> BullMQ platform queue in Redis
-  -> fwk worker
+  -> workbench worker
   -> authenticated /api/internal/worker/events callback
-  -> fengine workflow trigger
+  -> ledger-core workflow trigger
 ```
 
-`fwk` retries callback failures with exponential backoff. Terminal failures remain available through dead-letter queue metrics. The public status API reports PostgreSQL, Redis, and `fengine` dependency health as well as queue and schedule state.
+`workbench` retries callback failures with exponential backoff. Terminal failures remain available through dead-letter queue metrics. The public status API reports PostgreSQL, Redis, and `ledger-core` dependency health as well as queue and schedule state.
 
 Production operators must alert on:
 
 - `fwk_worker_running == 0`.
 - Any dead-letter backlog.
 - Sustained queue delay or growth.
-- `fengine` dependency failure.
+- `ledger-core` dependency failure.
 - Repeated callback or workflow failures.
 
 ## Database and Tenant Operations
@@ -309,18 +309,18 @@ Production operators must alert on:
 Prisma schema commands:
 
 ```bash
-pnpm --filter @getfluxo/fengine prisma:generate
-pnpm --filter @getfluxo/finfra migrate:schema
+pnpm --filter @mavula/ledger-core prisma:generate
+pnpm --filter @mavula/operations migrate:schema
 ```
 
 Local Minikube currently uses `prisma db push --skip-generate`. Production must replace this with reviewed, versioned migrations and a deploy-time migration policy.
 
-RLS definitions exist in `packages/fengine/migrations/rls_setup.sql`. They must be applied after shared-schema tables are created and tested with the non-bypass application role.
+RLS definitions exist in `packages/ledger-core/migrations/rls_setup.sql`. They must be applied after shared-schema tables are created and tested with the non-bypass application role.
 
 Backup:
 
 ```bash
-DATABASE_URL="postgresql://..." pnpm --filter @getfluxo/finfra backup:db
+DATABASE_URL="postgresql://..." pnpm --filter @mavula/operations backup:db
 ```
 
 The repository has a backup script but no complete automated restore workflow. A backup is not production-ready until restoration is exercised and reconciled.
@@ -335,10 +335,10 @@ Required secret categories:
 - Redis connection credentials.
 - JWT signing material.
 - Shared internal service API key.
-- Payment-provider and webhook secrets when `fpay` is implemented.
+- Payment-provider and webhook secrets when `settlements` is implemented.
 - Object-storage and observability credentials when those services are added.
 
-External Secrets manifests reference AWS Secrets Manager keys, including `getfluxo/internal_api_key`. Before use, install the operator, configure workload identity correctly, create the remote values, and verify secret rotation.
+External Secrets manifests reference AWS Secrets Manager keys, including `mavula/internal_api_key`. Before use, install the operator, configure workload identity correctly, create the remote values, and verify secret rotation.
 
 Never commit production `.env` files, credentials, tokens, private keys, or generated Kubernetes secrets.
 
@@ -346,8 +346,8 @@ Never commit production `.env` files, credentials, tokens, private keys, or gene
 
 Available endpoints:
 
-- `fengine`: `/api/health` and `/api/metrics`.
-- `fwk`: `/api/health`, `/api/status`, `/api/status/queues`, `/api/status/schedules`, `/api/status/metrics`, and `/api/metrics`.
+- `ledger-core`: `/api/health` and `/api/metrics`.
+- `workbench`: `/api/health`, `/api/status`, `/api/status/queues`, `/api/status/schedules`, `/api/status/metrics`, and `/api/metrics`.
 
 ServiceMonitor and alert-rule manifests exist, but the repository does not install Prometheus Operator, Grafana, central logging, tracing, or alert routing.
 
@@ -395,7 +395,7 @@ Production signals should cover:
 - ✅ Engine-worker communication is authenticated and observable.
 - 🟡 Kubernetes and secret-management foundations exist.
 - 🟡 Backup creation exists; restoration automation does not.
-- ✅ `fengine` and `fwk` complete suites run in GitHub Actions for every pull request.
+- ✅ `ledger-core` and `workbench` complete suites run in GitHub Actions for every pull request.
 - 🟡 `main` is protected operationally while server-side enforcement awaits GitHub Team.
 - ⬜ Complete CI, security, artifact, staging, and production workflows.
 - ⬜ Production infrastructure, managed data services, and disaster recovery.

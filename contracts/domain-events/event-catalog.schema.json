@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://getfluxo.io/contracts/domain-events/event-catalog.schema.json",
-  "title": "Fluxo Domain Event Catalog",
+  "$id": "https://mavula.io/contracts/domain-events/event-catalog.schema.json",
+  "title": "MAVULA Domain Event Catalog",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "events"],
@@ -63,7 +63,7 @@
         },
         "producer": {
           "type": "string",
-          "enum": ["fengine", "fwk", "fpay"]
+          "enum": ["ledger-core", "workbench", "settlements", "fengine", "fwk", "fpay"]
         },
         "aggregate_type": {
           "type": "string",
@@ -92,7 +92,21 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["fengine", "fwk", "fpay", "fwallet", "fdocs", "fxAI"]
+            "enum": [
+              "ledger-core",
+              "workbench",
+              "settlements",
+              "console",
+              "mobile",
+              "docs",
+              "intelligence",
+              "fengine",
+              "fwk",
+              "fpay",
+              "fwallet",
+              "fdocs",
+              "fxAI"
+            ]
           }
         },
         "payload_schema": {

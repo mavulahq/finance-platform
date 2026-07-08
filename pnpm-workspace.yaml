@@ -1,12 +1,8 @@
 packages:
-  - packages/fengine
-  - packages/fwallet
-  - packages/fwallet-mobile
-  - packages/fwk
-  - packages/fxAI
-  - packages/fpay
-  - packages/finfra
-  - packages/fdocs
+  - packages/ledger-core
+  - packages/workbench
+  - packages/settlements
+  - packages/operations
 
 peerDependencyRules:
   ignoreMissing:

@@ -27,7 +27,7 @@
     "balance_after": "23625.00"
   },
   "metadata": {
-    "producer": "fengine",
+    "producer": "ledger-core",
     "data_classification": "restricted",
     "trace_id": "trace_01JY7K35SSAXXKCK4V7NMFPRCM",
     "schema_uri": "contracts/domain-events/event-envelope.schema.json"

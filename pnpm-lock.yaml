@@ -33,7 +33,7 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
-  packages/fengine:
+  packages/ledger-core:
     dependencies:
       '@nestjs/common':
         specifier: ^10.0.0
@@ -121,7 +121,7 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/finfra:
+  packages/operations:
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
@@ -130,7 +130,7 @@ importers:
         specifier: ^16.3.1
         version: 16.6.1
 
-  packages/fpay:
+  packages/settlements:
     dependencies:
       pg:
         specifier: ^8.13.1
@@ -152,9 +152,9 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
-  packages/fwk:
+  packages/workbench:
     dependencies:
-      '@getfluxo/fpay':
+      '@mavula/settlements':
         specifier: workspace:*
         version: link:../fpay
       '@nestjs/common':

@@ -4,7 +4,7 @@ Estado: **Accepted**
 
 Decisão: 2026-06-27
 
-RFC: [RFC-0001](https://github.com/orgs/getfluxo-io/discussions/1)
+RFC: [RFC-0001](https://github.com/orgs/mavulahq/discussions/1)
 
 ## Invariantes globais
 

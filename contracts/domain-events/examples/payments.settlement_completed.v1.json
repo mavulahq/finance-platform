@@ -25,7 +25,7 @@
     "reconciliation_status": "MATCHED"
   },
   "metadata": {
-    "producer": "fpay",
+    "producer": "settlements",
     "data_classification": "restricted",
     "trace_id": "trace_01JZ0F54T8NTKXTK6HBTE3Z1AH",
     "schema_uri": "contracts/domain-events/event-envelope.schema.json"
