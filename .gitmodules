@@ -1,16 +1,16 @@
-[submodule "packages/fengine"]
-	path = packages/fengine
-	url = git@github.com:getfluxo-io/fengine.git
+[submodule "packages/ledger-core"]
+	path = packages/ledger-core
+	url = git@github.com:getfluxo-io/ledger-core.git
 	branch = main
-[submodule "packages/fwk"]
-	path = packages/fwk
-	url = git@github.com:getfluxo-io/fwk.git
+[submodule "packages/workbench"]
+	path = packages/workbench
+	url = git@github.com:getfluxo-io/workbench.git
 	branch = main
-[submodule "packages/finfra"]
-	path = packages/finfra
-	url = git@github.com:getfluxo-io/finfra.git
+[submodule "packages/operations"]
+	path = packages/operations
+	url = git@github.com:getfluxo-io/operations.git
 	branch = main
-[submodule "packages/fpay"]
-	path = packages/fpay
-	url = git@github.com:getfluxo-io/fpay.git
+[submodule "packages/settlements"]
+	path = packages/settlements
+	url = git@github.com:getfluxo-io/settlements.git
 	branch = main

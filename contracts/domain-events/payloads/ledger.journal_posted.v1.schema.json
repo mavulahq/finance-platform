@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://getfluxo.io/contracts/domain-events/payloads/ledger.journal_posted.v1.schema.json",
+  "$id": "https://mavula.io/contracts/domain-events/payloads/ledger.journal_posted.v1.schema.json",
   "title": "ledger.journal_posted.v1 payload",
   "type": "object",
   "additionalProperties": false,

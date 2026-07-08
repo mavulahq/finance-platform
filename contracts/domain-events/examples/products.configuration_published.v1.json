@@ -20,7 +20,7 @@
     "configuration_version": 2
   },
   "metadata": {
-    "producer": "fengine",
+    "producer": "ledger-core",
     "data_classification": "internal",
     "trace_id": "trace_01JYSW73HAH6S0P66YC3H1T7AT",
     "schema_uri": "contracts/domain-events/event-envelope.schema.json"

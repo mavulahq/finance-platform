@@ -1,15 +1,15 @@
 {
-  "name": "getfluxo",
+  "name": "finance-platform",
   "version": "1.0.0",
   "private": true,
-  "description": "Fluxo by getfluxo.io - configurable Banking as a Service (BaaS) infrastructure",
+  "description": "MAVULA finance platform - infrastructure for the next generation of finance.",
   "author": "EstandarMustaq <mustaqueestandarjunior@gmail.com>",
-  "copyright": "Copyright (c) 2025-2026 getfluxo.io - All Rights Reserved",
-  "license": "SEE LICENSE IN LICENSE",
-  "homepage": "https://getfluxo.io",
+  "copyright": "Copyright (c) 2025-2026 mavula.io",
+  "license": "AGPL-3.0-only",
+  "homepage": "https://mavula.io",
   "repository": {
     "type": "git",
-    "url": "git@github.com:getfluxo-io/getfluxo.git"
+    "url": "git@github.com:getfluxo-io/finance-platform.git"
   },
   "packageManager": "pnpm@10.33.0",
   "engines": {
@@ -35,12 +35,11 @@
     "dev:services:down": "docker compose down",
     "dev:services:logs": "docker compose logs -f postgres redis",
     "dev:services:ps": "docker compose ps",
-    "docs:generate": "pnpm --filter @getfluxo/fdocs generate",
-    "infra:plan": "pnpm --filter @getfluxo/finfra tf:plan",
-    "infra:apply": "pnpm --filter @getfluxo/finfra tf:apply",
-    "docker:build-all": "pnpm --filter @getfluxo/finfra docker:build",
-    "deploy:staging": "pnpm --filter @getfluxo/finfra deploy:staging",
-    "deploy:production": "pnpm --filter @getfluxo/finfra deploy:prod"
+    "infra:plan": "pnpm --filter @mavula/operations tf:plan",
+    "infra:apply": "pnpm --filter @mavula/operations tf:apply",
+    "docker:build-all": "pnpm --filter @mavula/operations docker:build",
+    "deploy:staging": "pnpm --filter @mavula/operations deploy:staging",
+    "deploy:production": "pnpm --filter @mavula/operations deploy:prod"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -53,13 +52,9 @@
     "typescript": "^5.3.3"
   },
   "workspaces": [
-    "packages/fengine",
-    "packages/fwallet",
-    "packages/fwallet-mobile",
-    "packages/fwk",
-    "packages/fxAI",
-    "packages/fpay",
-    "packages/finfra",
-    "packages/fdocs"
+    "packages/ledger-core",
+    "packages/workbench",
+    "packages/settlements",
+    "packages/operations"
   ]
 }

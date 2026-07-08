@@ -21,7 +21,7 @@
     }
   },
   "metadata": {
-    "producer": "fengine",
+    "producer": "ledger-core",
     "data_classification": "restricted",
     "trace_id": "trace_01JY6M4R4H95QFM1VXEZKCWVDN",
     "schema_uri": "contracts/domain-events/event-envelope.schema.json"

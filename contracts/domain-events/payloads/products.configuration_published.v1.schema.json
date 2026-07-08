@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://getfluxo.io/contracts/domain-events/payloads/products.configuration_published.v1.schema.json",
+  "$id": "https://mavula.io/contracts/domain-events/payloads/products.configuration_published.v1.schema.json",
   "title": "products.configuration_published.v1 payload",
   "type": "object",
   "additionalProperties": false,

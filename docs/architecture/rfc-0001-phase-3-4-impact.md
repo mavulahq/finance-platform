@@ -4,7 +4,7 @@ Status: **Updated**
 
 Date: 2026-07-01
 
-RFC: [RFC-0001](https://github.com/orgs/getfluxo-io/discussions/1)
+RFC: [RFC-0001](https://github.com/orgs/mavula-io/discussions/1)
 
 This document records the implementation impact of the next RFC-0001 stages. It separates the RFC stages from the product roadmap stages:
 
@@ -15,38 +15,38 @@ This document records the implementation impact of the next RFC-0001 stages. It 
 
 ## Current baseline
 
-RFC-0001 Phase 2 is closed for the `fengine` runtime event scope. The active events are:
+RFC-0001 Phase 2 is closed for the `ledger-core` runtime event scope. The active events are:
 
 - `lending.loan_disbursed` v1.
 - `lending.payment_posted` v1.
 - `products.configuration_published` v1.
 - `ledger.journal_posted` v1.
 
-These events have versioned contracts, Outbox producers, BullMQ transport through `fwk`, Inbox/idempotency where applicable, and tests.
+These events have versioned contracts, Outbox producers, BullMQ transport through `workbench`, Inbox/idempotency where applicable, and tests.
 
-`payments.settlement_completed` v1 is active as a Payments-owned domain event. Its producer is `fpay`; `fwk` publishes guarded Outbox records to the platform queue; `fengine` consumes the event through Inbox idempotency and keeps it outside direct ledger and lending mutation paths.
+`payments.settlement_completed` v1 is active as a Payments-owned domain event. Its producer is `settlements`; `workbench` publishes guarded Outbox records to the platform queue; `ledger-core` consumes the event through Inbox idempotency and keeps it outside direct ledger and lending mutation paths.
 
 RFC-0001 Phase 3 has an initial implementation for the existing modules:
 
-- `fengine` stores tenant-scoped projections for `loan_activity`, `ledger_activity`, and `product_publication`.
-- `fengine` exposes projection list, detail, status, and internal rebuild APIs.
-- `fwk` includes `fengine` projection status in the platform dependency status when enabled.
+- `ledger-core` stores tenant-scoped projections for `loan_activity`, `ledger_activity`, and `product_publication`.
+- `ledger-core` exposes projection list, detail, status, and internal rebuild APIs.
+- `workbench` includes `ledger-core` projection status in the platform dependency status when enabled.
 
 RFC-0001 Phase 4 has a first foundation implementation for the existing modules. It activates the settlement-completed event contract and delivery path, but does not activate direct cross-context financial effects from that event.
 
-- `fpay` stores payment process state, webhook receipts and payment outbox rows in PostgreSQL.
-- `fwk` executes payment process and reconciliation jobs through `fpay`, publishes claimed payment outbox events, and exposes process metrics.
-- `fengine` keeps `payments.settlement_completed` outside active financial mutation paths.
-- `finfra` provides migration, runtime configuration and monitoring support for payment processes.
+- `settlements` stores payment process state, webhook receipts and payment outbox rows in PostgreSQL.
+- `workbench` executes payment process and reconciliation jobs through `settlements`, publishes claimed payment outbox events, and exposes process metrics.
+- `ledger-core` keeps `payments.settlement_completed` outside active financial mutation paths.
+- `operations` provides migration, runtime configuration and monitoring support for payment processes.
 
 ## Module impact
 
 | Module | Current responsibility | Phase 3 impact | Phase 4 impact |
 | --- | --- | --- | --- |
-| `fengine` | Financial source of truth, ledger, lending, product configuration, audit trail, Outbox/Inbox. | Owns initial projections for financial read use cases. Projections are rebuildable and tenant-scoped. | Participates as command owner for ledger and lending effects. It must not delegate financial invariants to workflow jobs. |
-| `fwk` | Worker runtime, BullMQ transport, retries, schedules, DLQ, public platform status. | Exposes `fengine` projection status with dependency health and worker metrics. | Runs jobs for process steps but does not own business state or decide financial outcomes. |
-| `fpay` | Payment adapter contract foundation. | Owns the active `payments.settlement_completed` producer. Payment read models remain deferred until a concrete settlement view is specified. | Owns payment settlement facts, webhook idempotency, reconciliation and provider-facing process state. |
-| `finfra` | Local and Kubernetes platform infrastructure. | Provides PostgreSQL, Redis, observability and deployment support for projection consumers. | Provides runtime support for process-manager workers, metrics and alerts. |
+| `ledger-core` | Financial source of truth, ledger, lending, product configuration, audit trail, Outbox/Inbox. | Owns initial projections for financial read use cases. Projections are rebuildable and tenant-scoped. | Participates as command owner for ledger and lending effects. It must not delegate financial invariants to workflow jobs. |
+| `workbench` | Worker runtime, BullMQ transport, retries, schedules, DLQ, public platform status. | Exposes `ledger-core` projection status with dependency health and worker metrics. | Runs jobs for process steps but does not own business state or decide financial outcomes. |
+| `settlements` | Payment adapter contract foundation. | Owns the active `payments.settlement_completed` producer. Payment read models remain deferred until a concrete settlement view is specified. | Owns payment settlement facts, webhook idempotency, reconciliation and provider-facing process state. |
+| `operations` | Local and Kubernetes platform infrastructure. | Provides PostgreSQL, Redis, observability and deployment support for projection consumers. | Provides runtime support for process-manager workers, metrics and alerts. |
 | `fwallet` | Planned institution operating surface. | Consumes read models for operator screens. It should not compute balances or financial state directly. | Surfaces process state and exception handling, but does not own process invariants. |
 | `fwallet-mobile` | Planned customer channel. | Consumes stable read APIs for balances, loan state, repayment history and transaction history. | Receives process status and notifications; does not orchestrate financial processes. |
 | `fdocs` | Planned documentation and integration guides. | Documents read model freshness, rebuild and fallback rules. | Documents process states, timeout semantics and retry behavior. |
@@ -60,9 +60,9 @@ Implemented initial scope:
 
 | Read model | Owner | Source events | Freshness | Rebuild | Fallback |
 | --- | --- | --- | --- | --- | --- |
-| Loan activity view | `fengine` | `lending.loan_disbursed`, `lending.payment_posted`. | Eventually consistent for operator views. | Rebuild from active Outbox event history. | Read canonical loan state when a synchronous decision is required. |
-| Ledger activity view | `fengine` | `ledger.journal_posted`. | Eventually consistent for reporting and audit navigation. | Rebuild from active Outbox event history. | Read ledger tables for accounting decisions. |
-| Product publication view | `fengine` | `products.configuration_published`. | Eventually consistent for configuration history. | Rebuild from active Outbox event history. | Read product configuration tables for command validation. |
+| Loan activity view | `ledger-core` | `lending.loan_disbursed`, `lending.payment_posted`. | Eventually consistent for operator views. | Rebuild from active Outbox event history. | Read canonical loan state when a synchronous decision is required. |
+| Ledger activity view | `ledger-core` | `ledger.journal_posted`. | Eventually consistent for reporting and audit navigation. | Rebuild from active Outbox event history. | Read ledger tables for accounting decisions. |
+| Product publication view | `ledger-core` | `products.configuration_published`. | Eventually consistent for configuration history. | Rebuild from active Outbox event history. | Read product configuration tables for command validation. |
 
 Deferred candidates:
 
@@ -86,9 +86,9 @@ Initial candidates:
 
 | Process | Owner | Trigger | Required contexts | Status |
 | --- | --- | --- | --- | --- |
-| External payment settlement reconciliation | `fpay` | Provider callback or settlement file. | Payments, Accounts & Ledger, Audit & Reporting. | Foundation implemented for process state, webhook idempotency, reconciliation, guarded outbox publication and metrics. Provider signature verification remains pending. |
-| Loan disbursement through external rail | `fengine` with `fpay` participation. | Approved loan command requiring external transfer. | Lending, Payments, Accounts & Ledger. | Deferred until Payments has a settlement contract. |
-| Failed settlement exception handling | `fpay` | Failed or mismatched provider settlement. | Payments, Workflow, Audit & Reporting. | Deferred until settlement state exists. |
+| External payment settlement reconciliation | `settlements` | Provider callback or settlement file. | Payments, Accounts & Ledger, Audit & Reporting. | Foundation implemented for process state, webhook idempotency, reconciliation, guarded outbox publication and metrics. Provider signature verification remains pending. |
+| Loan disbursement through external rail | `ledger-core` with `settlements` participation. | Approved loan command requiring external transfer. | Lending, Payments, Accounts & Ledger. | Deferred until Payments has a settlement contract. |
+| Failed settlement exception handling | `settlements` | Failed or mismatched provider settlement. | Payments, Workflow, Audit & Reporting. | Deferred until settlement state exists. |
 
 Minimum implementation requirements:
 
@@ -104,11 +104,11 @@ Minimum implementation requirements:
 
 1. **Does the bounded context map separate accounts, ledger, lending and payments correctly?**
 
-   Yes. The current map is valid as an initial boundary. `fengine` owns Accounts & Ledger and Lending. `fpay` owns Payments. `fwk` owns operational execution, not business facts. This separation prevents payment adapters from writing ledger state directly.
+   Yes. The current map is valid as an initial boundary. `ledger-core` owns Accounts & Ledger and Lending. `settlements` owns Payments. `workbench` owns operational execution, not business facts. This separation prevents payment adapters from writing ledger state directly.
 
 2. **Which flow should be the first vertical slice: loan disbursement or payment settlement?**
 
-   The first delivered vertical slice was `lending.loan_disbursed`. That was the correct choice because it used existing `fengine` ownership and avoided depending on incomplete external payment provider state.
+   The first delivered vertical slice was `lending.loan_disbursed`. That was the correct choice because it used existing `ledger-core` ownership and avoided depending on incomplete external payment provider state.
 
 3. **Should BullMQ remain focused on command jobs while domain events receive a dedicated transport later?**
 
@@ -132,8 +132,8 @@ Minimum implementation requirements:
 
 ## Recommended implementation order
 
-1. Add a minimal projection runtime in `fengine` for one read model. Implemented for three initial projections.
-2. Expose projection status and lag through `fwk` or `fengine` status endpoints. Implemented through `fengine` projection status and `fwk` dependency status.
+1. Add a minimal projection runtime in `ledger-core` for one read model. Implemented for three initial projections.
+2. Expose projection status and lag through `workbench` or `ledger-core` status endpoints. Implemented through `ledger-core` projection status and `workbench` dependency status.
 3. Document freshness, rebuild and fallback for the first read model in `fdocs` when that module exists.
-4. Implement `fpay` payment state, webhook verification and Outbox before activating `payments.settlement_completed`. Implemented for state, webhook idempotency, outbox storage, guarded publication, reconciliation, metrics and infrastructure alerts; provider signature verification remains pending.
+4. Implement `settlements` payment state, webhook verification and Outbox before activating `payments.settlement_completed`. Implemented for state, webhook idempotency, outbox storage, guarded publication, reconciliation, metrics and infrastructure alerts; provider signature verification remains pending.
 5. Introduce process managers only after a real cross-context payment settlement flow exists. Foundation implemented for the payment process runtime and settlement event delivery; direct ledger/lending mutation from payment events remains out of scope.

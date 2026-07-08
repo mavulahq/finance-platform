@@ -1,6 +1,22 @@
-# Fluxo Delivery Roadmap
+# MAVULA Delivery Roadmap
 
-This roadmap tracks the implementation of Fluxo by getfluxo.io as configurable financial infrastructure for Mozambican institutions.
+This roadmap tracks the implementation of MAVULA by mavula.io as configurable financial infrastructure for Mozambican institutions.
+
+MAVULA replaces the former GetFluxo identity. The mission remains:
+Infrastructure for the next generation of finance.
+
+## Rebrand and Open Core Baseline
+
+- ✅ Product identity moved to MAVULA with primary domain `mavula.io` and developer/open source domain `mavula.dev`.
+- ✅ Main workspace renamed conceptually to `finance-platform` instead of using the brand name as the repository identity.
+- ✅ Implemented modules use professional technical names: `ledger-core`, `workbench`, `settlements`, and `operations`.
+- ✅ Legacy module names remain documented only as transition aliases.
+- ✅ Licensing policy moved from proprietary-only to open core: AGPL-3.0-only for runtime financial modules and Apache-2.0 for operations tooling.
+- ✅ Trademark, brand, contribution and CLA policy documents exist in the repository.
+- 🟡 Organization profile still needs the public `mavula_branding.png` README update after the profile repository is updated.
+- 🟡 Remote GitHub repositories still need administrator rename coordination after PRs merge.
+- ⬜ Legal review of the final open core policy, trademark policy and contribution process before public launch.
+- ⬜ CLA automation and public security policy.
 
 ## Status Legend
 
@@ -12,7 +28,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 
 ## Current Baseline
 
-### Core Financial Engine
+### Ledger Core
 
 - ✅ NestJS service, health endpoint, Prometheus metrics, tenant middleware, auth foundation, and RBAC primitives.
 - ✅ Decimal.js financial calculations for payments, amortisation, interest, fees, and scenarios.
@@ -49,9 +65,9 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ Dead-letter queues and terminal-failure metrics.
 - ✅ Scheduled jobs for fees, interest, reconciliation, and reports.
 - ✅ Public status API for platform, dependencies, queues, schedules, and worker metrics.
-- ✅ `fengine` job producer and authenticated `fwk` callback contract.
+- ✅ `ledger-core` job producer and authenticated `workbench` callback contract.
 - ✅ Workflow execution from asynchronous `event_type` triggers.
-- ✅ Startup dependency checks for PostgreSQL, Redis, and `fengine`.
+- ✅ Startup dependency checks for PostgreSQL, Redis, and `ledger-core`.
 - ✅ Migration of the legacy reconciliation schedule from `payments` to `platform`.
 - 🟡 Durable workflow-level deduplication for side effects after process restarts.
 
@@ -62,19 +78,19 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ RFC-0001 Phase 2 has active Product Configuration, Ledger, and Lending vertical slices for `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, and `lending.payment_posted`: payload schemas, Outbox producers, BullMQ transport adapter, Inbox consumer where applicable, and tests.
 - ✅ RFC-0001 Phase 3/4 impact analysis documents read-model boundaries, process-manager prerequisites, affected modules, and answers to the open RFC questions.
 - ✅ RFC-0001 Phase 3 initial read projections exist for loan activity, ledger activity, and product publication, with tenant-scoped storage, idempotent consumers, rebuild support, and platform status exposure.
-- ✅ RFC-0001 Phase 4 foundation exists for `fpay` payment process state, webhook dedupe, reconciliation jobs, process metrics, guarded settlement outbox, and infrastructure alerts.
-- ✅ `payments.settlement_completed` v1 has an active payload contract, `fpay` Outbox producer, `fwk` publisher path, idempotent `fengine` Inbox handling, tests, and outbox observability.
+- ✅ RFC-0001 Phase 4 foundation exists for `settlements` payment process state, webhook dedupe, reconciliation jobs, process metrics, guarded settlement outbox, and infrastructure alerts.
+- ✅ `payments.settlement_completed` v1 has an active payload contract, `settlements` Outbox producer, `workbench` publisher path, idempotent `ledger-core` Inbox handling, tests, and outbox observability.
 - ⬜ Activate further event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - 🟡 Add further read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
 ### Local and Kubernetes Infrastructure
 
-- ✅ Docker Compose services for PostgreSQL, Redis, `fengine`, and `fwk`.
+- ✅ Docker Compose services for PostgreSQL, Redis, `ledger-core`, and `workbench`.
 - ✅ Multi-stage Node `22.22.3` container builds with a shared BuildKit pnpm cache.
 - ✅ Minikube overlay with persistent PostgreSQL and Redis StatefulSets.
 - ✅ Immutable local application image tags and automated Prisma schema synchronisation.
 - ✅ Kubernetes deployments, services, liveness probes, readiness probes, and dependency init containers.
-- ✅ ServiceMonitor and PrometheusRule definitions for `fengine` and `fwk`.
+- ✅ ServiceMonitor and PrometheusRule definitions for `ledger-core` and `workbench`.
 - ✅ Local database backup and deployment health-check scripts.
 - 🟡 External Secrets resources exist but require a valid operator, workload identity, and managed secret values.
 - 🟡 k3s deployment script exists but has not been validated as the primary local runtime.
@@ -84,7 +100,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 
 ## Phase 1: Engine Closeout
 
-Goal: make `fengine` safe and complete enough to support institution-facing operations.
+Goal: make `ledger-core` safe and complete enough to support institution-facing operations.
 
 - 🟡 Complete account lifecycle APIs and DTO validation.
 - 🟡 Expose reversal and correction workflows with approval and audit controls.
@@ -103,7 +119,7 @@ Acceptance criteria:
 
 ## Phase 2: Institution Operations
 
-### fwallet
+### console
 
 - ⬜ Institution login and role-based operator navigation.
 - ⬜ Customer and account management.
@@ -112,7 +128,7 @@ Acceptance criteria:
 - ⬜ No-code product, rule, schema, and workflow configuration.
 - ⬜ Audit, compliance, and operational reporting views.
 
-### fdocs
+### docs
 
 - ⬜ Generated OpenAPI reference.
 - ⬜ Institution onboarding and sandbox guides.
@@ -126,7 +142,7 @@ Acceptance criteria:
 
 ## Phase 3: Payments
 
-### fpay
+### settlements
 
 - ✅ Payment-provider adapter contract foundation.
 - ✅ Payment process state, webhook receipt dedupe, reconciliation foundation, metrics, and settlement outbox.
@@ -145,14 +161,14 @@ Acceptance criteria:
 
 ## Phase 4: Customer Channels and Intelligence
 
-### fwallet-mobile
+### mobile
 
 - ⬜ Institution-branded mobile application.
 - ⬜ Account overview, loan status, repayment, and transaction history.
 - ⬜ Push notifications, device security, and biometric authentication.
 - ⬜ Offline-tolerant read experiences for variable connectivity.
 
-### fxAI
+### intelligence
 
 - ⬜ Affordability and credit-risk scoring services.
 - ⬜ Fraud and anomaly detection.
@@ -185,10 +201,18 @@ Acceptance criteria:
 - ⬜ Service tiers, support model, service levels, and usage metering.
 - ⬜ Billing, contract, and customer-success operations.
 
+### Runtime and Integration Languages
+
+- ✅ TypeScript remains the implemented runtime language for current modules.
+- ⬜ Go is reserved for high-throughput services or operational agents when a concrete workload requires it.
+- ⬜ Java is reserved for institutional integration surfaces where JVM ecosystems are a better fit.
+- ⬜ COBOL is treated as an integration compatibility concern for legacy financial systems, not as a primary implementation runtime.
+
 ## Immediate Delivery Order
 
 1. Complete engine API validation, authorisation, RLS enforcement, and durable idempotency.
-2. Build `fwallet` as the institution operating surface.
-3. Implement `fpay` with the first local payment adapters and reconciliation.
-4. Expand CI security gates and production infrastructure.
-5. Add customer mobile and intelligence modules after core operating flows are stable.
+2. Complete the MAVULA open core transition: org profile, repository renames, legal review and CLA automation.
+3. Build `console` as the institution operating surface.
+4. Implement `settlements` with the first local payment adapters and reconciliation.
+5. Expand CI security gates and production infrastructure.
+6. Add customer mobile and intelligence modules after core operating flows are stable.
