@@ -93,7 +93,7 @@ async function validateAndMerge(prNumber) {
     }
 
     console.log(
-      `PR #${prNumber} passed the mavula.io merge policy${pr.url ? `: ${pr.url}` : "."}`,
+      `PR #${prNumber} passed the MAVULA merge policy${pr.url ? `: ${pr.url}` : "."}`,
     );
 
     if (!checkOnly) {

@@ -43,7 +43,7 @@ test("pre-push permits feature branches", () => {
 });
 
 async function fakeGh(pr) {
-  const directory = await mkdtemp(join(tmpdir(), "getfluxo-guardrails-"));
+  const directory = await mkdtemp(join(tmpdir(), "mavula-guardrails-"));
   const executable = join(directory, "gh");
   const log = join(directory, "commands.log");
   await writeFile(
