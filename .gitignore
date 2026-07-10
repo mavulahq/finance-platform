@@ -1,6 +1,6 @@
-# getfluxo.io - .gitignore
+# finance-platform - .gitignore
 # Author: EstandarMustaq <mustaqueestandarjunior@gmail.com>
-# Copyright (c) 2026 getfluxo.io
+# Copyright (c) 2026 mavula.io
 
 # =============================================================================
 # Dependencies
@@ -155,9 +155,9 @@ packages/*/.next/
 packages/*/.nuxt/
 packages/*/node_modules/
 
-# Don't commit Terraform state from any package's finfra
-packages/finfra/terraform.tfstate*
-packages/finfra/terraform.tfvars
+# Don't commit Terraform state from operations
+packages/operations/terraform.tfstate*
+packages/operations/terraform.tfvars
 
 # =============================================================================
 # Development

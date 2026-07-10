@@ -19,7 +19,7 @@ function writeJson(filePath, value) {
 
 function withContractCopy(mutate, verify) {
   const tempRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), "getfluxo-contracts-"),
+    path.join(os.tmpdir(), "finance-platform-contracts-"),
   );
   const contractsDir = path.join(tempRoot, "domain-events");
   fs.cpSync(sourceContractsDir, contractsDir, { recursive: true });
