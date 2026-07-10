@@ -77,8 +77,10 @@ Legacy names remain as compatibility aliases where needed:
 ## Architecture Contracts
 
 RFC-0001 defines the current module boundaries, CQRS posture and domain event
-catalog. The active event flow uses Transactional Outbox/Inbox, not full Event
-Sourcing.
+catalog. RFC-0002 defines the `ledger-core` production closeout for API
+security, tenant isolation, controlled financial operations, idempotency, audit
+trail and versioned HTTP contracts. The active event flow uses Transactional
+Outbox/Inbox, not full Event Sourcing.
 
 Active events:
 
@@ -178,3 +180,4 @@ questions should go to `legal@mavula.io`.
 - [docs/architecture/context-map.md](docs/architecture/context-map.md)
 - [docs/architecture/domain-events.md](docs/architecture/domain-events.md)
 - [docs/architecture/rfc-0001-phase-3-4-impact.md](docs/architecture/rfc-0001-phase-3-4-impact.md)
+- [docs/architecture/rfc-0002-ledger-core-closeout.md](docs/architecture/rfc-0002-ledger-core-closeout.md)

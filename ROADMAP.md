@@ -81,6 +81,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ RFC-0001 Phase 3 initial read projections exist for loan activity, ledger activity, and product publication, with tenant-scoped storage, idempotent consumers, rebuild support, and platform status exposure.
 - ✅ RFC-0001 Phase 4 foundation exists for `settlements` payment process state, webhook dedupe, reconciliation jobs, process metrics, guarded settlement outbox, and infrastructure alerts.
 - ✅ `payments.settlement_completed` v1 has an active payload contract, `settlements` Outbox producer, `workbench` publisher path, idempotent `ledger-core` Inbox handling, tests, and outbox observability.
+- 🟡 RFC-0002 is proposed for `ledger-core` production closeout: API security, tenant isolation, controlled financial operations, idempotency, audit trail and versioned HTTP contracts.
 - ⬜ Activate further event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - 🟡 Add further read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
@@ -102,6 +103,8 @@ Status applies to the specific line item, not to regulatory approval or general 
 ## Phase 1: Engine Closeout
 
 Goal: make `ledger-core` safe and complete enough to support institution-facing operations.
+
+Tracked by [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 
 - 🟡 Complete account lifecycle APIs and DTO validation.
 - 🟡 Expose reversal and correction workflows with approval and audit controls.
