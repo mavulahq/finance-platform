@@ -1,0 +1,8 @@
+---
+description: MAVULA review and implementation guardrails
+alwaysApply: true
+---
+
+Use `.agents/skills/mavula-review/SKILL.md` as the canonical MAVULA review skill.
+
+For reviews, lead with actionable findings ordered by severity. Cover correctness, data safety, database behavior, security, CI, and module ownership. Use the language already used in the pull request, issue, or discussion.

@@ -162,7 +162,13 @@ packages/finfra/terraform.tfvars
 # =============================================================================
 # Development
 # =============================================================================
-.agents/
+.agents/*
+!.agents/AGENTS.md
+!.agents/skills/
+!.agents/skills/mavula-review/
+!.agents/skills/mavula-review/SKILL.md
+!.agents/skills/mavula-review/agents/
+!.agents/skills/mavula-review/agents/openai.yaml
 .codex/
 .history/
 *.orig
