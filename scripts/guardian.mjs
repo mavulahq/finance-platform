@@ -27,6 +27,17 @@ function requireFile(path) {
   if (!existsSync(path)) fail(`${path} is required`);
 }
 
+function runModuleGuardian(name) {
+  const base = `packages/${name}`;
+  const result = spawnSync("pnpm", ["--dir", base, "run", "guardian:check"], {
+    encoding: "utf8",
+  });
+  if (result.status !== 0) {
+    const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+    fail(`${base} guardian:check failed${output ? `:\n${output}` : ""}`);
+  }
+}
+
 [
   ".github/CODEOWNERS",
   ".github/PULL_REQUEST_TEMPLATE.md",
@@ -66,6 +77,7 @@ for (const [name, license] of modules) {
     `${base}/README.md`,
     `${base}/LICENSE`,
   ].forEach(requireFile);
+  runModuleGuardian(name);
 }
 
 const requiredCi = read(".github/workflows/required-ci.yml");
