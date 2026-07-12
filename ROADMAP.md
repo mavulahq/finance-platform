@@ -10,6 +10,7 @@ Infrastructure for the next generation of finance.
 - ✅ Product identity moved to MAVULA with primary domain `mavula.io` and developer/open source domain `mavula.dev`.
 - ✅ Main workspace renamed conceptually to `finance-platform` instead of using the brand name as the repository identity.
 - ✅ Implemented modules use professional technical names: `ledger-core`, `workbench`, `settlements`, and `operations`.
+- ⬜ Planned technical modules use the names `identity-access`, `developer-docs`, and `legacy-connectors`.
 - ✅ Legacy module names remain documented only as transition aliases.
 - ✅ Licensing policy moved from proprietary-only to open core: AGPL-3.0-only for runtime financial modules and Apache-2.0 for operations tooling.
 - ✅ Trademark, brand, contribution and CLA policy documents exist in the repository.
@@ -31,7 +32,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 
 ### Ledger Core
 
-- ✅ NestJS service, health endpoint, Prometheus metrics, tenant middleware, auth foundation, and RBAC primitives.
+- ✅ NestJS service, health endpoint, Prometheus metrics, tenant middleware, transitional auth foundation, and RBAC primitives.
 - ✅ Decimal.js financial calculations for payments, amortisation, interest, fees, and scenarios.
 - ✅ Product configuration for current accounts, savings, loans, and credit lines.
 - ✅ Rules engine with safe conditions, eligibility, limits, fees, interest tiers, and compliance rules.
@@ -43,11 +44,19 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ REST controllers for products, rules, schemas, workflows, accounts, health, metrics, and internal workers.
 - ✅ Prisma/PostgreSQL persistence paths for the implemented financial and configuration entities.
 - ✅ Unit, integration, financial-lifecycle, and e2e test suites.
-- 🟡 Authentication credential validation, role enforcement across every controller, and production identity integration.
+- 🟡 Resource-server token validation and role enforcement across every controller.
 - 🟡 Account APIs: create and list exist; balance, statement, freeze, close, and status-transition contracts remain incomplete.
 - 🟡 Request DTO coverage and global runtime validation across all public APIs.
 - 🟡 Reversal and correction APIs, approval controls, and operator-facing workflows.
 - 🟡 Durable idempotency for every workflow side effect, not only queue and transaction entry points.
+
+### Identity and Access
+
+- ⬜ Create `identity-access` as the owner of institutions, branches, operators, credentials, sessions, roles, and access policies.
+- ⬜ Implement OpenID Connect discovery, JWKS, Authorization Code with PKCE, service credentials, and token revocation.
+- ⬜ Replace the provisional `ledger-core` login path and reject roles supplied by login payloads.
+- ⬜ Enforce the institutional roles `institution_admin`, `operations_maker`, `operations_checker`, `compliance_officer`, and `auditor`.
+- ⬜ Enforce maker-checker separation and prevent self-approval.
 
 ### Tenant Isolation and Data
 
@@ -81,7 +90,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ RFC-0001 Phase 3 initial read projections exist for loan activity, ledger activity, and product publication, with tenant-scoped storage, idempotent consumers, rebuild support, and platform status exposure.
 - ✅ RFC-0001 Phase 4 foundation exists for `settlements` payment process state, webhook dedupe, reconciliation jobs, process metrics, guarded settlement outbox, and infrastructure alerts.
 - ✅ `payments.settlement_completed` v1 has an active payload contract, `settlements` Outbox producer, `workbench` publisher path, idempotent `ledger-core` Inbox handling, tests, and outbox observability.
-- 🟡 RFC-0002 is proposed for `ledger-core` production closeout: API security, tenant isolation, controlled financial operations, idempotency, audit trail and versioned HTTP contracts.
+- 🟡 RFC-0002 is proposed for production closeout: dedicated identity ownership, API security, tenant isolation, controlled financial operations, idempotency, regulatory audit contracts, dedicated documentation, and legacy interoperability.
 - ⬜ Activate further event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - 🟡 Add further read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
@@ -106,17 +115,20 @@ Goal: make `ledger-core` safe and complete enough to support institution-facing 
 
 Tracked by [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 
+- ⬜ Establish `identity-access` and migrate `ledger-core` to a resource-server boundary.
 - 🟡 Complete account lifecycle APIs and DTO validation.
 - 🟡 Expose reversal and correction workflows with approval and audit controls.
 - 🟡 Make RLS setup part of repeatable migrations and CI isolation tests.
 - 🟡 Add durable deduplication receipts for financial workflow side effects.
-- ⬜ Publish versioned OpenAPI contracts for public and partner APIs.
-- ⬜ Add customer, institution, branch, and operator domain models.
+- ⬜ Publish versioned OpenAPI contracts for public and partner APIs through `developer-docs`.
+- ⬜ Add customer models to the financial domain and institution, branch, and operator models to `identity-access`.
 - ⬜ Add regulatory reporting data contracts required for the Mozambican launch scope.
+- ⬜ Add `AuditTrailEvent.stage`, legacy `phase` read compatibility, and separate regulatory transaction, AML decision, and export contracts.
 
 Acceptance criteria:
 
 - ⬜ All public write APIs use validated DTOs and explicit authorisation.
+- ⬜ Credentials, sessions, roles, and policies are owned outside `ledger-core`.
 - ⬜ Tenant A cannot access Tenant B through HTTP, Prisma, jobs, logs, or exports.
 - ⬜ Every financial mutation is idempotent, auditable, and reversible through controlled workflows.
 - ⬜ Trial balance remains balanced across lifecycle, retry, reversal, and concurrency tests.
@@ -132,12 +144,19 @@ Acceptance criteria:
 - ⬜ No-code product, rule, schema, and workflow configuration.
 - ⬜ Audit, compliance, and operational reporting views.
 
-### docs
+### developer-docs
 
 - ⬜ Generated OpenAPI reference.
 - ⬜ Institution onboarding and sandbox guides.
 - ⬜ Partner integration examples and webhook documentation.
 - ⬜ Operator runbooks generated from the operational source of truth.
+
+### legacy-connectors
+
+- ⬜ Versioned COBOL copybooks and fixed-width layouts.
+- ⬜ Idempotent batch import and export with checksums, reconciliation, and deterministic rejection reports.
+- ⬜ Golden-file tests without real personal or financial data.
+- ⬜ No direct access to `ledger-core` or `identity-access` stores.
 
 Acceptance criteria:
 
@@ -210,13 +229,16 @@ Acceptance criteria:
 - ✅ TypeScript remains the implemented runtime language for current modules.
 - ⬜ Go is reserved for high-throughput services or operational agents when a concrete workload requires it.
 - ⬜ Java is reserved for institutional integration surfaces where JVM ecosystems are a better fit.
-- ⬜ COBOL is treated as an integration compatibility concern for legacy financial systems, not as a primary implementation runtime.
+- ⬜ COBOL is introduced through `legacy-connectors` for copybooks, fixed-width records, and batch interoperability, not as the runtime for identity or financial invariants.
 
 ## Immediate Delivery Order
 
-1. Complete engine API validation, authorisation, RLS enforcement, and durable idempotency.
-2. Complete the MAVULA open core transition: legal review and CLA automation.
-3. Build `console` as the institution operating surface.
-4. Implement `settlements` with the first local payment adapters and reconciliation.
-5. Expand CI security gates and production infrastructure.
-6. Add customer mobile and intelligence modules after core operating flows are stable.
+1. Establish `identity-access`, API validation, and trusted claims at the resource-server boundary.
+2. Complete transactional RLS and cross-tenant isolation tests.
+3. Complete account lifecycle, reversals, corrections, maker-checker, and technical audit classification.
+4. Complete durable idempotency and publish OpenAPI through `developer-docs`.
+5. Introduce `legacy-connectors` after public contracts are stable.
+6. Complete the MAVULA open core transition: legal review and CLA automation.
+7. Build `console` as the institution operating surface.
+8. Expand payment adapters, CI security gates, and production infrastructure.
+9. Add customer mobile and intelligence modules after core operating flows are stable.

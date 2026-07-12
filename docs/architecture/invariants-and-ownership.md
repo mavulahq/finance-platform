@@ -18,10 +18,17 @@ RFC: [RFC-0001](https://github.com/orgs/mavulahq/discussions/1)
 
 ## Invariantes por contexto
 
-### Tenant & Identity
+### Identity & Access
 
-- A identidade do tenant não é inferida de payload não confiável quando existe contexto autenticado.
+- `identity-access` é o único owner de credenciais, sessões, roles e políticas institucionais.
+- Tenant, instituição e filial são obtidos de claims assinadas e nunca de roles ou identidades fornecidas pelo payload.
 - Autorização e role são avaliadas antes da mutação.
+- Operações sujeitas a maker-checker não podem ser aprovadas pelo actor que as iniciou.
+
+### Financial Tenant Boundary
+
+- `ledger-core` mantém apenas a referência local de tenant necessária para integridade financeira e RLS.
+- A referência financeira de tenant deve corresponder às claims validadas de `identity-access`.
 - RLS e contexto transacional devem impedir acesso cruzado mesmo quando a camada HTTP falha.
 
 ### Product Configuration
@@ -66,9 +73,17 @@ RFC: [RFC-0001](https://github.com/orgs/mavulahq/discussions/1)
 
 ### Audit & Reporting
 
-- Registros de auditoria são append-only e preservam tenant, ator, ação, entidade e instante.
+- Registros de auditoria são append-only e preservam tenant, instituição, actor, role efetiva, ação, entidade, etapa, resultado e instante.
+- `AuditTrailEvent.stage` usa classificação técnica; o campo legado `phase` não recebe novas escritas.
+- Informação AML sensível usa contratos próprios, acesso need-to-know e retenção regulatória, não metadata livre.
 - Projeções podem ser eventualmente consistentes e devem ser reconstruíveis.
 - Relatórios usados numa decisão financeira síncrona leem uma fonte com a consistência exigida por essa decisão.
+
+### Legacy Interoperability
+
+- `legacy-connectors` valida versão, checksum e idempotência antes de aceitar um batch.
+- Copybooks e layouts fixed-width são contratos versionados e testados com dados sintéticos.
+- Integrações legadas usam API, comando, evento ou ficheiro aprovado e nunca escrevem diretamente nos stores dos owners.
 
 ## Política de ownership
 

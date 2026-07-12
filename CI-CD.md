@@ -21,7 +21,7 @@ This document describes the automation that exists today and the controls still 
 
 The repository pins Node and pnpm in package metadata and container images. Ensure the `node` and `pnpm` executables are available in the runner's `PATH`.
 
-The root repository and its `ledger-core`, `workbench`, and `operations` submodules are private. Local development and CI require an SSH identity with read access to all four repositories.
+The root repository and the `ledger-core`, `workbench`, `settlements`, and `operations` submodules are public. Local development and CI still use the configured SSH remotes; write operations require an authorized GitHub identity.
 
 ## Current Automation
 

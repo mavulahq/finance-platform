@@ -44,6 +44,11 @@ finance-platform/
 └── CONTRIBUTING.md             Contribution rules
 ```
 
+`identity-access`, `developer-docs`, and `legacy-connectors` are planned
+architecture modules tracked by
+[RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md); they are not
+present as workspace packages yet.
+
 ## Licensing
 
 MAVULA follows an open core model.
