@@ -10,6 +10,11 @@ const modules = [
   ["settlements", "AGPL-3.0-only"],
   ["operations", "Apache-2.0"],
 ];
+const canonicalAgentFiles = new Set([
+  ".agents/AGENTS.md",
+  ".agents/skills/mavula-review/SKILL.md",
+  ".agents/skills/mavula-review/agents/openai.yaml",
+]);
 
 function fail(message) {
   failures.push(message);
@@ -25,6 +30,19 @@ function json(path) {
 
 function requireFile(path) {
   if (!existsSync(path)) fail(`${path} is required`);
+}
+
+function requireIgnoreState(path, shouldBeIgnored) {
+  const result = spawnSync("git", ["check-ignore", "--quiet", "--no-index", path]);
+  if (![0, 1].includes(result.status)) {
+    fail(`git check-ignore failed for ${path}`);
+    return;
+  }
+
+  const isIgnored = result.status === 0;
+  if (isIgnored !== shouldBeIgnored) {
+    fail(`${path} must ${shouldBeIgnored ? "be ignored" : "remain trackable"}`);
+  }
 }
 
 function runModuleGuardian(name) {
@@ -52,6 +70,16 @@ function runModuleGuardian(name) {
   "scripts/merge-pr.mjs",
   "scripts/guardrails.test.mjs",
 ].forEach(requireFile);
+canonicalAgentFiles.forEach(requireFile);
+
+for (const path of canonicalAgentFiles) requireIgnoreState(path, false);
+for (const path of [
+  ".agents/skills/other/SKILL.md",
+  ".agents/skills/mavula-review/local-report.md",
+  ".agents/skills/mavula-review/agents/local.yaml",
+]) {
+  requireIgnoreState(path, true);
+}
 
 const pkg = json("package.json");
 if (pkg.name !== "finance-platform") fail("root package must be finance-platform");
@@ -100,6 +128,9 @@ if (tracked.status !== 0) fail("git ls-files --recurse-submodules failed");
 
 for (const file of tracked.stdout.split("\n").filter(Boolean)) {
   if (/(^|\/)\.env($|\.(?!example$))/.test(file)) fail(`${file} must not be tracked`);
+  if (file.startsWith(".agents/") && !canonicalAgentFiles.has(file)) {
+    fail(`${file} is not part of the canonical agent policy`);
+  }
   if (file.endsWith("scripts/guardian.mjs")) continue;
   if (/(\.github\/workflows\/.*\.ya?ml|package\.json|\.githooks\/pre-push|scripts\/.*\.mjs)$/.test(file)) {
     const content = read(file);

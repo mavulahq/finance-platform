@@ -209,7 +209,7 @@ Registos sujeitos às regras de BC/FT/FP devem ser conservados por pelo menos de
 Fontes regulatórias primárias:
 
 - [Aviso n.º 10/GBM/2024](https://www.bancomoc.mz/media/2xud3l5t/avisos-n%C3%BAmeros-10-e-11-gbm-2024-de-30-de-agosto.pdf), artigos 10-20, 86-92, 96 e 98;
-- [Lei de Prevenção e Combate ao BC/FT/FP](https://www.gifim.gov.mz/documents/88.pdf), artigo 42;
+- [Lei n.º 14/2023](https://bancomoc.mz/media/jmalaodu/lei-n-%C2%BA-14_2023-aml-cft-pf.pdf), artigo 43, alterada pela [Lei n.º 3/2024](https://www.bancomoc.mz/media/gmilvpu3/lei-n-%C2%BA-3_2024-de-22-mar%C3%A7o-altera%C3%A7%C3%B5es-lei-aml_cft_cfp-e-lei-n-%C2%BA-4_2024-de-22-de-mar%C3%A7o-altera%C3%A7%C3%B5es-a-lei-de-repress%C3%A3o-e-combate-ao-terrorismo.pdf);
 - [Aviso n.º 11/GGBM/99](https://www.bancomoc.mz/media/bdtm1w20/8_252_tb1_pt_aviso_11_ggbm_99.pdf), artigos 5 e 6;
 - [Lei n.º 20/2020](https://bancomoc.mz/media/eo1fg0lb/lei_20-2020_31_de_dezembro_-_lei_das_institui%C3%A7%C3%B5es_de_cr%C3%A9dito_e_sociedades_financeiras-licsf-1.pdf);
 - [Decreto n.º 50/2024](https://www.bancomoc.mz/media/jcdnvi0r/decreto-50-2024-11-de-julho-regulamento-da-lei-das-institui%C3%A7%C3%B5es-de-cr%C3%A9dito-e-sociedades-financeiras.pdf);
