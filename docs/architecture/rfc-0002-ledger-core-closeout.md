@@ -238,7 +238,16 @@ A primeira fatia entrega a fundação de identidade e segurança de API:
 - chamadas internas do `workbench` autenticadas por Client Credentials, sem shared API key;
 - contrato JSON Schema de access-token claims, configuração por `.env`, manifests Kubernetes e CI obrigatória.
 
-As fatias seguintes mantêm a ordem definida acima. RLS transacional, lifecycle completo de contas, maker-checker aplicado às mutações financeiras, OpenAPI dedicado e conectores legados não fazem parte desta entrega.
+A segunda fatia entrega isolamento transacional de tenant:
+
+- baseline Prisma controlada e migration repetível para políticas RLS;
+- role `ledger_core_app` sem bypass, credenciais de runtime separadas das credenciais de migration e remoção do role legado com password fixa;
+- vínculo local entre tenant e instituição no primeiro uso de claims assinadas, com rejeição de correspondências posteriores divergentes;
+- contexto PostgreSQL aplicado por `SET LOCAL` dentro da mesma transação que executa cada query;
+- Inbox, Outbox, projeções, jobs, logs e exports restritos ao tenant autenticado, sem contexto global `*`;
+- testes PostgreSQL com role real, `WITH CHECK` e reutilização de conexão com pool limitado.
+
+As fatias seguintes mantêm a ordem definida acima. Lifecycle completo de contas, maker-checker aplicado às mutações financeiras, idempotência durável, OpenAPI dedicado e conectores legados não fazem parte desta entrega.
 
 ## Plano de testes
 

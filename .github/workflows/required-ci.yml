@@ -38,6 +38,8 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
     env:
       DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=public
+      LEDGER_CORE_MIGRATION_DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=public
+      LEDGER_CORE_DATABASE_ROLE_PASSWORD: mavula_ledger_ci_password
       REDIS_URL: redis://127.0.0.1:6379
       IDENTITY_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=identity
       LEDGER_CORE_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=public
@@ -142,10 +144,17 @@ jobs:
         run: pnpm --filter @mavula/settlements test
 
       - name: Sync ledger-core database schema
-        run: pnpm --filter @mavula/ledger-core exec prisma db push --skip-generate
+        run: |
+          pnpm --filter @mavula/ledger-core database:migrate
+          pnpm --filter @mavula/ledger-core database:provision-role
 
       - name: Test ledger-core
         run: pnpm --filter @mavula/ledger-core test:all
+
+      - name: Test ledger-core tenant RLS
+        env:
+          DATABASE_URL: postgresql://ledger_core_app:mavula_ledger_ci_password@127.0.0.1:5432/mavula?schema=public&connection_limit=1
+        run: pnpm --filter @mavula/ledger-core test:rls
 
       - name: Test workbench
         run: pnpm --filter @mavula/workbench test:all

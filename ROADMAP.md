@@ -61,12 +61,12 @@ Status applies to the specific line item, not to regulatory approval or general 
 ### Tenant Isolation and Data
 
 - ✅ Tenant identifiers are propagated through HTTP and persistence service boundaries.
-- ✅ PostgreSQL RLS definitions and a non-bypass application role exist.
+- ✅ PostgreSQL RLS is versioned in Prisma migrations and enforced through a non-bypass application role.
 - ✅ Prisma models cover tenants, accounts, products, loans, transactions, ledger, rules, workflows, and audit events.
-- 🟡 RLS application is not yet automatic in every deployment and migration path.
-- 🟡 Tenant-context enforcement must be bound transactionally to pooled database connections.
+- ✅ Deployment and CI migration paths apply the ledger baseline and RLS before runtime rollout.
+- ✅ Tenant context is transaction-bound and cleared automatically when pooled connections are reused.
 - 🟡 Schema-per-tenant tooling is experimental and not the production migration strategy.
-- ⬜ Automated cross-tenant isolation tests for every repository and API path.
+- ✅ Cross-tenant tests cover identity bindings, PostgreSQL, HTTP boundaries, jobs, logs and schema exports.
 
 ### Worker Runtime
 
@@ -90,7 +90,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ RFC-0001 Phase 3 initial read projections exist for loan activity, ledger activity, and product publication, with tenant-scoped storage, idempotent consumers, rebuild support, and platform status exposure.
 - ✅ RFC-0001 Phase 4 foundation exists for `settlements` payment process state, webhook dedupe, reconciliation jobs, process metrics, guarded settlement outbox, and infrastructure alerts.
 - ✅ `payments.settlement_completed` v1 has an active payload contract, `settlements` Outbox producer, `workbench` publisher path, idempotent `ledger-core` Inbox handling, tests, and outbox observability.
-- 🟡 RFC-0002 is proposed for production closeout: dedicated identity ownership, API security, tenant isolation, controlled financial operations, idempotency, regulatory audit contracts, dedicated documentation, and legacy interoperability.
+- 🟡 RFC-0002 has completed its identity/API-security and tenant-isolation slices; controlled financial operations, idempotency, regulatory audit contracts, dedicated documentation, and legacy interoperability remain.
 - ⬜ Activate further event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - 🟡 Add further read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
@@ -118,7 +118,7 @@ Tracked by [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 - ✅ Establish `identity-access` and migrate `ledger-core` to a resource-server boundary.
 - 🟡 Complete account lifecycle APIs and DTO validation.
 - 🟡 Expose reversal and correction workflows with approval and audit controls.
-- 🟡 Make RLS setup part of repeatable migrations and CI isolation tests.
+- ✅ Make RLS setup part of repeatable migrations and CI isolation tests.
 - 🟡 Add durable deduplication receipts for financial workflow side effects.
 - ⬜ Publish versioned OpenAPI contracts for public and partner APIs through `developer-docs`.
 - ⬜ Add customer models to the financial domain and institution, branch, and operator models to `identity-access`.

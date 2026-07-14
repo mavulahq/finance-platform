@@ -20,8 +20,8 @@ Este documento define as fronteiras de negócio iniciais do MAVULA. As fronteira
 
 | Contexto                  | Owner               | Dados e agregados controlados                                                      | Estado atual                                                                                |
 | ------------------------- | ------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Identity & Access         | `identity-access`   | instituições, filiais, operadores, credenciais, sessões, roles e políticas         | Planeado pela RFC-0002; a fundação existente no `ledger-core` é transitória                  |
-| Financial Tenant Boundary | `ledger-core`       | referência local de tenant, partição financeira e contexto necessário para RLS     | Tenant middleware e RLS existem; validação contra claims institucionais permanece incompleta |
+| Identity & Access         | `identity-access`   | instituições, filiais, operadores, credenciais, sessões, roles e políticas         | Fundação OIDC implementada; APIs administrativas de lifecycle permanecem pendentes           |
+| Financial Tenant Boundary | `ledger-core`       | referência local de tenant, partição financeira e contexto necessário para RLS     | Binding institucional, RLS transacional e testes cross-tenant implementados                   |
 | Product Configuration     | `ledger-core`       | produtos, regras, taxas, limites, schemas e versões publicadas                     | Produtos, regras e schemas existem; publicação e versionamento imutável são lacunas         |
 | Accounts & Ledger         | `ledger-core`       | contas, transações financeiras, plano de contas e journal entries                  | Implementado como fonte da verdade financeira                                               |
 | Lending                   | `ledger-core`       | empréstimos, decisões, desembolsos, calendários e reembolsos                       | Lifecycle principal implementado                                                            |
