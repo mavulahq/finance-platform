@@ -227,6 +227,19 @@ Esta definição técnica não substitui parecer jurídico nem validação forma
 6. OpenAPI versionado em `developer-docs`.
 7. `legacy-connectors` sobre contratos estabilizados.
 
+## Estado de implementação
+
+A primeira fatia entrega a fundação de identidade e segurança de API:
+
+- `identity-access` como authorization server OIDC com discovery, JWKS, Authorization Code com PKCE, credenciais de serviço por `private_key_jwt`, revogação e access tokens de cinco minutos;
+- ownership durável de instituições, filiais, operadores, credenciais, memberships, roles, clientes OAuth e artefactos OIDC em PostgreSQL;
+- claims institucionais e permissões derivadas do estado persistido, sem roles fornecidas pelo request;
+- `ledger-core` e `workbench` como resource servers com validação de issuer, audience, assinatura PS256, tenant e permissões;
+- chamadas internas do `workbench` autenticadas por Client Credentials, sem shared API key;
+- contrato JSON Schema de access-token claims, configuração por `.env`, manifests Kubernetes e CI obrigatória.
+
+As fatias seguintes mantêm a ordem definida acima. RLS transacional, lifecycle completo de contas, maker-checker aplicado às mutações financeiras, OpenAPI dedicado e conectores legados não fazem parte desta entrega.
+
 ## Plano de testes
 
 - `pnpm --filter @mavula/identity-access test`

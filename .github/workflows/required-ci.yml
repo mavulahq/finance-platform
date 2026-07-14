@@ -39,8 +39,17 @@ jobs:
     env:
       DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=public
       REDIS_URL: redis://127.0.0.1:6379
-      INTERNAL_API_KEY: guardian-internal-api-key
-      JWT_SECRET: guardian-jwt-secret
+      IDENTITY_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=identity
+      LEDGER_CORE_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=public
+      WORKBENCH_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=settlements
+      IDENTITY_ISSUER: https://identity.example.test
+      IDENTITY_JWKS_JSON: '{"keys":[]}'
+      IDENTITY_COOKIE_KEYS: guardian-cookie-key-one-32-characters,guardian-cookie-key-two-32-characters
+      OIDC_AUTHORIZATION_ENDPOINT: https://identity.example.test/auth
+      OIDC_JWKS_URI: https://identity.example.test/jwks
+      OIDC_TOKEN_ENDPOINT: https://identity.example.test/token
+      WORKBENCH_OIDC_CLIENT_ID: workbench-ci
+      WORKBENCH_PRIVATE_JWK_JSON: '{}'
     steps:
       - name: Audit main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -118,9 +127,16 @@ jobs:
 
       - name: Build implemented services
         run: |
+          pnpm --filter @mavula/identity-access build
           pnpm --filter @mavula/settlements build
           pnpm --filter @mavula/ledger-core build
           pnpm --filter @mavula/workbench build
+
+      - name: Sync identity-access database schema
+        run: DATABASE_URL="postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=identity" pnpm --filter @mavula/identity-access prisma:migrate
+
+      - name: Test identity-access
+        run: pnpm --filter @mavula/identity-access test
 
       - name: Test settlements
         run: pnpm --filter @mavula/settlements test

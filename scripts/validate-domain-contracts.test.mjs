@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { validateContracts } from "./validate-domain-contracts.mjs";
+import { validateContracts, validateIdentityContracts } from "./validate-domain-contracts.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceContractsDir = path.join(root, "contracts", "domain-events");
@@ -34,6 +34,10 @@ function withContractCopy(mutate, verify) {
 
 test("accepts the canonical catalog and examples", () => {
   assert.deepEqual(validateContracts(), { contractCount: 6, exampleCount: 5 });
+});
+
+test("accepts canonical identity access-token claims", () => {
+  assert.deepEqual(validateIdentityContracts(), { exampleCount: 1 });
 });
 
 test("rejects event names outside the canonical pattern", () => {

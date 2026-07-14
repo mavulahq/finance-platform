@@ -7,6 +7,7 @@ import addFormats from "ajv-formats";
 const scriptPath = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(scriptPath), "..");
 const defaultContractsDir = path.join(root, "contracts", "domain-events");
+const defaultIdentityContractsDir = path.join(root, "contracts", "identity");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -137,9 +138,26 @@ export function validateContracts(contractsDir = defaultContractsDir) {
   };
 }
 
+export function validateIdentityContracts(contractsDir = defaultIdentityContractsDir) {
+  const schema = readJson(path.join(contractsDir, "access-token-claims.schema.json"));
+  const examplesDir = path.join(contractsDir, "examples");
+  const exampleFiles = fs.readdirSync(examplesDir).filter((name) => name.endsWith(".json")).sort();
+  if (exampleFiles.length === 0) fail("At least one identity claim example is required");
+  const ajv = new Ajv2020({ allErrors: true, strict: true });
+  addFormats(ajv);
+  const validate = ajv.compile(schema);
+  for (const fileName of exampleFiles) {
+    if (!validate(readJson(path.join(examplesDir, fileName)))) {
+      fail(`Invalid identity example ${fileName}: ${formatErrors(validate.errors)}`);
+    }
+  }
+  return { exampleCount: exampleFiles.length };
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
   const result = validateContracts();
+  const identityResult = validateIdentityContracts();
   console.log(
-    `Validated ${result.contractCount} event contracts and ${result.exampleCount} examples.`,
+    `Validated ${result.contractCount} event contracts, ${result.exampleCount} event examples, and ${identityResult.exampleCount} identity examples.`,
   );
 }

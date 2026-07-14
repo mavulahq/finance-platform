@@ -14,3 +14,7 @@
 	path = packages/settlements
 	url = git@github.com:mavulahq/settlements.git
 	branch = main
+[submodule "packages/identity-access"]
+	path = packages/identity-access
+	url = git@github.com:mavulahq/identity-access.git
+	branch = main

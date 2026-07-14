@@ -35,6 +35,7 @@ finance-platform/
 ├── docs/architecture/          Context map, invariants and ADRs
 ├── packages/
 │   ├── ledger-core/            Financial source of truth
+│   ├── identity-access/        Institutional identity and authorization server
 │   ├── workbench/              Durable worker runtime and status API
 │   ├── settlements/            Payment process and reconciliation foundation
 │   └── operations/             Docker, Kubernetes, Terraform and runbooks
@@ -44,16 +45,15 @@ finance-platform/
 └── CONTRIBUTING.md             Contribution rules
 ```
 
-`identity-access`, `developer-docs`, and `legacy-connectors` are planned
-architecture modules tracked by
-[RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md); they are not
-present as workspace packages yet.
+`developer-docs` and `legacy-connectors` remain planned architecture modules.
+Their delivery order is tracked by
+[RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 
 ## Licensing
 
 MAVULA follows an open core model.
 
-- `ledger-core`, `workbench`, `settlements`, contracts and root code:
+- `identity-access`, `ledger-core`, `workbench`, `settlements`, contracts and root code:
   `AGPL-3.0-only`.
 - `operations`: `Apache-2.0`.
 - MAVULA names, logos, domains and product marks remain reserved.
@@ -67,6 +67,7 @@ See [LICENSE_POLICY.md](LICENSE_POLICY.md), [TRADEMARKS.md](TRADEMARKS.md) and
 
 | Module | Package | Responsibility |
 | --- | --- | --- |
+| Identity Access | `@mavula/identity-access` | Institutions, branches, operators, credentials, memberships, roles, OIDC artifacts and access policy. |
 | Ledger Core | `@mavula/ledger-core` | Product configuration, accounts, ledger, lending, audit, outbox/inbox and read projections. |
 | Workbench | `@mavula/workbench` | BullMQ workers, schedules, retries, queues, payment outbox publishing and platform status. |
 | Settlements | `@mavula/settlements` | Payment process state, webhook dedupe, reconciliation candidates and guarded settlement outbox. |
@@ -127,6 +128,8 @@ pnpm git:hooks:install
 Build and test:
 
 ```bash
+pnpm --filter @mavula/identity-access build
+pnpm --filter @mavula/identity-access test
 pnpm --filter @mavula/ledger-core build
 pnpm --filter @mavula/ledger-core test:all
 pnpm --filter @mavula/settlements test
@@ -138,16 +141,16 @@ pnpm -r build
 Docker Compose:
 
 ```bash
-docker compose up -d postgres redis ledger-core workbench
+docker compose up -d postgres redis identity-access ledger-core workbench
 docker compose ps
-docker compose logs -f ledger-core workbench
+docker compose logs -f identity-access ledger-core workbench
 docker compose down
 ```
 
 Minikube:
 
 ```bash
-pnpm --filter @mavula/operations minikube:deploy
+MINIKUBE_PROFILE=<existing-profile> pnpm --filter @mavula/operations minikube:deploy
 pnpm --filter @mavula/operations minikube:status
 pnpm --filter @mavula/operations minikube:stop
 ```
@@ -156,6 +159,9 @@ pnpm --filter @mavula/operations minikube:stop
 
 `.env.example` is intentionally a placeholder. Local secrets and runtime
 configuration belong in `.env`, which must not be committed.
+
+Minikube reuses `mavula/*:<tag>` images by default. Set
+`MINIKUBE_REBUILD_IMAGES=true` only when a deliberate local rebuild is required.
 
 New environment names are preferred:
 

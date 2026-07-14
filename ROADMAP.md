@@ -10,7 +10,7 @@ Infrastructure for the next generation of finance.
 - ✅ Product identity moved to MAVULA with primary domain `mavula.io` and developer/open source domain `mavula.dev`.
 - ✅ Main workspace renamed conceptually to `finance-platform` instead of using the brand name as the repository identity.
 - ✅ Implemented modules use professional technical names: `ledger-core`, `workbench`, `settlements`, and `operations`.
-- ⬜ Planned technical modules use the names `identity-access`, `developer-docs`, and `legacy-connectors`.
+- 🟡 Planned technical modules use the names `developer-docs` and `legacy-connectors`; `identity-access` now has an initial implementation.
 - ✅ Legacy module names remain documented only as transition aliases.
 - ✅ Licensing policy moved from proprietary-only to open core: AGPL-3.0-only for runtime financial modules and Apache-2.0 for operations tooling.
 - ✅ Trademark, brand, contribution and CLA policy documents exist in the repository.
@@ -44,18 +44,18 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ REST controllers for products, rules, schemas, workflows, accounts, health, metrics, and internal workers.
 - ✅ Prisma/PostgreSQL persistence paths for the implemented financial and configuration entities.
 - ✅ Unit, integration, financial-lifecycle, and e2e test suites.
-- 🟡 Resource-server token validation and role enforcement across every controller.
+- ✅ Resource-server token validation and permission enforcement across every controller.
 - 🟡 Account APIs: create and list exist; balance, statement, freeze, close, and status-transition contracts remain incomplete.
-- 🟡 Request DTO coverage and global runtime validation across all public APIs.
+- 🟡 Request DTO coverage and global runtime validation across the current public APIs.
 - 🟡 Reversal and correction APIs, approval controls, and operator-facing workflows.
 - 🟡 Durable idempotency for every workflow side effect, not only queue and transaction entry points.
 
 ### Identity and Access
 
-- ⬜ Create `identity-access` as the owner of institutions, branches, operators, credentials, sessions, roles, and access policies.
-- ⬜ Implement OpenID Connect discovery, JWKS, Authorization Code with PKCE, service credentials, and token revocation.
-- ⬜ Replace the provisional `ledger-core` login path and reject roles supplied by login payloads.
-- ⬜ Enforce the institutional roles `institution_admin`, `operations_maker`, `operations_checker`, `compliance_officer`, and `auditor`.
+- 🟡 `identity-access` owns institutions, branches, operators, credentials, memberships, roles, OIDC artifacts, and identity audit events; lifecycle administration APIs remain pending.
+- ✅ OpenID Connect discovery, JWKS, Authorization Code with PKCE, private-key service credentials, short-lived access tokens, and token revocation are implemented.
+- ✅ The provisional `ledger-core` login path no longer issues tokens or accepts caller-supplied roles.
+- ✅ Institutional roles `institution_admin`, `operations_maker`, `operations_checker`, `compliance_officer`, and `auditor` are defined and mapped to permissions.
 - ⬜ Enforce maker-checker separation and prevent self-approval.
 
 ### Tenant Isolation and Data
@@ -96,7 +96,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 
 ### Local and Kubernetes Infrastructure
 
-- ✅ Docker Compose services for PostgreSQL, Redis, `ledger-core`, and `workbench`.
+- ✅ Docker Compose services for PostgreSQL, Redis, `identity-access`, `ledger-core`, and `workbench`.
 - ✅ Multi-stage Node `22.22.3` container builds with a shared BuildKit pnpm cache.
 - ✅ Minikube overlay with persistent PostgreSQL and Redis StatefulSets.
 - ✅ Immutable local application image tags and automated Prisma schema synchronisation.
@@ -115,7 +115,7 @@ Goal: make `ledger-core` safe and complete enough to support institution-facing 
 
 Tracked by [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 
-- ⬜ Establish `identity-access` and migrate `ledger-core` to a resource-server boundary.
+- ✅ Establish `identity-access` and migrate `ledger-core` to a resource-server boundary.
 - 🟡 Complete account lifecycle APIs and DTO validation.
 - 🟡 Expose reversal and correction workflows with approval and audit controls.
 - 🟡 Make RLS setup part of repeatable migrations and CI isolation tests.
