@@ -26,9 +26,16 @@ download artefacts, review deterministic rejections and record authority
 delivery. Public writes require bearer authentication, `compliance.manage`,
 `Idempotency-Key` and `X-Correlation-ID`.
 
-The owner OpenAPI contract and operational guide are published at
-<https://mavulahq.github.io/developer-docs/>. Internal source, health and metrics
-routes are excluded from the public contract.
+The owner OpenAPI contracts and integration guides are published at
+<https://mavulahq.github.io/developer-docs/>. The versioned portal covers
+institutional authentication, tenant isolation, controlled account and
+financial operations, payment jobs, configuration, projections, legacy batches,
+idempotency and recovery. Scalar renders the public contracts locally; internal
+source, health and metrics routes remain excluded.
+
+The published examples cover curl, TypeScript, Python, Java and Go. A versioned
+Postman collection is provided without a hosted request console or credential
+retention.
 
 ## Operations
 
