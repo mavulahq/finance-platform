@@ -8,6 +8,7 @@ const scriptPath = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(scriptPath), "..");
 const defaultContractsDir = path.join(root, "contracts", "domain-events");
 const defaultIdentityContractsDir = path.join(root, "contracts", "identity");
+const defaultRegulatoryContractsDir = path.join(root, "contracts", "regulatory");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -154,10 +155,36 @@ export function validateIdentityContracts(contractsDir = defaultIdentityContract
   return { exampleCount: exampleFiles.length };
 }
 
+export function validateRegulatoryContracts(contractsDir = defaultRegulatoryContractsDir) {
+  const catalog = readJson(path.join(contractsDir, "catalog.json"));
+  const ajv = new Ajv2020({ allErrors: true, strict: true });
+  addFormats(ajv);
+  const seen = new Set();
+  for (const contract of catalog.contracts || []) {
+    if (seen.has(contract.contract_id)) fail(`Duplicate regulatory contract: ${contract.contract_id}`);
+    seen.add(contract.contract_id);
+    if (contract.data_classification !== "restricted") {
+      fail(`Regulatory contract ${contract.contract_id} must be restricted`);
+    }
+    const schemaPath = path.resolve(contractsDir, contract.schema);
+    const examplePath = path.resolve(contractsDir, contract.example);
+    if (!schemaPath.startsWith(`${contractsDir}${path.sep}`) || !examplePath.startsWith(`${contractsDir}${path.sep}`)) {
+      fail(`Regulatory contract ${contract.contract_id} must stay inside contracts/regulatory`);
+    }
+    const validate = ajv.compile(readJson(schemaPath));
+    if (!validate(readJson(examplePath))) {
+      fail(`Invalid regulatory example ${contract.example}: ${formatErrors(validate.errors)}`);
+    }
+  }
+  if (seen.size !== 3) fail("Exactly three regulatory v1 contracts are required");
+  return { contractCount: seen.size };
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
   const result = validateContracts();
   const identityResult = validateIdentityContracts();
+  const regulatoryResult = validateRegulatoryContracts();
   console.log(
-    `Validated ${result.contractCount} event contracts, ${result.exampleCount} event examples, and ${identityResult.exampleCount} identity examples.`,
+    `Validated ${result.contractCount} event contracts, ${result.exampleCount} event examples, ${identityResult.exampleCount} identity examples, and ${regulatoryResult.contractCount} regulatory contracts.`,
   );
 }

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mavula.io/contracts/regulatory/export-record.v1.schema.json",
+  "title": "MAVULA Regulatory Export Record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "export_id", "tenant_id", "institution_id", "export_type",
+    "period", "content_contract_id", "generated_at", "generated_by", "content_hash", "delivery_status",
+    "correlation_id", "data_classification"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "export_id": { "$ref": "#/$defs/id" },
+    "tenant_id": { "$ref": "#/$defs/id" },
+    "institution_id": { "$ref": "#/$defs/id" },
+    "export_type": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "period": {
+      "type": "object", "additionalProperties": false, "required": ["from", "to"],
+      "properties": { "from": { "type": "string", "format": "date" }, "to": { "type": "string", "format": "date" } }
+    },
+    "content_contract_id": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]+@[1-9][0-9]*$", "maxLength": 160 },
+    "generated_at": { "$ref": "#/$defs/timestamp" },
+    "generated_by": { "$ref": "#/$defs/id" },
+    "content_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "delivery_status": { "enum": ["GENERATED", "DELIVERED", "FAILED"] },
+    "delivered_at": { "$ref": "#/$defs/timestamp" },
+    "authority_reference": { "$ref": "#/$defs/id" },
+    "correlation_id": { "$ref": "#/$defs/id" },
+    "data_classification": { "const": "restricted" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "timestamp": { "type": "string", "format": "date-time", "pattern": "Z$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "delivery_status": { "const": "DELIVERED" } } },
+      "then": {
+        "properties": { "delivered_at": true, "authority_reference": true },
+        "required": ["delivered_at", "authority_reference"]
+      }
+    }
+  ]
+}

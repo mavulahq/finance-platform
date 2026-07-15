@@ -126,6 +126,8 @@ Requisitos mínimos:
 ### 3. Operações financeiras controladas
 
 O `ledger-core` deve fechar o ciclo operacional mínimo de contas e correções financeiras.
+Na ordem executável, esta capacidade é entregue em duas fatias: account lifecycle
+na terceira e ajustes financeiros na quarta.
 
 Requisitos mínimos:
 
@@ -136,6 +138,11 @@ Requisitos mínimos:
 - audit trail obrigatório para operações aprovadas, rejeitadas, postadas, revertidas, falhadas e configuradas.
 
 ### 4. Idempotência, contratos e observabilidade
+
+Esta capacidade começa na quinta fatia executável. Os contratos regulatórios
+foram antecipados na quarta fatia porque o novo audit trail e os ajustes
+financeiros precisavam de fronteiras de dados explícitas; receipts duráveis,
+OpenAPI e observabilidade adicional permanecem na quinta.
 
 Requisitos mínimos:
 
@@ -256,10 +263,23 @@ A terceira fatia entrega account lifecycle e contratos públicos mínimos:
 - maker-checker para freeze, unfreeze e close, com permissão explícita de aprovação e bloqueio de autoaprovação;
 - política de posting que bloqueia débitos em contas congeladas, permite créditos e bloqueia qualquer posting em contas encerradas;
 - encerramento restrito a contas ativas com saldo zero;
-- audit trail gravado na mesma transação da decisão e do posting, sem novas escritas no campo legado `phase`;
+- audit trail gravado na mesma transação da decisão e do posting;
 - migrations com RLS e privilégios append-only, testes de lifecycle, concorrência, isolamento e ausência de efeitos financeiros diretos por eventos de pagamento.
 
-Reversões, correções, maker-checker para as restantes mutações financeiras, `AuditTrailEvent.stage`, idempotência durável, OpenAPI dedicado e conectores legados permanecem nas fatias seguintes, na ordem definida acima.
+A quarta fatia entrega ajustes financeiros controlados e classificação técnica de auditoria:
+
+- pedidos duráveis de reversão e correção para transactions e journal entries, com original imutável;
+- correção atómica por journal de reversão seguido de journal substituto, incluindo postings do subledger;
+- suporte a reversão e correção dos efeitos de pagamento e desembolso em lending, com bloqueio quando existem efeitos financeiros posteriores;
+- maker-checker, bloqueio de autoaprovação, decisões idempotentes e estados `PENDING_APPROVAL`, `APPLIED`, `REJECTED` e `FAILED`;
+- `AuditTrailEvent.stage`, `result` e `source` tipados, actor roles, instituição, filial, motivo, correlação, causação e referência de aprovação;
+- campo legado `phase` disponível apenas para leitura, sem novas escritas no runtime;
+- eventos ativos `ledger.adjustment_posted` v1 e `lending.adjustment_applied` v1, com Outbox transacional e rebuild das projeções;
+- contratos JSON Schema v1 separados para transaction record regulatório, decisão AML e export regulatório;
+- migration com RLS, alvo ativo único por tenant, lançamentos `REVERSAL`/`CORRECTION` e audit trail append-only;
+- testes de concorrência, rejeição, trial balance, pagamentos, desembolsos, efeitos posteriores, API, projeções e PostgreSQL/RLS.
+
+Receipts duráveis para todos os side effects, OpenAPI em `developer-docs`, métricas adicionais e conectores legados permanecem nas fatias seguintes, na ordem definida acima.
 
 ## Plano de testes
 

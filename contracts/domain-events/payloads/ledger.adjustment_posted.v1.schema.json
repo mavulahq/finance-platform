@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mavula.io/contracts/domain-events/payloads/ledger.adjustment_posted.v1.schema.json",
+  "title": "ledger.adjustment_posted.v1 payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "adjustment_request_id",
+    "adjustment_type",
+    "target_journal_entry_id",
+    "reversal_journal_entry_id",
+    "applied_at"
+  ],
+  "properties": {
+    "adjustment_request_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "adjustment_type": { "enum": ["REVERSAL", "CORRECTION"] },
+    "target_journal_entry_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "reversal_journal_entry_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "replacement_journal_entry_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "applied_at": { "type": "string", "format": "date-time", "pattern": "Z$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "adjustment_type": { "const": "CORRECTION" } } },
+      "then": {
+        "properties": { "replacement_journal_entry_id": true },
+        "required": ["replacement_journal_entry_id"]
+      },
+      "else": {
+        "properties": { "replacement_journal_entry_id": true },
+        "not": { "required": ["replacement_journal_entry_id"] }
+      }
+    }
+  ]
+}
