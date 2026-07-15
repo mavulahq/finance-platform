@@ -29,9 +29,9 @@ Este documento define as fronteiras de negócio iniciais do MAVULA. As fronteira
 | Workflow Configuration    | `ledger-core`       | definições de workflow, triggers, schemas e políticas de execução                  | Definição e execução básica existem no `ledger-core`                                        |
 | Automation Execution      | `workbench`         | jobs, schedules, tentativas, dead-letter queues e receipts de execução             | BullMQ, retries, schedules, métricas e callbacks implementados                              |
 | Audit & Reporting         | `ledger-core`       | trilho de auditoria canônico e factos necessários para projeções e relatórios      | Audit trail técnico e contratos regulatórios v1 existem; reporting dedicado permanece planeado |
-| Legacy Interoperability   | `legacy-connectors` | copybooks, layouts fixed-width, batches e traduções para sistemas legados          | Planeado pela RFC-0002 após estabilização dos contratos públicos                            |
+| Legacy Interoperability   | `legacy-connectors` | copybooks, layouts fixed-width, batches e traduções para sistemas legados          | Copybook e validação de export regulatório v1 implementados; execução batch permanece inativa |
 
-`operations` é uma capacidade de plataforma que provisiona e opera PostgreSQL, Redis, Kubernetes, observabilidade e secrets. `developer-docs` publica contratos e documentação técnica. Nenhum deles é um bounded context de negócio nem possui agregados financeiros.
+`operations` é uma capacidade de plataforma que provisiona e opera PostgreSQL, Redis, Kubernetes, observabilidade e secrets. `developer-docs` publica os contratos OpenAPI aprovados pelos módulos owners. Nenhum deles é um bounded context de negócio nem possui agregados financeiros.
 
 ## Relações
 

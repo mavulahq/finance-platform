@@ -33,6 +33,12 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
+  packages/developer-docs:
+    devDependencies:
+      '@redocly/cli':
+        specifier: 2.39.0
+        version: 2.39.0
+
   packages/identity-access:
     dependencies:
       '@nestjs/common':
@@ -160,6 +166,15 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
+
+  packages/legacy-connectors:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.19.19
+      typescript:
+        specifier: 5.3.3
+        version: 5.3.3
 
   packages/operations:
     devDependencies:
@@ -860,6 +875,11 @@ packages:
 
   '@prisma/get-platform@5.7.0':
     resolution: {integrity: sha512-ZeV/Op4bZsWXuw5Tg05WwRI8BlKiRFhsixPcAM+5BKYSiUZiMKIi713tfT3drBq8+T0E1arNZgYSA9QYcglWNA==}
+
+  '@redocly/cli@2.39.0':
+    resolution: {integrity: sha512-xA0Z9YMEhlzbpn/BVErlE2UzuKfahp9llBwEnVtAYuhWdF8UCIm+cgYX8f/gHQIJ/TKwB93awAewTOgEsbZFZw==}
+    engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
+    hasBin: true
 
   '@sinclair/typebox@0.27.10':
     resolution: {integrity: sha512-MTBk/3jGLNB2tVxv6uLlFh1iu64iYOQ2PbdOSK3NW8JZsmlaOh2q6sdtKowBhfw8QFLmYNzTW4/oK4uATIi6ZA==}
@@ -2876,6 +2896,11 @@ packages:
   typedarray@0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
 
+  typescript@5.3.3:
+    resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
@@ -3639,6 +3664,8 @@ snapshots:
   '@prisma/get-platform@5.7.0':
     dependencies:
       '@prisma/debug': 5.7.0
+
+  '@redocly/cli@2.39.0': {}
 
   '@sinclair/typebox@0.27.10': {}
 
@@ -5966,6 +5993,8 @@ snapshots:
       mime-types: 3.0.2
 
   typedarray@0.0.6: {}
+
+  typescript@5.3.3: {}
 
   typescript@5.9.3: {}
 

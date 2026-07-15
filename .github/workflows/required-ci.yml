@@ -133,6 +133,19 @@ jobs:
           pnpm --filter @mavula/settlements build
           pnpm --filter @mavula/ledger-core build
           pnpm --filter @mavula/workbench build
+          pnpm --filter @mavula/legacy-connectors build
+
+      - name: Validate public OpenAPI contracts
+        run: |
+          pnpm --filter @mavula/identity-access openapi:check
+          pnpm --filter @mavula/ledger-core openapi:check
+          pnpm --filter @mavula/workbench openapi:check
+          pnpm --filter @mavula/developer-docs contracts:check
+          pnpm --filter @mavula/developer-docs test
+          pnpm --filter @mavula/developer-docs build
+
+      - name: Test legacy contract foundation
+        run: pnpm --filter @mavula/legacy-connectors test
 
       - name: Sync identity-access database schema
         run: DATABASE_URL="postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=identity" pnpm --filter @mavula/identity-access prisma:migrate

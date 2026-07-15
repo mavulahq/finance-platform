@@ -9,7 +9,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg)](pnpm-workspace.yaml)
 [![Go](https://img.shields.io/badge/Go-planned-00ADD8.svg)](ROADMAP.md)
 [![Java](https://img.shields.io/badge/Java-planned-ED8B00.svg)](ROADMAP.md)
-[![COBOL](https://img.shields.io/badge/COBOL-integration--ready-005CA5.svg)](ROADMAP.md)
+[![COBOL](https://img.shields.io/badge/COBOL-contract--ready-005CA5.svg)](ROADMAP.md)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-runtime-4169E1.svg)](docker-compose.yml)
 [![Redis](https://img.shields.io/badge/Redis-queues-DC382D.svg)](docker-compose.yml)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-operations-326CE5.svg)](packages/operations/kubernetes)
@@ -38,6 +38,8 @@ finance-platform/
 │   ├── identity-access/        Institutional identity and authorization server
 │   ├── workbench/              Durable worker runtime and status API
 │   ├── settlements/            Payment process and reconciliation foundation
+│   ├── developer-docs/         Versioned public API reference
+│   ├── legacy-connectors/      COBOL and fixed-width interoperability contracts
 │   └── operations/             Docker, Kubernetes, Terraform and runbooks
 ├── LICENSE_POLICY.md           Open core policy
 ├── TRADEMARKS.md               MAVULA mark usage
@@ -45,15 +47,17 @@ finance-platform/
 └── CONTRIBUTING.md             Contribution rules
 ```
 
-`developer-docs` and `legacy-connectors` remain planned architecture modules.
-Their delivery order is tracked by
-[RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
+`developer-docs` publishes the approved Identity Access, Ledger Core and
+Workbench OpenAPI v1 contracts. `legacy-connectors` contains the first
+validation-only COBOL export contract; executable batch integration remains
+deferred by [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 
 ## Licensing
 
 MAVULA follows an open core model.
 
-- `identity-access`, `ledger-core`, `workbench`, `settlements`, contracts and root code:
+- `identity-access`, `ledger-core`, `workbench`, `settlements`, `developer-docs`,
+  `legacy-connectors`, contracts and root code:
   `AGPL-3.0-only`.
 - `operations`: `Apache-2.0`.
 - MAVULA names, logos, domains and product marks remain reserved.
@@ -71,6 +75,8 @@ See [LICENSE_POLICY.md](LICENSE_POLICY.md), [TRADEMARKS.md](TRADEMARKS.md) and
 | Ledger Core | `@mavula/ledger-core` | Product configuration, accounts, ledger, lending, audit, outbox/inbox and read projections. |
 | Workbench | `@mavula/workbench` | BullMQ workers, schedules, retries, queues, payment outbox publishing and platform status. |
 | Settlements | `@mavula/settlements` | Payment process state, webhook dedupe, reconciliation candidates and guarded settlement outbox. |
+| Developer Docs | `@mavula/developer-docs` | Versioned public and partner OpenAPI reference with owner contract provenance. |
+| Legacy Connectors | `@mavula/legacy-connectors` | COBOL copybooks, fixed-width layouts and deterministic validation without owner-store access. |
 | Operations | `@mavula/operations` | Local services, Docker, Kubernetes, Minikube, monitoring, secrets and Terraform starters. |
 
 Legacy names remain as compatibility aliases where needed:

@@ -9,6 +9,8 @@ The implemented financial runtime packages are open source:
 - `packages/ledger-core`: AGPL-3.0-only
 - `packages/workbench`: AGPL-3.0-only
 - `packages/settlements`: AGPL-3.0-only
+- `packages/developer-docs`: AGPL-3.0-only
+- `packages/legacy-connectors`: AGPL-3.0-only
 - root contracts, scripts and documentation: AGPL-3.0-only unless a file states otherwise
 
 Network use of AGPL-covered services must comply with AGPL-3.0-only source

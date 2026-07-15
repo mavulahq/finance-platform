@@ -279,7 +279,17 @@ A quarta fatia entrega ajustes financeiros controlados e classificação técnic
 - migration com RLS, alvo ativo único por tenant, lançamentos `REVERSAL`/`CORRECTION` e audit trail append-only;
 - testes de concorrência, rejeição, trial balance, pagamentos, desembolsos, efeitos posteriores, API, projeções e PostgreSQL/RLS.
 
-Receipts duráveis para todos os side effects, OpenAPI em `developer-docs`, métricas adicionais e conectores legados permanecem nas fatias seguintes, na ordem definida acima.
+### Quinta fatia implementada
+
+A quinta fatia entrega:
+
+- receipts PostgreSQL atómicos por tenant, operação e digest de `Idempotency-Key`, com RLS, replay, conflito de fingerprint e retenção configurável de 365 dias;
+- cobertura de idempotência para todos os writes públicos de contas, lifecycle, ajustes, produtos, regras, schemas e workflows;
+- contratos OpenAPI v1 de `identity-access`, `ledger-core` e `workbench`, publicados por `developer-docs` sem endpoints internos ou operacionais;
+- métricas HTTP, idempotência, auth, tenant boundary, validação de contratos e ajustes, com alertas em `operations`;
+- fundação contratual de `legacy-connectors` para export regulatório fixed-width, incluindo copybook COBOL, manifesto, checksum e golden file sintético.
+
+O contrato legado desta fatia é apenas de validação. Importação, geração de exports a partir do ledger e execução batch permanecem na sexta fatia, depois da estabilização dos contratos públicos.
 
 ## Plano de testes
 

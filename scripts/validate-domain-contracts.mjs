@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
+import { createHash } from "node:crypto";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(scriptPath), "..");
@@ -180,11 +181,60 @@ export function validateRegulatoryContracts(contractsDir = defaultRegulatoryCont
   return { contractCount: seen.size };
 }
 
+export function validatePublishedOpenApiContracts(workspaceRoot = root) {
+  const docsRoot = path.join(workspaceRoot, "packages", "developer-docs");
+  const lock = readJson(path.join(docsRoot, "sources.lock.json"));
+  const repositoryNames = new Map([
+    ["mavulahq/identity-access", "identity-access"],
+    ["mavulahq/ledger-core", "ledger-core"],
+    ["mavulahq/workbench", "workbench"],
+  ]);
+  if (lock.version !== 1 || lock.contracts?.length !== repositoryNames.size) {
+    fail("developer-docs must lock the three public owner contracts");
+  }
+  for (const contract of lock.contracts) {
+    const moduleName = repositoryNames.get(contract.owner);
+    if (!moduleName) fail(`Unsupported OpenAPI owner: ${contract.owner}`);
+    const ownerSource = fs.readFileSync(path.join(workspaceRoot, "packages", moduleName, contract.source));
+    const publishedSource = fs.readFileSync(path.join(docsRoot, "openapi", contract.file));
+    if (!ownerSource.equals(publishedSource)) fail(`Published OpenAPI drift: ${contract.file}`);
+    const digest = createHash("sha256").update(publishedSource).digest("hex");
+    if (digest !== contract.sha256) fail(`Published OpenAPI digest mismatch: ${contract.file}`);
+  }
+  return { contractCount: lock.contracts.length };
+}
+
+export function validateLegacyInteropContract(workspaceRoot = root) {
+  const contractRoot = path.join(
+    workspaceRoot, "packages", "legacy-connectors", "contracts", "regulatory-transaction-export", "v1",
+  );
+  const layout = readJson(path.join(contractRoot, "layout.json"));
+  if (layout.contract_id !== "legacy.regulatory_transaction_export@1" || layout.record_length !== 2048) {
+    fail("Legacy regulatory export must remain contract v1 with 2048-byte records");
+  }
+  for (const [recordType, definition] of Object.entries(layout.records || {})) {
+    let expectedOffset = 1;
+    for (const field of definition.fields) {
+      if (field.offset !== expectedOffset) fail(`Legacy ${recordType}.${field.name} has a layout gap or overlap`);
+      expectedOffset += field.length;
+    }
+    if (expectedOffset - 1 !== layout.record_length) fail(`Legacy ${recordType} record does not fill 2048 bytes`);
+  }
+  const fixture = fs.readFileSync(path.join(contractRoot, "examples", "regulatory-transaction-export.v1.dat"));
+  const lines = fixture.subarray(0, fixture.length - 1).toString("ascii").split("\n");
+  if (lines.length < 3 || lines.some((line) => Buffer.byteLength(line, "ascii") !== layout.record_length)) {
+    fail("Legacy golden file must contain fixed-width header, detail and trailer records");
+  }
+  return { recordLength: layout.record_length, fixtureRecords: lines.length };
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
   const result = validateContracts();
   const identityResult = validateIdentityContracts();
   const regulatoryResult = validateRegulatoryContracts();
+  const openApiResult = validatePublishedOpenApiContracts();
+  const legacyResult = validateLegacyInteropContract();
   console.log(
-    `Validated ${result.contractCount} event contracts, ${result.exampleCount} event examples, ${identityResult.exampleCount} identity examples, and ${regulatoryResult.contractCount} regulatory contracts.`,
+    `Validated ${result.contractCount} event contracts, ${result.exampleCount} event examples, ${identityResult.exampleCount} identity examples, ${regulatoryResult.contractCount} regulatory contracts, ${openApiResult.contractCount} OpenAPI contracts, and ${legacyResult.fixtureRecords} legacy records.`,
   );
 }

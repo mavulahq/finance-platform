@@ -10,6 +10,8 @@ const modules = [
   ["workbench", "AGPL-3.0-only"],
   ["settlements", "AGPL-3.0-only"],
   ["operations", "Apache-2.0"],
+  ["developer-docs", "AGPL-3.0-only"],
+  ["legacy-connectors", "AGPL-3.0-only"],
 ];
 const canonicalAgentFiles = new Set([
   ".agents/AGENTS.md",
@@ -119,6 +121,8 @@ for (const expected of [
   "pnpm --filter @mavula/ledger-core build",
   "pnpm --filter @mavula/workbench test:all",
   "pnpm --filter @mavula/settlements test",
+  "pnpm --filter @mavula/developer-docs build",
+  "pnpm --filter @mavula/legacy-connectors test",
   "docker compose config",
   "kubectl kustomize packages/operations/kubernetes/overlays/minikube",
 ]) {

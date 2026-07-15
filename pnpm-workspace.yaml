@@ -4,6 +4,8 @@ packages:
   - packages/workbench
   - packages/settlements
   - packages/operations
+  - packages/developer-docs
+  - packages/legacy-connectors
 
 onlyBuiltDependencies:
   - '@prisma/client'
