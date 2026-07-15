@@ -247,7 +247,19 @@ A segunda fatia entrega isolamento transacional de tenant:
 - Inbox, Outbox, projeções, jobs, logs e exports restritos ao tenant autenticado, sem contexto global `*`;
 - testes PostgreSQL com role real, `WITH CHECK` e reutilização de conexão com pool limitado.
 
-As fatias seguintes mantêm a ordem definida acima. Lifecycle completo de contas, maker-checker aplicado às mutações financeiras, idempotência durável, OpenAPI dedicado e conectores legados não fazem parte desta entrega.
+A terceira fatia entrega account lifecycle e contratos públicos mínimos:
+
+- contas com referência de cliente e produto, moeda, versionamento e estados `ACTIVE`, `FROZEN` e `CLOSED`;
+- APIs tenant-scoped de criação, listagem, consulta, saldo e extrato;
+- subledger append-only em `account_entries`, suportado por journal entries balanceados e valores decimais serializados como string;
+- pedidos duráveis de transição com estados `PENDING_APPROVAL`, `APPLIED`, `REJECTED` e `FAILED`;
+- maker-checker para freeze, unfreeze e close, com permissão explícita de aprovação e bloqueio de autoaprovação;
+- política de posting que bloqueia débitos em contas congeladas, permite créditos e bloqueia qualquer posting em contas encerradas;
+- encerramento restrito a contas ativas com saldo zero;
+- audit trail gravado na mesma transação da decisão e do posting, sem novas escritas no campo legado `phase`;
+- migrations com RLS e privilégios append-only, testes de lifecycle, concorrência, isolamento e ausência de efeitos financeiros diretos por eventos de pagamento.
+
+Reversões, correções, maker-checker para as restantes mutações financeiras, `AuditTrailEvent.stage`, idempotência durável, OpenAPI dedicado e conectores legados permanecem nas fatias seguintes, na ordem definida acima.
 
 ## Plano de testes
 

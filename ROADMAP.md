@@ -45,9 +45,10 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ Prisma/PostgreSQL persistence paths for the implemented financial and configuration entities.
 - ✅ Unit, integration, financial-lifecycle, and e2e test suites.
 - ✅ Resource-server token validation and permission enforcement across every controller.
-- 🟡 Account APIs: create and list exist; balance, statement, freeze, close, and status-transition contracts remain incomplete.
+- ✅ Account APIs cover create, list, get, balance, statement, freeze, close, and controlled status transitions.
+- ✅ Account balances and statements derive from an append-only, journal-backed subledger with tenant-scoped lifecycle requests.
 - 🟡 Request DTO coverage and global runtime validation across the current public APIs.
-- 🟡 Reversal and correction APIs, approval controls, and operator-facing workflows.
+- 🟡 Reversal and correction APIs, their approval controls, and operator-facing workflows.
 - 🟡 Durable idempotency for every workflow side effect, not only queue and transaction entry points.
 
 ### Identity and Access
@@ -56,7 +57,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ OpenID Connect discovery, JWKS, Authorization Code with PKCE, private-key service credentials, short-lived access tokens, and token revocation are implemented.
 - ✅ The provisional `ledger-core` login path no longer issues tokens or accepts caller-supplied roles.
 - ✅ Institutional roles `institution_admin`, `operations_maker`, `operations_checker`, `compliance_officer`, and `auditor` are defined and mapped to permissions.
-- ⬜ Enforce maker-checker separation and prevent self-approval.
+- 🟡 Maker-checker separation and self-approval prevention are enforced for account lifecycle requests; remaining financial mutations are pending.
 
 ### Tenant Isolation and Data
 
@@ -90,7 +91,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ RFC-0001 Phase 3 initial read projections exist for loan activity, ledger activity, and product publication, with tenant-scoped storage, idempotent consumers, rebuild support, and platform status exposure.
 - ✅ RFC-0001 Phase 4 foundation exists for `settlements` payment process state, webhook dedupe, reconciliation jobs, process metrics, guarded settlement outbox, and infrastructure alerts.
 - ✅ `payments.settlement_completed` v1 has an active payload contract, `settlements` Outbox producer, `workbench` publisher path, idempotent `ledger-core` Inbox handling, tests, and outbox observability.
-- 🟡 RFC-0002 has completed its identity/API-security and tenant-isolation slices; controlled financial operations, idempotency, regulatory audit contracts, dedicated documentation, and legacy interoperability remain.
+- 🟡 RFC-0002 has completed its identity/API-security, tenant-isolation, and account-lifecycle slices; reversals, corrections, durable idempotency, regulatory audit contracts, dedicated documentation, and legacy interoperability remain.
 - ⬜ Activate further event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - 🟡 Add further read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
@@ -116,7 +117,7 @@ Goal: make `ledger-core` safe and complete enough to support institution-facing 
 Tracked by [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 
 - ✅ Establish `identity-access` and migrate `ledger-core` to a resource-server boundary.
-- 🟡 Complete account lifecycle APIs and DTO validation.
+- ✅ Complete account lifecycle APIs and their DTO validation.
 - 🟡 Expose reversal and correction workflows with approval and audit controls.
 - ✅ Make RLS setup part of repeatable migrations and CI isolation tests.
 - 🟡 Add durable deduplication receipts for financial workflow side effects.
@@ -235,10 +236,11 @@ Acceptance criteria:
 
 1. Establish `identity-access`, API validation, and trusted claims at the resource-server boundary.
 2. Complete transactional RLS and cross-tenant isolation tests.
-3. Complete account lifecycle, reversals, corrections, maker-checker, and technical audit classification.
-4. Complete durable idempotency and publish OpenAPI through `developer-docs`.
-5. Introduce `legacy-connectors` after public contracts are stable.
-6. Complete the MAVULA open core transition: legal review and CLA automation.
-7. Build `console` as the institution operating surface.
-8. Expand payment adapters, CI security gates, and production infrastructure.
-9. Add customer mobile and intelligence modules after core operating flows are stable.
+3. Complete account lifecycle and its controlled maker-checker transitions.
+4. Complete reversals, corrections, maker-checker for remaining financial mutations, and technical audit classification.
+5. Complete durable idempotency and publish OpenAPI through `developer-docs`.
+6. Introduce `legacy-connectors` after public contracts are stable.
+7. Complete the MAVULA open core transition: legal review and CLA automation.
+8. Build `console` as the institution operating surface.
+9. Expand payment adapters, CI security gates, and production infrastructure.
+10. Add customer mobile and intelligence modules after core operating flows are stable.
