@@ -48,9 +48,10 @@ finance-platform/
 ```
 
 `developer-docs` publishes the approved Identity Access, Ledger Core and
-Workbench OpenAPI v1 contracts. `legacy-connectors` contains the first
-validation-only COBOL export contract; executable batch integration remains
-deferred by [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
+Workbench OpenAPI v1 contracts at
+[mavulahq.github.io/developer-docs](https://mavulahq.github.io/developer-docs/).
+`legacy-connectors` owns durable receipts, fixed-width generation and
+validation-only imports under [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 
 ## Licensing
 
@@ -73,10 +74,10 @@ See [LICENSE_POLICY.md](LICENSE_POLICY.md), [TRADEMARKS.md](TRADEMARKS.md) and
 | --- | --- | --- |
 | Identity Access | `@mavula/identity-access` | Institutions, branches, operators, credentials, memberships, roles, OIDC artifacts and access policy. |
 | Ledger Core | `@mavula/ledger-core` | Product configuration, accounts, ledger, lending, audit, outbox/inbox and read projections. |
-| Workbench | `@mavula/workbench` | BullMQ workers, schedules, retries, queues, payment outbox publishing and platform status. |
+| Workbench | `@mavula/workbench` | BullMQ workers, schedules, retries, payment publishing, legacy batch orchestration and platform status. |
 | Settlements | `@mavula/settlements` | Payment process state, webhook dedupe, reconciliation candidates and guarded settlement outbox. |
 | Developer Docs | `@mavula/developer-docs` | Versioned public and partner OpenAPI reference with owner contract provenance. |
-| Legacy Connectors | `@mavula/legacy-connectors` | COBOL copybooks, fixed-width layouts and deterministic validation without owner-store access. |
+| Legacy Connectors | `@mavula/legacy-connectors` | COBOL copybooks, fixed-width generation, validation-only imports and durable batch receipts. |
 | Operations | `@mavula/operations` | Local services, Docker, Kubernetes, Minikube, monitoring, secrets and Terraform starters. |
 
 Legacy names remain as compatibility aliases where needed:

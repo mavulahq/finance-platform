@@ -291,6 +291,20 @@ A quinta fatia entrega:
 
 O contrato legado desta fatia é apenas de validação. Importação, geração de exports a partir do ledger e execução batch permanecem na sexta fatia, depois da estabilização dos contratos públicos.
 
+### Sexta fatia implementada
+
+A sexta fatia entrega:
+
+- estado PostgreSQL próprio para receipts, artefactos e tentativas de batch, com role restrita, RLS por tenant e idempotência por digest;
+- geração determinística do export regulatório fixed-width a partir de transações `POSTED` fornecidas pela API interna do `ledger-core`;
+- importação limitada a staging e validação, sem postings, comandos de lending ou eventos financeiros;
+- queue `legacy` no `workbench`, leases, três tentativas, dead-letter, estados formais e registo idempotente de entrega;
+- APIs públicas protegidas por `compliance.manage`, `Idempotency-Key`, correlation id e tenant institucional;
+- métricas e alertas para backlog, processamento bloqueado, rejeições e falhas;
+- OpenAPI e guia operacional publicados em `developer-docs` por GitHub Pages.
+
+Os limites são 5000 detalhes e 10 MiB por artefacto. O checksum do trailer cobre header e detalhes; o ETag HTTP cobre o ficheiro completo. `legacy-connectors` continua sem acesso direto aos stores financeiros ou de identidade e não possui deployment próprio.
+
 ## Plano de testes
 
 - `pnpm --filter @mavula/identity-access test`

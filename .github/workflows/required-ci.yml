@@ -40,6 +40,9 @@ jobs:
       DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=public
       LEDGER_CORE_MIGRATION_DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=public
       LEDGER_CORE_DATABASE_ROLE_PASSWORD: mavula_ledger_ci_password
+      LEGACY_CONNECTORS_MIGRATION_DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=legacy_connectors
+      LEGACY_CONNECTORS_DATABASE_ROLE_PASSWORD: mavula_legacy_ci_password
+      LEGACY_CONNECTORS_DATABASE_URL: postgresql://legacy_connectors_app:mavula_legacy_ci_password@127.0.0.1:5432/mavula?schema=legacy_connectors
       REDIS_URL: redis://127.0.0.1:6379
       IDENTITY_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=identity
       LEDGER_CORE_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=public
@@ -144,8 +147,14 @@ jobs:
           pnpm --filter @mavula/developer-docs test
           pnpm --filter @mavula/developer-docs build
 
-      - name: Test legacy contract foundation
+      - name: Test legacy batch runtime
         run: pnpm --filter @mavula/legacy-connectors test
+
+      - name: Sync and test legacy batch PostgreSQL runtime
+        run: |
+          DATABASE_URL="$LEGACY_CONNECTORS_MIGRATION_DATABASE_URL" pnpm --filter @mavula/legacy-connectors prisma:migrate
+          pnpm --filter @mavula/legacy-connectors database:provision-role
+          pnpm --filter @mavula/legacy-connectors test:postgres
 
       - name: Sync identity-access database schema
         run: DATABASE_URL="postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=identity" pnpm --filter @mavula/identity-access prisma:migrate
