@@ -135,8 +135,8 @@ jobs:
           pnpm --filter @mavula/identity-access build
           pnpm --filter @mavula/settlements build
           pnpm --filter @mavula/ledger-core build
-          pnpm --filter @mavula/workbench build
           pnpm --filter @mavula/legacy-connectors build
+          pnpm --filter @mavula/workbench build
 
       - name: Validate public OpenAPI contracts
         run: |
