@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "export_id": "regexp_001",
+  "tenant_id": "tenant_maputo_001",
+  "institution_id": "institution_001",
+  "export_type": "AML_PERIODIC_REPORT",
+  "period": { "from": "2026-07-01", "to": "2026-07-31" },
+  "content_contract_id": "regulatory.aml_periodic_report@1",
+  "generated_at": "2026-08-01T08:00:00.000Z",
+  "generated_by": "officer_001",
+  "content_hash": "6d7fce9fee471194aa8b5b6e47267f03f0d84f69e888b681abac8af255fce93b",
+  "delivery_status": "DELIVERED",
+  "delivered_at": "2026-08-01T09:00:00.000Z",
+  "authority_reference": "authority_receipt_001",
+  "correlation_id": "corr_export_001",
+  "data_classification": "restricted"
+}
