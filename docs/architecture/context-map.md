@@ -18,26 +18,29 @@ Este documento define as fronteiras de negócio iniciais do MAVULA. As fronteira
 
 ## Contextos
 
-| Contexto               | Owner     | Dados e agregados controlados                                                      | Estado atual                                                                                  |
-| ---------------------- | --------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Tenant & Identity      | `ledger-core` | tenant, identidade institucional, utilizadores, funções e políticas de acesso      | Tenant middleware, auth foundation e RLS existem; identidade de produção permanece incompleta |
-| Product Configuration  | `ledger-core` | produtos, regras, taxas, limites, schemas e versões publicadas                     | Produtos, regras e schemas existem; publicação e versionamento imutável são lacunas           |
-| Accounts & Ledger      | `ledger-core` | contas, transações financeiras, plano de contas e journal entries                  | Implementado como fonte da verdade financeira                                                 |
-| Lending                | `ledger-core` | empréstimos, decisões, desembolsos, calendários e reembolsos                       | Lifecycle principal implementado                                                              |
-| Payments               | `settlements`    | instruções, callbacks de providers, liquidação, reconciliação e reversões externas | Contratos de adapter existem; integrações de providers e reconciliação permanecem planeadas   |
-| Workflow Configuration | `ledger-core` | definições de workflow, triggers, schemas e políticas de execução                  | Definição e execução básica existem no `ledger-core`                                              |
-| Automation Execution   | `workbench`     | jobs, schedules, tentativas, dead-letter queues e receipts de execução             | BullMQ, retries, schedules, métricas e callbacks implementados                                |
-| Audit & Reporting      | `ledger-core` | trilho de auditoria canônico e factos necessários para projeções e relatórios      | Audit trail existe; read models e reporting dedicados são planeados                           |
+| Contexto                  | Owner               | Dados e agregados controlados                                                      | Estado atual                                                                                |
+| ------------------------- | ------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Identity & Access         | `identity-access`   | instituições, filiais, operadores, credenciais, sessões, roles e políticas         | Fundação OIDC implementada; APIs administrativas de lifecycle permanecem pendentes           |
+| Financial Tenant Boundary | `ledger-core`       | referência local de tenant, partição financeira e contexto necessário para RLS     | Binding institucional, RLS transacional e testes cross-tenant implementados                   |
+| Product Configuration     | `ledger-core`       | produtos, regras, taxas, limites, schemas e versões publicadas                     | Produtos, regras e schemas existem; publicação e versionamento imutável são lacunas         |
+| Accounts & Ledger         | `ledger-core`       | contas, transações financeiras, plano de contas e journal entries                  | Lifecycle, subledger e ajustes maker-checker implementados                                    |
+| Lending                   | `ledger-core`       | empréstimos, decisões, desembolsos, calendários e reembolsos                       | Lifecycle principal e ajustes controlados de pagamento/desembolso implementados               |
+| Payments                  | `settlements`       | instruções, callbacks de providers, liquidação, reconciliação e reversões externas | Contratos de adapter existem; integrações de providers e reconciliação permanecem planeadas |
+| Workflow Configuration    | `ledger-core`       | definições de workflow, triggers, schemas e políticas de execução                  | Definição e execução básica existem no `ledger-core`                                        |
+| Automation Execution      | `workbench`         | jobs, schedules, tentativas, dead-letter queues e receipts de execução             | BullMQ, retries, schedules, métricas, callbacks e orquestração batch implementados          |
+| Audit & Reporting         | `ledger-core`       | trilho de auditoria canônico e factos necessários para projeções e relatórios      | Audit trail técnico e contratos regulatórios v1 existem; reporting dedicado permanece planeado |
+| Legacy Interoperability   | `legacy-connectors` | copybooks, layouts fixed-width, receipts, artefactos e traduções legadas            | Export regulatório, imports de validação, idempotência, RLS e execução batch implementados     |
 
-`operations` é uma capacidade de plataforma que provisiona e opera PostgreSQL, Redis, Kubernetes, observabilidade e secrets. Não é um bounded context de negócio e não possui agregados financeiros.
+`operations` é uma capacidade de plataforma que provisiona e opera PostgreSQL, Redis, Kubernetes, observabilidade e secrets. `developer-docs` publica os contratos OpenAPI aprovados pelos módulos owners. Nenhum deles é um bounded context de negócio nem possui agregados financeiros.
 
 ## Relações
 
 ```mermaid
 flowchart LR
-    TI["Tenant & Identity"] --> PC["Product Configuration"]
-    TI --> AL["Accounts & Ledger"]
-    TI --> LN["Lending"]
+    IA["Identity & Access"] --> FT["Financial Tenant Boundary"]
+    FT --> PC["Product Configuration"]
+    FT --> AL["Accounts & Ledger"]
+    FT --> LN["Lending"]
     PC --> AL
     PC --> LN
     LN --> AL
@@ -48,12 +51,16 @@ flowchart LR
     AL --> AR["Audit & Reporting"]
     LN --> AR
     PY --> AR
+    LI["Legacy Interoperability"] --> AL
 ```
 
 As setas representam integração por contrato, não permissão de escrita direta.
 
 ## Fronteiras transitórias
 
+- `ledger-core` continua a validar tokens e a aplicar tenant/RBAC como resource server, mas deixa de emitir credenciais ou atribuir roles quando `identity-access` estiver ativo.
+- A referência local de tenant em `ledger-core` existe para integridade financeira e RLS; não transfere ownership de instituições, filiais ou operadores.
 - `ledger-core` continua a coordenar transações de desembolso e pagamento até `settlements` possuir o seu modelo e adapters. A extração não pode transferir ownership do ledger.
 - `ledger-core` possui definições de workflow; `workbench` possui apenas o estado operacional de jobs. Um job BullMQ não é um evento de domínio.
-- O audit trail registra ações atuais. A Fase 2 introduz vertical slices de domain events para `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed` e `lending.payment_posted`; os demais eventos continuam propostos até terem implementação equivalente.
+- `legacy-connectors` integra exclusivamente por contratos aprovados e nunca escreve diretamente nos stores dos contextos owner.
+- O audit trail registra ações atuais. As fatias ativas incluem `products.configuration_published`, `ledger.journal_posted`, `ledger.adjustment_posted`, `lending.loan_disbursed`, `lending.payment_posted`, `lending.adjustment_applied` e `payments.settlement_completed`; os demais eventos continuam propostos até terem implementação equivalente.

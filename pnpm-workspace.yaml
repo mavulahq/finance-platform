@@ -1,8 +1,18 @@
 packages:
+  - packages/identity-access
   - packages/ledger-core
   - packages/workbench
   - packages/settlements
   - packages/operations
+  - packages/developer-docs
+  - packages/legacy-connectors
+
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - argon2
+  - esbuild
+  - prisma
 
 peerDependencyRules:
   ignoreMissing:

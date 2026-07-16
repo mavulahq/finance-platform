@@ -5,11 +5,19 @@ import { spawnSync } from "node:child_process";
 
 const failures = [];
 const modules = [
+  ["identity-access", "AGPL-3.0-only"],
   ["ledger-core", "AGPL-3.0-only"],
   ["workbench", "AGPL-3.0-only"],
   ["settlements", "AGPL-3.0-only"],
   ["operations", "Apache-2.0"],
+  ["developer-docs", "AGPL-3.0-only"],
+  ["legacy-connectors", "AGPL-3.0-only"],
 ];
+const canonicalAgentFiles = new Set([
+  ".agents/AGENTS.md",
+  ".agents/skills/mavula-review/SKILL.md",
+  ".agents/skills/mavula-review/agents/openai.yaml",
+]);
 
 function fail(message) {
   failures.push(message);
@@ -27,9 +35,23 @@ function requireFile(path) {
   if (!existsSync(path)) fail(`${path} is required`);
 }
 
+function requireIgnoreState(path, shouldBeIgnored) {
+  const result = spawnSync("git", ["check-ignore", "--quiet", "--no-index", path]);
+  if (![0, 1].includes(result.status)) {
+    fail(`git check-ignore failed for ${path}`);
+    return;
+  }
+
+  const isIgnored = result.status === 0;
+  if (isIgnored !== shouldBeIgnored) {
+    fail(`${path} must ${shouldBeIgnored ? "be ignored" : "remain trackable"}`);
+  }
+}
+
 function runModuleGuardian(name) {
   const base = `packages/${name}`;
-  const result = spawnSync("pnpm", ["--dir", base, "run", "guardian:check"], {
+  const result = spawnSync(process.execPath, ["scripts/guardian.mjs"], {
+    cwd: base,
     encoding: "utf8",
   });
   if (result.status !== 0) {
@@ -52,6 +74,16 @@ function runModuleGuardian(name) {
   "scripts/merge-pr.mjs",
   "scripts/guardrails.test.mjs",
 ].forEach(requireFile);
+canonicalAgentFiles.forEach(requireFile);
+
+for (const path of canonicalAgentFiles) requireIgnoreState(path, false);
+for (const path of [
+  ".agents/skills/other/SKILL.md",
+  ".agents/skills/mavula-review/local-report.md",
+  ".agents/skills/mavula-review/agents/local.yaml",
+]) {
+  requireIgnoreState(path, true);
+}
 
 const pkg = json("package.json");
 if (pkg.name !== "finance-platform") fail("root package must be finance-platform");
@@ -84,9 +116,14 @@ const requiredCi = read(".github/workflows/required-ci.yml");
 for (const expected of [
   "pnpm guardian:check",
   "pnpm contracts:check",
+  "pnpm --filter @mavula/identity-access build",
+  "pnpm --filter @mavula/identity-access test",
   "pnpm --filter @mavula/ledger-core build",
   "pnpm --filter @mavula/workbench test:all",
   "pnpm --filter @mavula/settlements test",
+  "pnpm --filter @mavula/developer-docs build",
+  "pnpm --filter @mavula/legacy-connectors test",
+  "pnpm --filter @mavula/legacy-connectors test:postgres",
   "docker compose config",
   "kubectl kustomize packages/operations/kubernetes/overlays/minikube",
 ]) {
@@ -100,6 +137,9 @@ if (tracked.status !== 0) fail("git ls-files --recurse-submodules failed");
 
 for (const file of tracked.stdout.split("\n").filter(Boolean)) {
   if (/(^|\/)\.env($|\.(?!example$))/.test(file)) fail(`${file} must not be tracked`);
+  if (file.startsWith(".agents/") && !canonicalAgentFiles.has(file)) {
+    fail(`${file} is not part of the canonical agent policy`);
+  }
   if (file.endsWith("scripts/guardian.mjs")) continue;
   if (/(\.github\/workflows\/.*\.ya?ml|package\.json|\.githooks\/pre-push|scripts\/.*\.mjs)$/.test(file)) {
     const content = read(file);

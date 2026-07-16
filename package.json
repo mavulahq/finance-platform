@@ -53,9 +53,12 @@
     "typescript": "^5.3.3"
   },
   "workspaces": [
+    "packages/identity-access",
     "packages/ledger-core",
     "packages/workbench",
     "packages/settlements",
-    "packages/operations"
+    "packages/operations",
+    "packages/developer-docs",
+    "packages/legacy-connectors"
   ]
 }

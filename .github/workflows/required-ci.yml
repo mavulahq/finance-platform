@@ -38,9 +38,23 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
     env:
       DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=public
+      LEDGER_CORE_MIGRATION_DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=public
+      LEDGER_CORE_DATABASE_ROLE_PASSWORD: mavula_ledger_ci_password
+      LEGACY_CONNECTORS_MIGRATION_DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=legacy_connectors
+      LEGACY_CONNECTORS_DATABASE_ROLE_PASSWORD: mavula_legacy_ci_password
+      LEGACY_CONNECTORS_DATABASE_URL: postgresql://legacy_connectors_app:mavula_legacy_ci_password@127.0.0.1:5432/mavula?schema=legacy_connectors
       REDIS_URL: redis://127.0.0.1:6379
-      INTERNAL_API_KEY: guardian-internal-api-key
-      JWT_SECRET: guardian-jwt-secret
+      IDENTITY_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=identity
+      LEDGER_CORE_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=public
+      WORKBENCH_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=settlements
+      IDENTITY_ISSUER: https://identity.example.test
+      IDENTITY_JWKS_JSON: '{"keys":[]}'
+      IDENTITY_COOKIE_KEYS: guardian-cookie-key-one-32-characters,guardian-cookie-key-two-32-characters
+      OIDC_AUTHORIZATION_ENDPOINT: https://identity.example.test/auth
+      OIDC_JWKS_URI: https://identity.example.test/jwks
+      OIDC_TOKEN_ENDPOINT: https://identity.example.test/token
+      WORKBENCH_OIDC_CLIENT_ID: workbench-ci
+      WORKBENCH_PRIVATE_JWK_JSON: '{}'
     steps:
       - name: Audit main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -118,18 +132,51 @@ jobs:
 
       - name: Build implemented services
         run: |
+          pnpm --filter @mavula/identity-access build
           pnpm --filter @mavula/settlements build
           pnpm --filter @mavula/ledger-core build
+          pnpm --filter @mavula/legacy-connectors build
           pnpm --filter @mavula/workbench build
+
+      - name: Validate public OpenAPI contracts
+        run: |
+          pnpm --filter @mavula/identity-access openapi:check
+          pnpm --filter @mavula/ledger-core openapi:check
+          pnpm --filter @mavula/workbench openapi:check
+          pnpm --filter @mavula/developer-docs contracts:check
+          pnpm --filter @mavula/developer-docs test
+          pnpm --filter @mavula/developer-docs build
+
+      - name: Test legacy batch runtime
+        run: pnpm --filter @mavula/legacy-connectors test
+
+      - name: Sync and test legacy batch PostgreSQL runtime
+        run: |
+          DATABASE_URL="$LEGACY_CONNECTORS_MIGRATION_DATABASE_URL" pnpm --filter @mavula/legacy-connectors prisma:migrate
+          pnpm --filter @mavula/legacy-connectors database:provision-role
+          pnpm --filter @mavula/legacy-connectors test:postgres
+
+      - name: Sync identity-access database schema
+        run: DATABASE_URL="postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=identity" pnpm --filter @mavula/identity-access prisma:migrate
+
+      - name: Test identity-access
+        run: pnpm --filter @mavula/identity-access test
 
       - name: Test settlements
         run: pnpm --filter @mavula/settlements test
 
       - name: Sync ledger-core database schema
-        run: pnpm --filter @mavula/ledger-core exec prisma db push --skip-generate
+        run: |
+          pnpm --filter @mavula/ledger-core database:migrate
+          pnpm --filter @mavula/ledger-core database:provision-role
 
       - name: Test ledger-core
         run: pnpm --filter @mavula/ledger-core test:all
+
+      - name: Test ledger-core tenant RLS
+        env:
+          DATABASE_URL: postgresql://ledger_core_app:mavula_ledger_ci_password@127.0.0.1:5432/mavula?schema=public&connection_limit=1
+        run: pnpm --filter @mavula/ledger-core test:rls
 
       - name: Test workbench
         run: pnpm --filter @mavula/workbench test:all

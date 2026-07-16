@@ -1,0 +1,23 @@
+{
+  "catalog_version": 1,
+  "contracts": [
+    {
+      "contract_id": "regulatory.transaction_record@1",
+      "schema": "transaction-record.v1.schema.json",
+      "example": "examples/transaction-record.v1.json",
+      "data_classification": "restricted"
+    },
+    {
+      "contract_id": "regulatory.aml_decision@1",
+      "schema": "aml-decision.v1.schema.json",
+      "example": "examples/aml-decision.v1.json",
+      "data_classification": "restricted"
+    },
+    {
+      "contract_id": "regulatory.export_record@1",
+      "schema": "export-record.v1.schema.json",
+      "example": "examples/export-record.v1.json",
+      "data_classification": "restricted"
+    }
+  ]
+}

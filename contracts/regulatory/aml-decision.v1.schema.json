@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mavula.io/contracts/regulatory/aml-decision.v1.schema.json",
+  "title": "MAVULA AML Decision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "decision_id", "tenant_id", "institution_id", "alert_id",
+    "risk_classification", "decision", "decided_by", "basis_code", "decided_at",
+    "correlation_id", "retention_until", "legal_basis", "data_classification"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "decision_id": { "$ref": "#/$defs/id" },
+    "tenant_id": { "$ref": "#/$defs/id" },
+    "institution_id": { "$ref": "#/$defs/id" },
+    "branch_id": { "$ref": "#/$defs/id" },
+    "alert_id": { "$ref": "#/$defs/id" },
+    "transaction_record_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "risk_classification": { "enum": ["LOW", "MEDIUM", "HIGH", "PROHIBITED"] },
+    "decision": { "enum": ["CLEAR", "ESCALATE", "RESTRICT", "REPORT"] },
+    "decided_by": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actor_id", "role"],
+      "properties": {
+        "actor_id": { "$ref": "#/$defs/id" },
+        "role": { "enum": ["AML_ANALYST", "COMPLIANCE_OFFICER"] }
+      }
+    },
+    "reviewed_by_compliance_officer_id": { "$ref": "#/$defs/id" },
+    "basis_code": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "authority_communication_reference": { "$ref": "#/$defs/id" },
+    "decided_at": { "$ref": "#/$defs/timestamp" },
+    "correlation_id": { "$ref": "#/$defs/id" },
+    "retention_until": { "type": "string", "format": "date" },
+    "legal_basis": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "data_classification": { "const": "restricted" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "timestamp": { "type": "string", "format": "date-time", "pattern": "Z$" }
+  }
+}
