@@ -5,10 +5,13 @@ import { spawnSync } from "node:child_process";
 
 const failures = [];
 const modules = [
+  ["identity-access", "AGPL-3.0-only"],
   ["ledger-core", "AGPL-3.0-only"],
   ["workbench", "AGPL-3.0-only"],
   ["settlements", "AGPL-3.0-only"],
   ["operations", "Apache-2.0"],
+  ["developer-docs", "AGPL-3.0-only"],
+  ["legacy-connectors", "AGPL-3.0-only"],
 ];
 const canonicalAgentFiles = new Set([
   ".agents/AGENTS.md",
@@ -47,7 +50,8 @@ function requireIgnoreState(path, shouldBeIgnored) {
 
 function runModuleGuardian(name) {
   const base = `packages/${name}`;
-  const result = spawnSync("pnpm", ["--dir", base, "run", "guardian:check"], {
+  const result = spawnSync(process.execPath, ["scripts/guardian.mjs"], {
+    cwd: base,
     encoding: "utf8",
   });
   if (result.status !== 0) {
@@ -112,9 +116,14 @@ const requiredCi = read(".github/workflows/required-ci.yml");
 for (const expected of [
   "pnpm guardian:check",
   "pnpm contracts:check",
+  "pnpm --filter @mavula/identity-access build",
+  "pnpm --filter @mavula/identity-access test",
   "pnpm --filter @mavula/ledger-core build",
   "pnpm --filter @mavula/workbench test:all",
   "pnpm --filter @mavula/settlements test",
+  "pnpm --filter @mavula/developer-docs build",
+  "pnpm --filter @mavula/legacy-connectors test",
+  "pnpm --filter @mavula/legacy-connectors test:postgres",
   "docker compose config",
   "kubectl kustomize packages/operations/kubernetes/overlays/minikube",
 ]) {

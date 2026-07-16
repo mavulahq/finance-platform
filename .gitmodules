@@ -14,3 +14,15 @@
 	path = packages/settlements
 	url = git@github.com:mavulahq/settlements.git
 	branch = main
+[submodule "packages/identity-access"]
+	path = packages/identity-access
+	url = git@github.com:mavulahq/identity-access.git
+	branch = main
+[submodule "packages/developer-docs"]
+	path = packages/developer-docs
+	url = git@github.com:mavulahq/developer-docs.git
+	branch = main
+[submodule "packages/legacy-connectors"]
+	path = packages/legacy-connectors
+	url = git@github.com:mavulahq/legacy-connectors.git
+	branch = main

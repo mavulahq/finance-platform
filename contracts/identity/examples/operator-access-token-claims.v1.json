@@ -1,0 +1,12 @@
+{
+  "iss": "https://identity.mavula.io",
+  "sub": "operator_01J00000000000000000000000",
+  "aud": "urn:mavula:ledger-core",
+  "iat": 1784000000,
+  "exp": 1784000300,
+  "tenant_id": "tenant_mz_001",
+  "institution_id": "institution_mz_001",
+  "branch_id": "branch_maputo_001",
+  "roles": ["operations_maker"],
+  "permissions": ["finance.read", "finance.write", "workbench.read", "workbench.jobs.write"]
+}

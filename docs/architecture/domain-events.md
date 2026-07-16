@@ -6,7 +6,7 @@ Decisão: 2026-06-27
 
 RFC: [RFC-0001](https://github.com/orgs/mavulahq/discussions/1)
 
-Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Eventos com estado `proposed` continuam sendo linguagem de arquitetura, não contratos publicados. As fatias ativas atuais são `products.configuration_published`, `ledger.journal_posted`, `lending.loan_disbursed`, `lending.payment_posted` e `payments.settlement_completed`.
+Os schemas e o catálogo canônicos ficam em [`contracts/domain-events`](../../contracts/domain-events/). Eventos com estado `proposed` continuam sendo linguagem de arquitetura, não contratos publicados. As fatias ativas atuais são `products.configuration_published`, `ledger.journal_posted`, `ledger.adjustment_posted`, `lending.loan_disbursed`, `lending.payment_posted`, `lending.adjustment_applied` e `payments.settlement_completed`.
 
 ## Evento, comando e job
 
@@ -68,8 +68,12 @@ Um evento só muda de `proposed` para `active` quando possui payload schema vers
 
 `ledger.journal_posted` v1 está ativo como fatia de Accounts & Ledger da Fase 2. O `ledger-core` grava o evento numa Outbox após validar e publicar um journal entry balanceado, com linhas e totais por moeda sem incluir descrição livre ou dados pessoais.
 
+`ledger.adjustment_posted` v1 está ativo como facto de uma reversão ou correção aprovada. O evento referencia o journal original, o journal de reversão e, numa correção, o journal substituto. O original permanece imutável e a projeção conserva histórico idempotente para entrega fora de ordem e rebuild.
+
 `lending.loan_disbursed` v1 está ativo como primeira fatia vertical da Fase 2. O `ledger-core` grava o evento numa Outbox após desembolso aprovado; o publisher envia o envelope ao `workbench` pela queue `platform`; o `workbench` chama o endpoint interno de domain events; e o `ledger-core` registra Inbox por consumidor antes de disparar workflows.
 
 `lending.payment_posted` v1 está ativo como segunda fatia vertical da Fase 2. O `ledger-core` grava o evento numa Outbox após um pagamento de empréstimo ser alocado em taxas, juros e principal, com saldo remanescente explícito no payload.
+
+`lending.adjustment_applied` v1 está ativo para ajustes aprovados de pagamentos e desembolsos. O payload identifica a operação original, reversão, substituição quando aplicável, alocação, saldo e versão do empréstimo; o evento é gravado na mesma transação dos efeitos financeiros.
 
 `payments.settlement_completed` v1 está ativo como fatia de Payments da Fase 4. O `settlements` grava o evento numa Outbox após webhook de liquidação reconciliado; o publisher do `workbench` envia o envelope pela queue `platform`; e o `ledger-core` registra Inbox idempotente sem executar mutação financeira direta.

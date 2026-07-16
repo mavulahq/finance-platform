@@ -9,7 +9,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg)](pnpm-workspace.yaml)
 [![Go](https://img.shields.io/badge/Go-planned-00ADD8.svg)](ROADMAP.md)
 [![Java](https://img.shields.io/badge/Java-planned-ED8B00.svg)](ROADMAP.md)
-[![COBOL](https://img.shields.io/badge/COBOL-integration--ready-005CA5.svg)](ROADMAP.md)
+[![COBOL](https://img.shields.io/badge/COBOL-contract--ready-005CA5.svg)](ROADMAP.md)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-runtime-4169E1.svg)](docker-compose.yml)
 [![Redis](https://img.shields.io/badge/Redis-queues-DC382D.svg)](docker-compose.yml)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-operations-326CE5.svg)](packages/operations/kubernetes)
@@ -35,8 +35,11 @@ finance-platform/
 ├── docs/architecture/          Context map, invariants and ADRs
 ├── packages/
 │   ├── ledger-core/            Financial source of truth
+│   ├── identity-access/        Institutional identity and authorization server
 │   ├── workbench/              Durable worker runtime and status API
 │   ├── settlements/            Payment process and reconciliation foundation
+│   ├── developer-docs/         Public integration guides and API reference
+│   ├── legacy-connectors/      COBOL and fixed-width interoperability contracts
 │   └── operations/             Docker, Kubernetes, Terraform and runbooks
 ├── LICENSE_POLICY.md           Open core policy
 ├── TRADEMARKS.md               MAVULA mark usage
@@ -44,16 +47,18 @@ finance-platform/
 └── CONTRIBUTING.md             Contribution rules
 ```
 
-`identity-access`, `developer-docs`, and `legacy-connectors` are planned
-architecture modules tracked by
-[RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md); they are not
-present as workspace packages yet.
+`developer-docs` publishes the approved Identity Access, Ledger Core and
+Workbench OpenAPI v1 contracts, operational guides and reproducible examples at
+[mavulahq.github.io/developer-docs](https://mavulahq.github.io/developer-docs/).
+`legacy-connectors` owns durable receipts, fixed-width generation and
+validation-only imports under [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
 
 ## Licensing
 
 MAVULA follows an open core model.
 
-- `ledger-core`, `workbench`, `settlements`, contracts and root code:
+- `identity-access`, `ledger-core`, `workbench`, `settlements`, `developer-docs`,
+  `legacy-connectors`, contracts and root code:
   `AGPL-3.0-only`.
 - `operations`: `Apache-2.0`.
 - MAVULA names, logos, domains and product marks remain reserved.
@@ -67,9 +72,12 @@ See [LICENSE_POLICY.md](LICENSE_POLICY.md), [TRADEMARKS.md](TRADEMARKS.md) and
 
 | Module | Package | Responsibility |
 | --- | --- | --- |
+| Identity Access | `@mavula/identity-access` | Institutions, branches, operators, credentials, memberships, roles, OIDC artifacts and access policy. |
 | Ledger Core | `@mavula/ledger-core` | Product configuration, accounts, ledger, lending, audit, outbox/inbox and read projections. |
-| Workbench | `@mavula/workbench` | BullMQ workers, schedules, retries, queues, payment outbox publishing and platform status. |
+| Workbench | `@mavula/workbench` | BullMQ workers, schedules, retries, payment publishing, legacy batch orchestration and platform status. |
 | Settlements | `@mavula/settlements` | Payment process state, webhook dedupe, reconciliation candidates and guarded settlement outbox. |
+| Developer Docs | `@mavula/developer-docs` | Versioned integration guides, examples and public OpenAPI reference with owner contract provenance. |
+| Legacy Connectors | `@mavula/legacy-connectors` | COBOL copybooks, fixed-width generation, validation-only imports and durable batch receipts. |
 | Operations | `@mavula/operations` | Local services, Docker, Kubernetes, Minikube, monitoring, secrets and Terraform starters. |
 
 Legacy names remain as compatibility aliases where needed:
@@ -127,6 +135,8 @@ pnpm git:hooks:install
 Build and test:
 
 ```bash
+pnpm --filter @mavula/identity-access build
+pnpm --filter @mavula/identity-access test
 pnpm --filter @mavula/ledger-core build
 pnpm --filter @mavula/ledger-core test:all
 pnpm --filter @mavula/settlements test
@@ -138,16 +148,16 @@ pnpm -r build
 Docker Compose:
 
 ```bash
-docker compose up -d postgres redis ledger-core workbench
+docker compose up -d postgres redis identity-access ledger-core workbench
 docker compose ps
-docker compose logs -f ledger-core workbench
+docker compose logs -f identity-access ledger-core workbench
 docker compose down
 ```
 
 Minikube:
 
 ```bash
-pnpm --filter @mavula/operations minikube:deploy
+MINIKUBE_PROFILE=<existing-profile> pnpm --filter @mavula/operations minikube:deploy
 pnpm --filter @mavula/operations minikube:status
 pnpm --filter @mavula/operations minikube:stop
 ```
@@ -156,6 +166,9 @@ pnpm --filter @mavula/operations minikube:stop
 
 `.env.example` is intentionally a placeholder. Local secrets and runtime
 configuration belong in `.env`, which must not be committed.
+
+Minikube reuses `mavula/*:<tag>` images by default. Set
+`MINIKUBE_REBUILD_IMAGES=true` only when a deliberate local rebuild is required.
 
 New environment names are preferred:
 

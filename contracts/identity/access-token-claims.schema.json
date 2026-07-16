@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mavula.dev/contracts/identity/access-token-claims.v1.schema.json",
+  "title": "MAVULA Access Token Claims v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["iss", "sub", "aud", "iat", "exp", "tenant_id", "institution_id", "roles", "permissions"],
+  "properties": {
+    "iss": { "type": "string", "format": "uri" },
+    "sub": { "type": "string", "minLength": 1 },
+    "aud": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      ]
+    },
+    "iat": { "type": "integer", "minimum": 1 },
+    "exp": { "type": "integer", "minimum": 1 },
+    "tenant_id": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{1,127}$" },
+    "institution_id": { "type": "string", "minLength": 1 },
+    "branch_id": { "type": "string", "minLength": 1 },
+    "client_id": { "type": "string", "minLength": 1 },
+    "roles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["institution_admin", "operations_maker", "operations_checker", "compliance_officer", "auditor"]
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["finance.read", "finance.write", "finance.approve", "configuration.write", "compliance.manage", "audit.read", "identity.admin", "workbench.read", "workbench.jobs.write", "observability.read", "internal.worker"]
+      }
+    }
+  }
+}

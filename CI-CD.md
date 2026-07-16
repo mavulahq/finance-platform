@@ -282,7 +282,9 @@ Required configuration:
 
 - `REDIS_URL` in `ledger-core` and `workbench`.
 - `LEDGER_CORE_URL=http://ledger-core` in `workbench` inside Kubernetes.
-- The same `INTERNAL_API_KEY` in both services.
+- `OIDC_ISSUER`, resource audiences, and the trusted JWKS URI in both resource servers.
+- A `private_key_jwt` client registration for `workbench`, with its private JWK supplied only through the secret store.
+- `OIDC_TOKEN_ENDPOINT` and `LEDGER_CORE_AUDIENCE=urn:mavula:ledger-core` in `workbench`.
 
 Operational flow:
 
@@ -290,7 +292,7 @@ Operational flow:
 ledger-core producer
   -> BullMQ platform queue in Redis
   -> workbench worker
-  -> authenticated /api/internal/worker/events callback
+  -> /api/internal/worker/events callback authenticated by an `internal.worker` access token
   -> ledger-core workflow trigger
 ```
 
