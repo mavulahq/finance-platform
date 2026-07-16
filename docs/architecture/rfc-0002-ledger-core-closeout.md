@@ -279,7 +279,31 @@ A quarta fatia entrega ajustes financeiros controlados e classificação técnic
 - migration com RLS, alvo ativo único por tenant, lançamentos `REVERSAL`/`CORRECTION` e audit trail append-only;
 - testes de concorrência, rejeição, trial balance, pagamentos, desembolsos, efeitos posteriores, API, projeções e PostgreSQL/RLS.
 
-Receipts duráveis para todos os side effects, OpenAPI em `developer-docs`, métricas adicionais e conectores legados permanecem nas fatias seguintes, na ordem definida acima.
+### Quinta fatia implementada
+
+A quinta fatia entrega:
+
+- receipts PostgreSQL atómicos por tenant, operação e digest de `Idempotency-Key`, com RLS, replay, conflito de fingerprint e retenção configurável de 365 dias;
+- cobertura de idempotência para todos os writes públicos de contas, lifecycle, ajustes, produtos, regras, schemas e workflows;
+- contratos OpenAPI v1 de `identity-access`, `ledger-core` e `workbench`, publicados por `developer-docs` sem endpoints internos ou operacionais;
+- métricas HTTP, idempotência, auth, tenant boundary, validação de contratos e ajustes, com alertas em `operations`;
+- fundação contratual de `legacy-connectors` para export regulatório fixed-width, incluindo copybook COBOL, manifesto, checksum e golden file sintético.
+
+O contrato legado desta fatia é apenas de validação. Importação, geração de exports a partir do ledger e execução batch permanecem na sexta fatia, depois da estabilização dos contratos públicos.
+
+### Sexta fatia implementada
+
+A sexta fatia entrega:
+
+- estado PostgreSQL próprio para receipts, artefactos e tentativas de batch, com role restrita, RLS por tenant e idempotência por digest;
+- geração determinística do export regulatório fixed-width a partir de transações `POSTED` fornecidas pela API interna do `ledger-core`;
+- importação limitada a staging e validação, sem postings, comandos de lending ou eventos financeiros;
+- queue `legacy` no `workbench`, leases, três tentativas, dead-letter, estados formais e registo idempotente de entrega;
+- APIs públicas protegidas por `compliance.manage`, `Idempotency-Key`, correlation id e tenant institucional;
+- métricas e alertas para backlog, processamento bloqueado, rejeições e falhas;
+- OpenAPI e guia operacional publicados em `developer-docs` por GitHub Pages.
+
+Os limites são 5000 detalhes e 10 MiB por artefacto. O checksum do trailer cobre header e detalhes; o ETag HTTP cobre o ficheiro completo. `legacy-connectors` continua sem acesso direto aos stores financeiros ou de identidade e não possui deployment próprio.
 
 ## Plano de testes
 

@@ -4,7 +4,10 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { validateContracts, validateIdentityContracts, validateRegulatoryContracts } from "./validate-domain-contracts.mjs";
+import {
+  validateContracts, validateIdentityContracts, validateLegacyInteropContract,
+  validatePublishedOpenApiContracts, validateRegulatoryContracts,
+} from "./validate-domain-contracts.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceContractsDir = path.join(root, "contracts", "domain-events");
@@ -42,6 +45,14 @@ test("accepts canonical identity access-token claims", () => {
 
 test("accepts canonical regulatory contracts", () => {
   assert.deepEqual(validateRegulatoryContracts(), { contractCount: 3 });
+});
+
+test("accepts owner-locked public OpenAPI contracts", () => {
+  assert.deepEqual(validatePublishedOpenApiContracts(), { contractCount: 3 });
+});
+
+test("accepts the durable legacy batch runtime", () => {
+  assert.deepEqual(validateLegacyInteropContract(), { recordLength: 2048, fixtureRecords: 3, durableRuntime: true });
 });
 
 test("rejects event names outside the canonical pattern", () => {
