@@ -57,6 +57,8 @@
     "packages/ledger-core",
     "packages/workbench",
     "packages/settlements",
-    "packages/operations"
+    "packages/operations",
+    "packages/developer-docs",
+    "packages/legacy-connectors"
   ]
 }

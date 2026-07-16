@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mavula.io/contracts/regulatory/transaction-record.v1.schema.json",
+  "title": "MAVULA Regulatory Transaction Record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "record_id", "tenant_id", "institution_id", "transaction_id",
+    "transaction_type", "instruction_method", "source", "destination", "executor",
+    "beneficial_owner_ids", "counterparty", "money", "occurred_at", "recorded_at",
+    "correlation_id", "retention_until", "legal_basis", "data_classification"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "record_id": { "$ref": "#/$defs/id" },
+    "tenant_id": { "$ref": "#/$defs/id" },
+    "institution_id": { "$ref": "#/$defs/id" },
+    "branch_id": { "$ref": "#/$defs/id" },
+    "transaction_id": { "$ref": "#/$defs/id" },
+    "transaction_type": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "instruction_method": { "enum": ["API", "BRANCH", "BATCH", "MOBILE", "PARTNER", "SYSTEM"] },
+    "source": { "$ref": "#/$defs/party" },
+    "destination": { "$ref": "#/$defs/party" },
+    "executor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["operator_id", "effective_role"],
+      "properties": { "operator_id": { "$ref": "#/$defs/id" }, "effective_role": { "$ref": "#/$defs/id" } }
+    },
+    "beneficial_owner_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "counterparty": { "$ref": "#/$defs/party" },
+    "money": { "$ref": "#/$defs/money" },
+    "occurred_at": { "$ref": "#/$defs/timestamp" },
+    "recorded_at": { "$ref": "#/$defs/timestamp" },
+    "correlation_id": { "$ref": "#/$defs/id" },
+    "adjustment_reference": { "$ref": "#/$defs/adjustment_reference" },
+    "retention_until": { "type": "string", "format": "date" },
+    "legal_basis": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "data_classification": { "const": "restricted" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "timestamp": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "money": {
+      "type": "object", "additionalProperties": false, "required": ["amount", "currency"],
+      "properties": {
+        "amount": { "type": "string", "pattern": "^([1-9][0-9]*(\\.[0-9]+)?|0\\.0*[1-9][0-9]*)$" },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+      }
+    },
+    "party": {
+      "type": "object", "additionalProperties": false, "required": ["party_id", "account_id", "party_type"],
+      "properties": {
+        "party_id": { "$ref": "#/$defs/id" }, "account_id": { "$ref": "#/$defs/id" },
+        "party_type": { "enum": ["CUSTOMER", "INSTITUTION", "MERCHANT", "GOVERNMENT", "OTHER"] },
+        "country": { "type": "string", "pattern": "^[A-Z]{2}$" }
+      }
+    },
+    "adjustment_reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["request_id", "adjustment_type", "original_transaction_id", "reversal_transaction_id"],
+      "properties": {
+        "request_id": { "$ref": "#/$defs/id" },
+        "adjustment_type": { "enum": ["REVERSAL", "CORRECTION"] },
+        "original_transaction_id": { "$ref": "#/$defs/id" },
+        "reversal_transaction_id": { "$ref": "#/$defs/id" },
+        "replacement_transaction_id": { "$ref": "#/$defs/id" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "adjustment_type": { "const": "CORRECTION" } } },
+          "then": {
+            "properties": { "replacement_transaction_id": true },
+            "required": ["replacement_transaction_id"]
+          },
+          "else": {
+            "properties": { "replacement_transaction_id": true },
+            "not": { "required": ["replacement_transaction_id"] }
+          }
+        }
+      ]
+    }
+  }
+}

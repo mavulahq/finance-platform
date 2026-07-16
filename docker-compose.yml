@@ -109,9 +109,11 @@ services:
       NODE_ENV: development
       PORT: 3010
       DATABASE_URL: ${WORKBENCH_DATABASE_URL:?configure WORKBENCH_DATABASE_URL in .env}
+      LEGACY_CONNECTORS_DATABASE_URL: ${LEGACY_CONNECTORS_DATABASE_URL:?configure LEGACY_CONNECTORS_DATABASE_URL in .env}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       WORKBENCH_WORKER_ENABLED: "true"
-      WORKBENCH_QUEUES: payments,platform
+      WORKBENCH_QUEUES: payments,platform,legacy
+      WORKBENCH_LEGACY_BATCH_STORE: postgres
       LEDGER_CORE_URL: http://ledger-core:3000
       OIDC_ISSUER: ${IDENTITY_ISSUER:?configure IDENTITY_ISSUER in .env}
       OIDC_AUDIENCE: urn:mavula:workbench

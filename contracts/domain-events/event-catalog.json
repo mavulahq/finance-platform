@@ -29,6 +29,19 @@
       "consumers": ["docs"]
     },
     {
+      "event_type": "ledger.adjustment_posted",
+      "event_version": 1,
+      "owner_context": "accounts_ledger",
+      "producer": "ledger-core",
+      "aggregate_type": "financial_adjustment",
+      "status": "active",
+      "data_classification": "restricted",
+      "description": "Uma reversão ou correção financeira controlada foi publicada no ledger.",
+      "ordering_key": "tenant_id:aggregate.id",
+      "payload_schema": "payloads/ledger.adjustment_posted.v1.schema.json",
+      "consumers": ["ledger-core", "console", "docs"]
+    },
+    {
       "event_type": "lending.loan_approved",
       "event_version": 1,
       "owner_context": "lending",
@@ -65,6 +78,19 @@
       "ordering_key": "tenant_id:aggregate.id",
       "payload_schema": "payloads/lending.payment_posted.v1.schema.json",
       "consumers": ["workbench", "console", "docs"]
+    },
+    {
+      "event_type": "lending.adjustment_applied",
+      "event_version": 1,
+      "owner_context": "lending",
+      "producer": "ledger-core",
+      "aggregate_type": "loan",
+      "status": "active",
+      "data_classification": "restricted",
+      "description": "Uma reversão ou correção controlada foi aplicada a um pagamento ou desembolso de empréstimo.",
+      "ordering_key": "tenant_id:aggregate.id",
+      "payload_schema": "payloads/lending.adjustment_applied.v1.schema.json",
+      "consumers": ["ledger-core", "console", "docs"]
     },
     {
       "event_type": "payments.settlement_completed",

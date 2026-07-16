@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mavula.io/contracts/domain-events/payloads/lending.adjustment_applied.v1.schema.json",
+  "title": "lending.adjustment_applied.v1 payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "adjustment_request_id",
+    "adjustment_type",
+    "operation",
+    "original_transaction_id",
+    "reversal_transaction_id",
+    "money",
+    "balance_after",
+    "loan_status",
+    "applied_at"
+  ],
+  "properties": {
+    "adjustment_request_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "adjustment_type": { "enum": ["REVERSAL", "CORRECTION"] },
+    "operation": { "enum": ["LOAN_PAYMENT", "LOAN_DISBURSEMENT"] },
+    "original_transaction_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "reversal_transaction_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "replacement_transaction_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "money": { "$ref": "#/$defs/money" },
+    "allocation": { "$ref": "#/$defs/allocation" },
+    "balance_after": { "$ref": "#/$defs/non_negative_decimal" },
+    "loan_status": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "applied_at": { "type": "string", "format": "date-time", "pattern": "Z$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "adjustment_type": { "const": "CORRECTION" } } },
+      "then": {
+        "properties": { "replacement_transaction_id": true },
+        "required": ["replacement_transaction_id"]
+      },
+      "else": {
+        "properties": { "replacement_transaction_id": true },
+        "not": { "required": ["replacement_transaction_id"] }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "LOAN_PAYMENT" } } },
+      "then": {
+        "properties": { "allocation": true },
+        "required": ["allocation"]
+      }
+    }
+  ],
+  "$defs": {
+    "positive_decimal": { "type": "string", "pattern": "^([1-9][0-9]*(\\.[0-9]+)?|0\\.0*[1-9][0-9]*)$" },
+    "non_negative_decimal": { "type": "string", "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$" },
+    "money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": { "$ref": "#/$defs/positive_decimal" },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+      }
+    },
+    "allocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal", "interest", "fees"],
+      "properties": {
+        "principal": { "$ref": "#/$defs/non_negative_decimal" },
+        "interest": { "$ref": "#/$defs/non_negative_decimal" },
+        "fees": { "$ref": "#/$defs/non_negative_decimal" }
+      }
+    }
+  }
+}

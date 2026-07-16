@@ -126,6 +126,8 @@ Requisitos mínimos:
 ### 3. Operações financeiras controladas
 
 O `ledger-core` deve fechar o ciclo operacional mínimo de contas e correções financeiras.
+Na ordem executável, esta capacidade é entregue em duas fatias: account lifecycle
+na terceira e ajustes financeiros na quarta.
 
 Requisitos mínimos:
 
@@ -136,6 +138,11 @@ Requisitos mínimos:
 - audit trail obrigatório para operações aprovadas, rejeitadas, postadas, revertidas, falhadas e configuradas.
 
 ### 4. Idempotência, contratos e observabilidade
+
+Esta capacidade começa na quinta fatia executável. Os contratos regulatórios
+foram antecipados na quarta fatia porque o novo audit trail e os ajustes
+financeiros precisavam de fronteiras de dados explícitas; receipts duráveis,
+OpenAPI e observabilidade adicional permanecem na quinta.
 
 Requisitos mínimos:
 
@@ -238,7 +245,65 @@ A primeira fatia entrega a fundação de identidade e segurança de API:
 - chamadas internas do `workbench` autenticadas por Client Credentials, sem shared API key;
 - contrato JSON Schema de access-token claims, configuração por `.env`, manifests Kubernetes e CI obrigatória.
 
-As fatias seguintes mantêm a ordem definida acima. RLS transacional, lifecycle completo de contas, maker-checker aplicado às mutações financeiras, OpenAPI dedicado e conectores legados não fazem parte desta entrega.
+A segunda fatia entrega isolamento transacional de tenant:
+
+- baseline Prisma controlada e migration repetível para políticas RLS;
+- role `ledger_core_app` sem bypass, credenciais de runtime separadas das credenciais de migration e remoção do role legado com password fixa;
+- vínculo local entre tenant e instituição no primeiro uso de claims assinadas, com rejeição de correspondências posteriores divergentes;
+- contexto PostgreSQL aplicado por `SET LOCAL` dentro da mesma transação que executa cada query;
+- Inbox, Outbox, projeções, jobs, logs e exports restritos ao tenant autenticado, sem contexto global `*`;
+- testes PostgreSQL com role real, `WITH CHECK` e reutilização de conexão com pool limitado.
+
+A terceira fatia entrega account lifecycle e contratos públicos mínimos:
+
+- contas com referência de cliente e produto, moeda, versionamento e estados `ACTIVE`, `FROZEN` e `CLOSED`;
+- APIs tenant-scoped de criação, listagem, consulta, saldo e extrato;
+- subledger append-only em `account_entries`, suportado por journal entries balanceados e valores decimais serializados como string;
+- pedidos duráveis de transição com estados `PENDING_APPROVAL`, `APPLIED`, `REJECTED` e `FAILED`;
+- maker-checker para freeze, unfreeze e close, com permissão explícita de aprovação e bloqueio de autoaprovação;
+- política de posting que bloqueia débitos em contas congeladas, permite créditos e bloqueia qualquer posting em contas encerradas;
+- encerramento restrito a contas ativas com saldo zero;
+- audit trail gravado na mesma transação da decisão e do posting;
+- migrations com RLS e privilégios append-only, testes de lifecycle, concorrência, isolamento e ausência de efeitos financeiros diretos por eventos de pagamento.
+
+A quarta fatia entrega ajustes financeiros controlados e classificação técnica de auditoria:
+
+- pedidos duráveis de reversão e correção para transactions e journal entries, com original imutável;
+- correção atómica por journal de reversão seguido de journal substituto, incluindo postings do subledger;
+- suporte a reversão e correção dos efeitos de pagamento e desembolso em lending, com bloqueio quando existem efeitos financeiros posteriores;
+- maker-checker, bloqueio de autoaprovação, decisões idempotentes e estados `PENDING_APPROVAL`, `APPLIED`, `REJECTED` e `FAILED`;
+- `AuditTrailEvent.stage`, `result` e `source` tipados, actor roles, instituição, filial, motivo, correlação, causação e referência de aprovação;
+- campo legado `phase` disponível apenas para leitura, sem novas escritas no runtime;
+- eventos ativos `ledger.adjustment_posted` v1 e `lending.adjustment_applied` v1, com Outbox transacional e rebuild das projeções;
+- contratos JSON Schema v1 separados para transaction record regulatório, decisão AML e export regulatório;
+- migration com RLS, alvo ativo único por tenant, lançamentos `REVERSAL`/`CORRECTION` e audit trail append-only;
+- testes de concorrência, rejeição, trial balance, pagamentos, desembolsos, efeitos posteriores, API, projeções e PostgreSQL/RLS.
+
+### Quinta fatia implementada
+
+A quinta fatia entrega:
+
+- receipts PostgreSQL atómicos por tenant, operação e digest de `Idempotency-Key`, com RLS, replay, conflito de fingerprint e retenção configurável de 365 dias;
+- cobertura de idempotência para todos os writes públicos de contas, lifecycle, ajustes, produtos, regras, schemas e workflows;
+- contratos OpenAPI v1 de `identity-access`, `ledger-core` e `workbench`, publicados por `developer-docs` sem endpoints internos ou operacionais;
+- métricas HTTP, idempotência, auth, tenant boundary, validação de contratos e ajustes, com alertas em `operations`;
+- fundação contratual de `legacy-connectors` para export regulatório fixed-width, incluindo copybook COBOL, manifesto, checksum e golden file sintético.
+
+O contrato legado desta fatia é apenas de validação. Importação, geração de exports a partir do ledger e execução batch permanecem na sexta fatia, depois da estabilização dos contratos públicos.
+
+### Sexta fatia implementada
+
+A sexta fatia entrega:
+
+- estado PostgreSQL próprio para receipts, artefactos e tentativas de batch, com role restrita, RLS por tenant e idempotência por digest;
+- geração determinística do export regulatório fixed-width a partir de transações `POSTED` fornecidas pela API interna do `ledger-core`;
+- importação limitada a staging e validação, sem postings, comandos de lending ou eventos financeiros;
+- queue `legacy` no `workbench`, leases, três tentativas, dead-letter, estados formais e registo idempotente de entrega;
+- APIs públicas protegidas por `compliance.manage`, `Idempotency-Key`, correlation id e tenant institucional;
+- métricas e alertas para backlog, processamento bloqueado, rejeições e falhas;
+- OpenAPI e guia operacional publicados em `developer-docs` por GitHub Pages.
+
+Os limites são 5000 detalhes e 10 MiB por artefacto. O checksum do trailer cobre header e detalhes; o ETag HTTP cobre o ficheiro completo. `legacy-connectors` continua sem acesso direto aos stores financeiros ou de identidade e não possui deployment próprio.
 
 ## Plano de testes
 
