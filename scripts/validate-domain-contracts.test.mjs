@@ -51,8 +51,8 @@ test("accepts owner-locked public OpenAPI contracts", () => {
   assert.deepEqual(validatePublishedOpenApiContracts(), { contractCount: 3 });
 });
 
-test("accepts the legacy fixed-width contract foundation", () => {
-  assert.deepEqual(validateLegacyInteropContract(), { recordLength: 2048, fixtureRecords: 3 });
+test("accepts the durable legacy batch runtime", () => {
+  assert.deepEqual(validateLegacyInteropContract(), { recordLength: 2048, fixtureRecords: 3, durableRuntime: true });
 });
 
 test("rejects event names outside the canonical pattern", () => {

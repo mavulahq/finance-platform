@@ -91,7 +91,7 @@ Status applies to the specific line item, not to regulatory approval or general 
 - ✅ RFC-0001 Phase 3 initial read projections exist for loan activity, ledger activity, and product publication, with tenant-scoped storage, idempotent consumers, rebuild support, and platform status exposure.
 - ✅ RFC-0001 Phase 4 foundation exists for `settlements` payment process state, webhook dedupe, reconciliation jobs, process metrics, guarded settlement outbox, and infrastructure alerts.
 - ✅ `payments.settlement_completed` v1 has an active payload contract, `settlements` Outbox producer, `workbench` publisher path, idempotent `ledger-core` Inbox handling, tests, and outbox observability.
-- 🟡 RFC-0002 has completed its fifth executable slice: durable idempotency, dedicated OpenAPI and additional observability. The legacy export contract foundation exists; executable batch interoperability remains.
+- ✅ RFC-0002 has completed its sixth executable slice: durable legacy receipts, deterministic regulatory exports, validation-only imports, Workbench orchestration, observability and published developer documentation.
 - ⬜ Activate further event vertical slices only after each one has producer, payload schema, idempotent consumer, tests, and observability.
 - 🟡 Add further read projections only for use cases with explicit consistency, freshness, and rebuild requirements.
 
@@ -130,7 +130,7 @@ Acceptance criteria:
 
 - 🟡 Public writes have explicit authorisation and durable idempotency; complete DTO coverage remains in progress.
 - ✅ Credentials, sessions, roles, and policies are owned outside `ledger-core`.
-- 🟡 Tenant isolation is enforced and tested in HTTP, Prisma and job boundaries; executable export isolation remains pending.
+- ✅ Tenant isolation is enforced and tested in HTTP, Prisma, job and executable legacy batch boundaries.
 - ✅ Every public financial mutation is idempotent, auditable, and reversible through controlled workflows.
 - ✅ Trial balance remains balanced across lifecycle, replay, reversal, correction, and concurrency tests.
 
@@ -148,14 +148,15 @@ Acceptance criteria:
 ### developer-docs
 
 - ✅ Generated OpenAPI reference for Identity Access, Ledger Core and Workbench.
+- ✅ Public GitHub Pages reference and legacy batch operator guide.
 - ⬜ Institution onboarding and sandbox guides.
 - ⬜ Partner integration examples and webhook documentation.
 - ⬜ Operator runbooks generated from the operational source of truth.
 
 ### legacy-connectors
 
-- 🟡 Versioned COBOL copybook and fixed-width regulatory transaction export v1; executable adapters remain pending.
-- ⬜ Idempotent batch import and export with checksums, reconciliation, and deterministic rejection reports.
+- ✅ Versioned COBOL copybook and executable fixed-width regulatory transaction export v1.
+- ✅ Idempotent batch import validation and export with checksums, durable receipts and deterministic rejection reports.
 - ✅ Golden-file tests without real personal or financial data.
 - ✅ Guardian enforcement prevents direct access to `ledger-core` or `identity-access` stores.
 
@@ -230,7 +231,7 @@ Acceptance criteria:
 - ✅ TypeScript remains the implemented runtime language for current modules.
 - ⬜ Go is reserved for high-throughput services or operational agents when a concrete workload requires it.
 - ⬜ Java is reserved for institutional integration surfaces where JVM ecosystems are a better fit.
-- 🟡 COBOL is introduced through a versioned `legacy-connectors` copybook and fixed-width contract; executable batch interoperability remains pending.
+- ✅ COBOL interoperability is active through versioned copybooks, fixed-width artefacts and the durable `legacy-connectors` runtime.
 
 ## Immediate Delivery Order
 
@@ -239,7 +240,7 @@ Acceptance criteria:
 3. Complete account lifecycle and its controlled maker-checker transitions.
 4. Completed reversals, corrections, maker-checker for financial adjustments, and technical audit classification.
 5. Completed durable idempotency, public OpenAPI publication and additional observability.
-6. Stabilize the regulatory export contract, then activate executable `legacy-connectors` batch processing.
+6. Completed executable `legacy-connectors` batch processing and public developer documentation.
 7. Complete the MAVULA open core transition: legal review and CLA automation.
 8. Build `console` as the institution operating surface.
 9. Expand payment adapters, CI security gates, and production infrastructure.

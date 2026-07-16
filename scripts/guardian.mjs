@@ -123,6 +123,7 @@ for (const expected of [
   "pnpm --filter @mavula/settlements test",
   "pnpm --filter @mavula/developer-docs build",
   "pnpm --filter @mavula/legacy-connectors test",
+  "pnpm --filter @mavula/legacy-connectors test:postgres",
   "docker compose config",
   "kubectl kustomize packages/operations/kubernetes/overlays/minikube",
 ]) {

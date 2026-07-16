@@ -225,7 +225,16 @@ export function validateLegacyInteropContract(workspaceRoot = root) {
   if (lines.length < 3 || lines.some((line) => Buffer.byteLength(line, "ascii") !== layout.record_length)) {
     fail("Legacy golden file must contain fixed-width header, detail and trailer records");
   }
-  return { recordLength: layout.record_length, fixtureRecords: lines.length };
+  const moduleRoot = path.join(workspaceRoot, "packages", "legacy-connectors");
+  const runtime = fs.readFileSync(path.join(moduleRoot, "src", "batch-runtime.ts"), "utf8");
+  const migration = fs.readFileSync(path.join(moduleRoot, "prisma", "migrations", "20260715000100_legacy_batch_runtime", "migration.sql"), "utf8");
+  for (const publicType of ["LegacyBatchManager", "PostgresLegacyBatchStore", "MemoryLegacyBatchStore"]) {
+    if (!runtime.includes(`class ${publicType}`)) fail(`Legacy runtime export missing: ${publicType}`);
+  }
+  if (!/ENABLE ROW LEVEL SECURITY/.test(migration) || !/FORCE ROW LEVEL SECURITY/.test(migration)) {
+    fail("Legacy batch receipts and artifacts must enforce PostgreSQL RLS");
+  }
+  return { recordLength: layout.record_length, fixtureRecords: lines.length, durableRuntime: true };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
