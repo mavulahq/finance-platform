@@ -38,7 +38,7 @@ finance-platform/
 │   ├── identity-access/        Institutional identity and authorization server
 │   ├── workbench/              Durable worker runtime and status API
 │   ├── settlements/            Payment process and reconciliation foundation
-│   ├── developer-docs/         Versioned public API reference
+│   ├── developer-docs/         Public integration guides and API reference
 │   ├── legacy-connectors/      COBOL and fixed-width interoperability contracts
 │   └── operations/             Docker, Kubernetes, Terraform and runbooks
 ├── LICENSE_POLICY.md           Open core policy
@@ -48,7 +48,7 @@ finance-platform/
 ```
 
 `developer-docs` publishes the approved Identity Access, Ledger Core and
-Workbench OpenAPI v1 contracts at
+Workbench OpenAPI v1 contracts, operational guides and reproducible examples at
 [mavulahq.github.io/developer-docs](https://mavulahq.github.io/developer-docs/).
 `legacy-connectors` owns durable receipts, fixed-width generation and
 validation-only imports under [RFC-0002](docs/architecture/rfc-0002-ledger-core-closeout.md).
@@ -76,7 +76,7 @@ See [LICENSE_POLICY.md](LICENSE_POLICY.md), [TRADEMARKS.md](TRADEMARKS.md) and
 | Ledger Core | `@mavula/ledger-core` | Product configuration, accounts, ledger, lending, audit, outbox/inbox and read projections. |
 | Workbench | `@mavula/workbench` | BullMQ workers, schedules, retries, payment publishing, legacy batch orchestration and platform status. |
 | Settlements | `@mavula/settlements` | Payment process state, webhook dedupe, reconciliation candidates and guarded settlement outbox. |
-| Developer Docs | `@mavula/developer-docs` | Versioned public and partner OpenAPI reference with owner contract provenance. |
+| Developer Docs | `@mavula/developer-docs` | Versioned integration guides, examples and public OpenAPI reference with owner contract provenance. |
 | Legacy Connectors | `@mavula/legacy-connectors` | COBOL copybooks, fixed-width generation, validation-only imports and durable batch receipts. |
 | Operations | `@mavula/operations` | Local services, Docker, Kubernetes, Minikube, monitoring, secrets and Terraform starters. |
 
