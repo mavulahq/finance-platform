@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "decision_id": "amldec_001",
+  "tenant_id": "tenant_maputo_001",
+  "institution_id": "institution_001",
+  "alert_id": "alert_001",
+  "transaction_record_ids": ["regtxn_001"],
+  "risk_classification": "HIGH",
+  "decision": "ESCALATE",
+  "decided_by": { "actor_id": "officer_001", "role": "COMPLIANCE_OFFICER" },
+  "basis_code": "UNUSUAL_TRANSACTION_PATTERN",
+  "decided_at": "2026-07-15T13:00:00.000Z",
+  "correlation_id": "corr_aml_001",
+  "retention_until": "2036-07-15",
+  "legal_basis": "Aviso 10/GBM/2024",
+  "data_classification": "restricted"
+}

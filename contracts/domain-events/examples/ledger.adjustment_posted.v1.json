@@ -1,0 +1,24 @@
+{
+  "event_id": "evt_7bb41bd1-6fb4-4d0b-9f14-b51506d517bb",
+  "event_type": "ledger.adjustment_posted",
+  "event_version": 1,
+  "occurred_at": "2026-07-15T12:00:00.000Z",
+  "tenant_id": "tenant_maputo_001",
+  "aggregate": { "type": "financial_adjustment", "id": "far_001", "version": 1 },
+  "correlation_id": "corr_adjustment_001",
+  "causation_id": "far_001",
+  "idempotency_key": "tenant_maputo_001:far_001:ledger.adjustment_posted:v1",
+  "payload": {
+    "adjustment_request_id": "far_001",
+    "adjustment_type": "CORRECTION",
+    "target_journal_entry_id": "je_payment_001",
+    "reversal_journal_entry_id": "je_reversal_001",
+    "replacement_journal_entry_id": "je_correction_001",
+    "applied_at": "2026-07-15T12:00:00.000Z"
+  },
+  "metadata": {
+    "producer": "ledger-core",
+    "data_classification": "restricted",
+    "schema_uri": "contracts/domain-events/event-envelope.schema.json"
+  }
+}

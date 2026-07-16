@@ -1,0 +1,29 @@
+{
+  "event_id": "evt_a25ff9aa-bb70-4b38-a65d-c21b77d76da5",
+  "event_type": "lending.adjustment_applied",
+  "event_version": 1,
+  "occurred_at": "2026-07-15T12:00:01.000Z",
+  "tenant_id": "tenant_maputo_001",
+  "aggregate": { "type": "loan", "id": "loan_001", "version": 4 },
+  "correlation_id": "corr_adjustment_001",
+  "causation_id": "far_001",
+  "idempotency_key": "tenant_maputo_001:far_001:lending.adjustment_applied:v1",
+  "payload": {
+    "adjustment_request_id": "far_001",
+    "adjustment_type": "CORRECTION",
+    "operation": "LOAN_PAYMENT",
+    "original_transaction_id": "txn_payment_001",
+    "reversal_transaction_id": "txn_reversal_001",
+    "replacement_transaction_id": "txn_correction_001",
+    "money": { "amount": "1200.00", "currency": "MZN" },
+    "allocation": { "principal": "1000.00", "interest": "150.00", "fees": "50.00" },
+    "balance_after": "9000.00",
+    "loan_status": "ACTIVE",
+    "applied_at": "2026-07-15T12:00:01.000Z"
+  },
+  "metadata": {
+    "producer": "ledger-core",
+    "data_classification": "restricted",
+    "schema_uri": "contracts/domain-events/event-envelope.schema.json"
+  }
+}

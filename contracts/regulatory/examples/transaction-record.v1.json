@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "record_id": "regtxn_001",
+  "tenant_id": "tenant_maputo_001",
+  "institution_id": "institution_001",
+  "branch_id": "branch_001",
+  "transaction_id": "txn_payment_001",
+  "transaction_type": "LOAN_PAYMENT",
+  "instruction_method": "BRANCH",
+  "source": { "party_id": "customer_001", "account_id": "account_001", "party_type": "CUSTOMER", "country": "MZ" },
+  "destination": { "party_id": "institution_001", "account_id": "loan_001", "party_type": "INSTITUTION", "country": "MZ" },
+  "executor": { "operator_id": "operator_001", "effective_role": "operations_maker" },
+  "beneficial_owner_ids": ["customer_001"],
+  "counterparty": { "party_id": "institution_001", "account_id": "loan_001", "party_type": "INSTITUTION", "country": "MZ" },
+  "money": { "amount": "1200.00", "currency": "MZN" },
+  "occurred_at": "2026-07-15T12:00:00.000Z",
+  "recorded_at": "2026-07-15T12:00:01.000Z",
+  "correlation_id": "corr_regtxn_001",
+  "retention_until": "2036-07-15",
+  "legal_basis": "Lei 14/2023 artigo 43",
+  "data_classification": "restricted"
+}
