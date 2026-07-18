@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mavula.dev/contracts/identity/access-token-claims.v1.schema.json",
+  "$id": "https://mavula.io/contracts/identity/access-token-claims.v1.schema.json",
   "title": "MAVULA Access Token Claims v1",
   "type": "object",
   "additionalProperties": true,

@@ -264,6 +264,9 @@ importers:
       jose:
         specifier: 6.2.3
         version: 6.2.3
+      pg:
+        specifier: ^8.13.1
+        version: 8.22.0
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.14
@@ -280,12 +283,18 @@ importers:
       '@types/multer':
         specifier: ^1.4.12
         version: 1.4.13
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.20.0
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
       jest:
         specifier: ^29.0.0
         version: 29.7.0(@types/node@24.13.3)(ts-node@10.9.2(@types/node@24.13.3)(typescript@5.9.3))
+      prisma:
+        specifier: 5.7.0
+        version: 5.7.0
       supertest:
         specifier: ^6.3.3
         version: 6.3.4

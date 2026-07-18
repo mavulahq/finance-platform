@@ -36,6 +36,8 @@
     "dev:services:down": "docker compose down",
     "dev:services:logs": "docker compose logs -f postgres redis",
     "dev:services:ps": "docker compose ps",
+    "dev:platform:up": "docker compose -f docker-compose.yml -f docker-compose.platform.yml up -d",
+    "dev:platform:down": "docker compose -f docker-compose.yml -f docker-compose.platform.yml down",
     "infra:plan": "pnpm --filter @mavula/operations tf:plan",
     "infra:apply": "pnpm --filter @mavula/operations tf:apply",
     "docker:build-all": "pnpm --filter @mavula/operations docker:build",
