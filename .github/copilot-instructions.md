@@ -1,5 +1,9 @@
 # MAVULA Agent Instructions
 
-For code reviews and implementation checks, follow the canonical skill in `.agents/skills/mavula-review/SKILL.md`.
+For architecture, implementation, operations, security, scalability,
+composability, and no-code configuration, follow
+`.agents/skills/mavula-cloud-banking/SKILL.md`.
 
-Prioritize correctness, finance invariants, tenant isolation, database safety, security, and CI reproducibility. Keep review output concise, actionable, and in the language already used by the pull request, issue, or discussion.
+For reviews, follow `.agents/skills/mavula-review/SKILL.md` and load the relevant
+cloud-banking references. Prioritize financial invariants, ownership, tenant and
+data safety, security, recovery, capacity evidence, and CI reproducibility.
