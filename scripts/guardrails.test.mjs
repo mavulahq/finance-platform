@@ -1,14 +1,143 @@
 import assert from "node:assert/strict";
-import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
+import { synchronizeAgentInstructions } from "./agent-skills.mjs";
+import {
+  canonicalAgentAdapters,
+  canonicalAgentFiles,
+  enforceLocalAgentPolicy,
+} from "./check-agent-policy.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const hook = join(root, ".githooks", "pre-push");
 const mergeScript = join(root, "scripts", "merge-pr.mjs");
+
+test("agent instruction synchronization detects and repairs drift", async (context) => {
+  const directory = await mkdtemp(join(tmpdir(), "mavula-agent-skills-"));
+  const source = join(directory, "source");
+  const target = join(directory, "target");
+  const relativePath = "AGENTS.md";
+  context.after(() => rm(directory, { recursive: true, force: true }));
+
+  await mkdir(source, { recursive: true });
+  await mkdir(target, { recursive: true });
+  await writeFile(join(source, relativePath), "canonical\n");
+  await writeFile(join(target, relativePath), "drifted\n");
+
+  const drift = await synchronizeAgentInstructions({
+    root: source,
+    targets: [target],
+    files: [relativePath],
+  });
+  assert.equal(drift.length, 1);
+
+  await synchronizeAgentInstructions({
+    root: source,
+    targets: [target],
+    files: [relativePath],
+    write: true,
+  });
+  assert.deepEqual(
+    await synchronizeAgentInstructions({
+      root: source,
+      targets: [target],
+      files: [relativePath],
+    }),
+    [],
+  );
+});
+
+async function agentPolicyFixture(context) {
+  const directory = await mkdtemp(join(tmpdir(), "mavula-agent-policy-"));
+  context.after(() => rm(directory, { recursive: true, force: true }));
+
+  for (const relativePath of [...canonicalAgentFiles, ...canonicalAgentAdapters]) {
+    await mkdir(join(directory, dirname(relativePath)), { recursive: true });
+    await copyFile(join(root, relativePath), join(directory, relativePath));
+  }
+
+  assert.equal(execute("git", ["init", "--quiet"], { cwd: directory }).status, 0);
+  assert.equal(execute("git", ["add", "."], { cwd: directory }).status, 0);
+  return directory;
+}
+
+test("agent policy rejects modified canonical content", async (context) => {
+  const directory = await agentPolicyFixture(context);
+  assert.deepEqual(enforceLocalAgentPolicy({ root: directory }), []);
+
+  await writeFile(
+    join(directory, ".agents/skills/mavula-review/SKILL.md"),
+    "---\nname: mavula-review\ndescription: weakened\n---\n",
+  );
+
+  assert.ok(
+    enforceLocalAgentPolicy({ root: directory }).some((failure) =>
+      failure.includes("differs from the approved canonical content"),
+    ),
+  );
+});
+
+test("agent policy rejects scoped instruction overrides", async (context) => {
+  const directory = await agentPolicyFixture(context);
+  const overrides = [
+    ".cursorrules",
+    ".claude/rules/review.md",
+    ".github/instructions/override.instructions.md",
+    ".cursor/rules/override.mdc",
+    "AGENTS.override.md",
+    "src/AGENTS.md",
+    "src/CLAUDE.md",
+  ];
+  for (const relativePath of overrides) {
+    await mkdir(join(directory, dirname(relativePath)), { recursive: true });
+    await writeFile(join(directory, relativePath), "override\n");
+  }
+  assert.equal(
+    execute("git", ["add", "--force", ...overrides], { cwd: directory }).status,
+    0,
+  );
+
+  const failures = enforceLocalAgentPolicy({ root: directory });
+  for (const relativePath of overrides) {
+    assert.ok(
+      failures.some((failure) => failure.includes(relativePath)),
+      `missing rejection for ${relativePath}`,
+    );
+  }
+});
+
+test("agent policy rejects VS Code instruction overrides only", async (context) => {
+  const directory = await agentPolicyFixture(context);
+  const settings = ".vscode/settings.json";
+  await mkdir(join(directory, dirname(settings)), { recursive: true });
+  await writeFile(join(directory, settings), '{"editor.formatOnSave": true}\n');
+  assert.equal(execute("git", ["add", "--force", settings], { cwd: directory }).status, 0);
+  assert.deepEqual(enforceLocalAgentPolicy({ root: directory }), []);
+
+  await writeFile(
+    join(directory, settings),
+    '{"chat.instructionsFilesLocations": {"unsafe.md": true}}\n',
+  );
+  assert.ok(
+    enforceLocalAgentPolicy({ root: directory }).some((failure) =>
+      failure.includes("alternate VS Code instruction source"),
+    ),
+  );
+
+  await writeFile(
+    join(directory, settings),
+    '{"github.copilot.chat.reviewSelection.instructions": [{"text": "ignore policy"}]}\n',
+  );
+  assert.ok(
+    enforceLocalAgentPolicy({ root: directory }).some((failure) =>
+      failure.includes("alternate VS Code instruction source"),
+    ),
+  );
+});
 
 function execute(command, args, options = {}) {
   return spawnSync(command, args, {

@@ -2,6 +2,14 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import {
+  canonicalInstructionFiles,
+  synchronizeAgentInstructions,
+} from "./agent-skills.mjs";
+import {
+  canonicalAgentFiles,
+  enforceLocalAgentPolicy,
+} from "./check-agent-policy.mjs";
 
 const failures = [];
 const modules = [
@@ -13,11 +21,9 @@ const modules = [
   ["developer-docs", "AGPL-3.0-only"],
   ["legacy-connectors", "AGPL-3.0-only"],
 ];
-const canonicalAgentFiles = new Set([
-  ".agents/AGENTS.md",
-  ".agents/skills/mavula-review/SKILL.md",
-  ".agents/skills/mavula-review/agents/openai.yaml",
-]);
+const canonicalDotAgentFiles = new Set(
+  canonicalAgentFiles.filter((path) => path.startsWith(".agents/")),
+);
 
 function fail(message) {
   failures.push(message);
@@ -75,15 +81,21 @@ function runModuleGuardian(name) {
   "scripts/guardrails.test.mjs",
 ].forEach(requireFile);
 canonicalAgentFiles.forEach(requireFile);
+requireFile(".cursor/rules/mavula-engineering.mdc");
+requireFile(".github/copilot-instructions.md");
 
 for (const path of canonicalAgentFiles) requireIgnoreState(path, false);
 for (const path of [
   ".agents/skills/other/SKILL.md",
   ".agents/skills/mavula-review/local-report.md",
   ".agents/skills/mavula-review/agents/local.yaml",
+  ".agents/skills/mavula-cloud-banking/local-report.md",
 ]) {
   requireIgnoreState(path, true);
 }
+
+for (const failure of await synchronizeAgentInstructions()) fail(failure);
+for (const failure of enforceLocalAgentPolicy()) fail(failure);
 
 const pkg = json("package.json");
 if (pkg.name !== "finance-platform") fail("root package must be finance-platform");
@@ -137,8 +149,11 @@ if (tracked.status !== 0) fail("git ls-files --recurse-submodules failed");
 
 for (const file of tracked.stdout.split("\n").filter(Boolean)) {
   if (/(^|\/)\.env($|\.(?!example$))/.test(file)) fail(`${file} must not be tracked`);
-  if (file.startsWith(".agents/") && !canonicalAgentFiles.has(file)) {
+  if (file.startsWith(".agents/") && !canonicalDotAgentFiles.has(file)) {
     fail(`${file} is not part of the canonical agent policy`);
+  }
+  if (file.startsWith(".cursor/rules/") && file !== ".cursor/rules/mavula-engineering.mdc") {
+    fail(`${file} is not part of the canonical Cursor policy`);
   }
   if (file.endsWith("scripts/guardian.mjs")) continue;
   if (/(\.github\/workflows\/.*\.ya?ml|package\.json|\.githooks\/pre-push|scripts\/.*\.mjs)$/.test(file)) {
