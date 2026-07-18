@@ -39,6 +39,12 @@
       "then": {
         "properties": { "delivered_at": true, "authority_reference": true },
         "required": ["delivered_at", "authority_reference"]
+      },
+      "else": {
+        "properties": {
+          "delivered_at": false,
+          "authority_reference": false
+        }
       }
     }
   ]

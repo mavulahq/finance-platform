@@ -13,6 +13,7 @@
   "beneficial_owner_ids": ["customer_001"],
   "counterparty": { "party_id": "institution_001", "account_id": "loan_001", "party_type": "INSTITUTION", "country": "MZ" },
   "money": { "amount": "1200.00", "currency": "MZN" },
+  "allocation": { "principal": "1100.00", "interest": "100.00", "fees": "0.00" },
   "occurred_at": "2026-07-15T12:00:00.000Z",
   "recorded_at": "2026-07-15T12:00:01.000Z",
   "correlation_id": "corr_regtxn_001",

@@ -11,6 +11,7 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceContractsDir = path.join(root, "contracts", "domain-events");
+const sourceRegulatoryContractsDir = path.join(root, "contracts", "regulatory");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -35,6 +36,21 @@ function withContractCopy(mutate, verify) {
   }
 }
 
+function withRegulatoryContractCopy(mutate, verify) {
+  const tempRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "finance-platform-regulatory-contracts-"),
+  );
+  const contractsDir = path.join(tempRoot, "regulatory");
+  fs.cpSync(sourceRegulatoryContractsDir, contractsDir, { recursive: true });
+
+  try {
+    mutate(contractsDir);
+    verify(contractsDir);
+  } finally {
+    fs.rmSync(tempRoot, { force: true, recursive: true });
+  }
+}
+
 test("accepts the canonical catalog and examples", () => {
   assert.deepEqual(validateContracts(), { contractCount: 8, exampleCount: 7 });
 });
@@ -45,6 +61,38 @@ test("accepts canonical identity access-token claims", () => {
 
 test("accepts canonical regulatory contracts", () => {
   assert.deepEqual(validateRegulatoryContracts(), { contractCount: 3 });
+});
+
+test("rejects delivery evidence before an export is delivered", () => {
+  withRegulatoryContractCopy(
+    (contractsDir) => {
+      const examplePath = path.join(contractsDir, "examples", "export-record.v1.json");
+      const example = readJson(examplePath);
+      example.delivery_status = "GENERATED";
+      example.delivered_at = "2026-07-18T08:00:00Z";
+      example.authority_reference = "BM-2026-0001";
+      writeJson(examplePath, example);
+    },
+    (contractsDir) => assert.throws(
+      () => validateRegulatoryContracts(contractsDir),
+      /Invalid regulatory example/,
+    ),
+  );
+});
+
+test("rejects lending allocation outside loan payments", () => {
+  withRegulatoryContractCopy(
+    (contractsDir) => {
+      const examplePath = path.join(contractsDir, "examples", "transaction-record.v1.json");
+      const example = readJson(examplePath);
+      example.transaction_type = "TRANSFER";
+      writeJson(examplePath, example);
+    },
+    (contractsDir) => assert.throws(
+      () => validateRegulatoryContracts(contractsDir),
+      /Invalid regulatory example/,
+    ),
+  );
 });
 
 test("accepts owner-locked public OpenAPI contracts", () => {

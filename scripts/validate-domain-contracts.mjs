@@ -161,6 +161,11 @@ export function validateRegulatoryContracts(contractsDir = defaultRegulatoryCont
   const ajv = new Ajv2020({ allErrors: true, strict: true });
   addFormats(ajv);
   const seen = new Set();
+  const expected = new Set([
+    "regulatory.transaction_record@1",
+    "regulatory.aml_decision@1",
+    "regulatory.export_record@1",
+  ]);
   for (const contract of catalog.contracts || []) {
     if (seen.has(contract.contract_id)) fail(`Duplicate regulatory contract: ${contract.contract_id}`);
     seen.add(contract.contract_id);
@@ -177,7 +182,9 @@ export function validateRegulatoryContracts(contractsDir = defaultRegulatoryCont
       fail(`Invalid regulatory example ${contract.example}: ${formatErrors(validate.errors)}`);
     }
   }
-  if (seen.size !== 3) fail("Exactly three regulatory v1 contracts are required");
+  if (seen.size !== expected.size || [...expected].some((contractId) => !seen.has(contractId))) {
+    fail("Regulatory catalog must contain the exact approved v1 contract identifiers");
+  }
   return { contractCount: seen.size };
 }
 
@@ -189,10 +196,17 @@ export function validatePublishedOpenApiContracts(workspaceRoot = root) {
     ["mavulahq/ledger-core", "ledger-core"],
     ["mavulahq/workbench", "workbench"],
   ]);
+  const lockedFiles = new Set();
+  const lockedOwners = new Set();
   if (lock.version !== 1 || lock.contracts?.length !== repositoryNames.size) {
     fail("developer-docs must lock the three public owner contracts");
   }
   for (const contract of lock.contracts) {
+    if (lockedFiles.has(contract.file)) fail(`Duplicate OpenAPI lock file: ${contract.file}`);
+    if (lockedOwners.has(contract.owner)) fail(`Duplicate OpenAPI owner lock: ${contract.owner}`);
+    lockedFiles.add(contract.file);
+    lockedOwners.add(contract.owner);
+    if (!/^[a-f0-9]{64}$/.test(contract.sha256 || "")) fail(`Invalid OpenAPI digest: ${contract.file}`);
     const moduleName = repositoryNames.get(contract.owner);
     if (!moduleName) fail(`Unsupported OpenAPI owner: ${contract.owner}`);
     const ownerSource = fs.readFileSync(path.join(workspaceRoot, "packages", moduleName, contract.source));
@@ -221,8 +235,15 @@ export function validateLegacyInteropContract(workspaceRoot = root) {
     if (expectedOffset - 1 !== layout.record_length) fail(`Legacy ${recordType} record does not fill 2048 bytes`);
   }
   const fixture = fs.readFileSync(path.join(contractRoot, "examples", "regulatory-transaction-export.v1.dat"));
+  if (fixture.at(-1) !== 0x0a || fixture.includes(0x0d) || [...fixture].some((byte) => byte > 0x7f)) {
+    fail("Legacy golden file must be raw US-ASCII with LF record terminators");
+  }
   const lines = fixture.subarray(0, fixture.length - 1).toString("ascii").split("\n");
-  if (lines.length < 3 || lines.some((line) => Buffer.byteLength(line, "ascii") !== layout.record_length)) {
+  if (
+    lines.length !== 3
+    || lines.map((line) => line[0]).join("") !== "HDT"
+    || lines.some((line) => Buffer.byteLength(line, "ascii") !== layout.record_length)
+  ) {
     fail("Legacy golden file must contain fixed-width header, detail and trailer records");
   }
   const moduleRoot = path.join(workspaceRoot, "packages", "legacy-connectors");
