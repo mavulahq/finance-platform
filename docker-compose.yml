@@ -23,13 +23,20 @@ services:
     image: redis:7-alpine
     container_name: mavula-redis
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?configure REDIS_PASSWORD in .env}
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - ${REDIS_PASSWORD:?configure REDIS_PASSWORD in .env}
     ports:
       - "16379:6379"
     volumes:
       - mavula-redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -76,7 +83,8 @@ services:
       NODE_ENV: development
       PORT: 3000
       DATABASE_URL: ${LEDGER_CORE_DATABASE_URL:?configure LEDGER_CORE_DATABASE_URL in .env}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      REDIS_URL: ${REDIS_URL:?configure REDIS_URL in .env}
+      JOB_SIGNING_SECRET: ${JOB_SIGNING_SECRET:?configure JOB_SIGNING_SECRET in .env}
       OIDC_ISSUER: ${IDENTITY_ISSUER:?configure IDENTITY_ISSUER in .env}
       OIDC_AUTHORIZATION_ENDPOINT: ${OIDC_AUTHORIZATION_ENDPOINT:?configure OIDC_AUTHORIZATION_ENDPOINT in .env}
       OIDC_AUDIENCE: urn:mavula:ledger-core
@@ -110,7 +118,8 @@ services:
       PORT: 3010
       DATABASE_URL: ${WORKBENCH_DATABASE_URL:?configure WORKBENCH_DATABASE_URL in .env}
       LEGACY_CONNECTORS_DATABASE_URL: ${LEGACY_CONNECTORS_DATABASE_URL:?configure LEGACY_CONNECTORS_DATABASE_URL in .env}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      REDIS_URL: ${REDIS_URL:?configure REDIS_URL in .env}
+      JOB_SIGNING_SECRET: ${JOB_SIGNING_SECRET:?configure JOB_SIGNING_SECRET in .env}
       WORKBENCH_WORKER_ENABLED: "true"
       WORKBENCH_QUEUES: payments,platform,legacy
       WORKBENCH_LEGACY_BATCH_STORE: postgres
