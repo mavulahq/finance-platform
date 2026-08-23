@@ -4,7 +4,7 @@ Operational contract for Workbench public jobs, Identity Access service
 clients, Prometheus scrapes, and Ledger Core worker callbacks.
 
 Verified against finance-platform pull request #52
-(`workbench@0526dbe`, `identity-access@af357c7`, `ledger-core@0988a20`,
+(`workbench@ed2c0e2`, `identity-access@af357c7`, `ledger-core@0988a20`,
 `operations@138dd5d`). Until that change merges, `main` still accepts
 internal types on `POST /api/jobs` and leaves `GET /api/jobs/:jobId`
 unscoped.
@@ -27,7 +27,9 @@ internal work; that is not a public client path.
 
 `GET /api/jobs/:jobId` requires `workbench.read` and returns the job only
 when `job.tenant_id` matches the token tenant. Unknown or cross-tenant IDs
-return `404 Not Found`.
+return `404 Not Found`. A missing authenticated tenant returns
+`403 Forbidden` (`Authenticated tenant is required`). That 403 is distinct
+from the 404 for a valid token whose tenant does not own the id.
 
 If `X-Tenant-ID` is sent and does not match the token `tenant_id`, Workbench
 and Ledger Core return `403`.
