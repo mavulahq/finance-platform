@@ -20,5 +20,7 @@ A decisão é independente de broker. BullMQ permanece a queue atual de jobs e p
 ## Consequências
 
 - A Fase 2 define tabelas, leasing, publisher, Inbox e recuperação de falhas inicialmente para os eventos ativos `products.configuration_published`, `lending.loan_disbursed` e `lending.payment_posted`.
+- A Fase 4 aplica o mesmo Outbox a `payments.settlement_completed`. O publisher só reclama linhas `PENDING` ou `PUBLISHING` com lease expirado; `FAILED` sai da claim query depois de `maxAttempts`.
+- Recuperar um outbox terminal `FAILED` não publica um segundo facto: a linha existente (`tenantId`, `processId`, `eventType`) volta a `PENDING` com o mesmo `event_id` e payload. O procedimento operacional está em [settlement-outbox-recovery.md](../../runbooks/settlement-outbox-recovery.md).
 - Exactly-once não será prometido; efeitos efetivamente únicos dependem de idempotência e deduplicação.
 - Lag, retries, idade do Outbox e DLQ tornam-se sinais operacionais obrigatórios.
