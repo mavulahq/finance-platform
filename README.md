@@ -114,6 +114,11 @@ Validate contracts with:
 pnpm contracts:check
 ```
 
+Operator runbook for the Identity Access interactive login limiter
+(per-source and per-account windows, `429 Too many authentication
+attempts`):
+[docs/runbooks/identity-login-rate-limit.md](docs/runbooks/identity-login-rate-limit.md).
+
 ## Local Development
 
 Required tools:
@@ -199,3 +204,4 @@ questions should go to `legal@mavula.io`.
 - [docs/architecture/domain-events.md](docs/architecture/domain-events.md)
 - [docs/architecture/rfc-0001-phase-3-4-impact.md](docs/architecture/rfc-0001-phase-3-4-impact.md)
 - [docs/architecture/rfc-0002-ledger-core-closeout.md](docs/architecture/rfc-0002-ledger-core-closeout.md)
+- [docs/runbooks/identity-login-rate-limit.md](docs/runbooks/identity-login-rate-limit.md)
