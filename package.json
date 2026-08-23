@@ -22,6 +22,7 @@
     "pr:merge": "node scripts/merge-pr.mjs",
     "guardian:check": "node scripts/guardian.mjs",
     "test:guardrails": "node --test scripts/guardrails.test.mjs",
+    "test:domain-safety": "node --test scripts/domain-safety.test.mjs",
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",
