@@ -114,6 +114,10 @@ Validate contracts with:
 pnpm contracts:check
 ```
 
+Operator runbook for public job types, `private_key_jwt` service clients,
+metrics scrape tokens, and Ledger Core worker identity checks:
+[docs/runbooks/job-authorization-and-service-tokens.md](docs/runbooks/job-authorization-and-service-tokens.md).
+
 ## Local Development
 
 Required tools:
