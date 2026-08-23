@@ -127,3 +127,100 @@ test("eligible pull request is squash-merged and its branch is deleted", async (
   const commands = await readFile(run.log, "utf8");
   assert.match(commands, /^pr merge 42 --squash --delete-branch$/m);
 });
+
+test("merge validation rejects a closed pull request", async (context) => {
+  const run = await runMerge(validPr({ state: "MERGED" }));
+  context.after(() => rm(run.directory, { recursive: true, force: true }));
+  assert.equal(run.result.status, 1);
+  assert.match(run.result.stderr, /not open/);
+});
+
+test("merge validation rejects a non-main base branch", async (context) => {
+  const run = await runMerge(validPr({ baseRefName: "release" }));
+  context.after(() => rm(run.directory, { recursive: true, force: true }));
+  assert.equal(run.result.status, 1);
+  assert.match(run.result.stderr, /base branch must be main/);
+});
+
+test("merge validation rejects a review that requested changes", async (context) => {
+  const run = await runMerge(validPr({ reviewDecision: "CHANGES_REQUESTED" }));
+  context.after(() => rm(run.directory, { recursive: true, force: true }));
+  assert.equal(run.result.status, 1);
+  assert.match(run.result.stderr, /requests changes/);
+});
+
+test("merge validation rejects a missing required CI check", async (context) => {
+  const run = await runMerge(validPr({ statusCheckRollup: [] }));
+  context.after(() => rm(run.directory, { recursive: true, force: true }));
+  assert.equal(run.result.status, 1);
+  assert.match(run.result.stderr, /Required CI check "required" is missing/);
+});
+
+test("merge validation rejects a pending companion check", async (context) => {
+  const run = await runMerge(
+    validPr({
+      statusCheckRollup: [
+        {
+          __typename: "CheckRun",
+          name: "required",
+          status: "COMPLETED",
+          conclusion: "SUCCESS",
+        },
+        {
+          __typename: "CheckRun",
+          name: "guardian",
+          status: "IN_PROGRESS",
+          conclusion: null,
+        },
+      ],
+    }),
+  );
+  context.after(() => rm(run.directory, { recursive: true, force: true }));
+  assert.equal(run.result.status, 1);
+  assert.match(run.result.stderr, /check "guardian" is pending/);
+});
+
+test("merge validation accepts a successful required status context", async (context) => {
+  const run = await runMerge(
+    validPr({
+      statusCheckRollup: [
+        {
+          __typename: "StatusContext",
+          context: "required",
+          state: "SUCCESS",
+        },
+      ],
+    }),
+  );
+  context.after(() => rm(run.directory, { recursive: true, force: true }));
+  assert.equal(run.result.status, 0);
+});
+
+test("merge validation ignores skipped companion checks", async (context) => {
+  const run = await runMerge(
+    validPr({
+      statusCheckRollup: [
+        {
+          __typename: "CheckRun",
+          name: "required",
+          status: "COMPLETED",
+          conclusion: "SUCCESS",
+        },
+        {
+          __typename: "CheckRun",
+          name: "optional-docs",
+          status: "COMPLETED",
+          conclusion: "SKIPPED",
+        },
+      ],
+    }),
+  );
+  context.after(() => rm(run.directory, { recursive: true, force: true }));
+  assert.equal(run.result.status, 0);
+});
+
+test("merge script rejects a missing pull request number", () => {
+  const result = execute(process.execPath, [mergeScript, "--check-only"]);
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Usage: pnpm pr:merge/);
+});
