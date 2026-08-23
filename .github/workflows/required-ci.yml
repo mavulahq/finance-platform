@@ -138,6 +138,9 @@ jobs:
           pnpm --filter @mavula/legacy-connectors build
           pnpm --filter @mavula/workbench build
 
+      - name: Test domain safety invariants
+        run: pnpm test:domain-safety
+
       - name: Validate public OpenAPI contracts
         run: |
           pnpm --filter @mavula/identity-access openapi:check
