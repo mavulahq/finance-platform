@@ -130,6 +130,9 @@ jobs:
       - name: Validate architecture contracts
         run: pnpm contracts:check
 
+      - name: Test repository guardrails
+        run: pnpm test:guardrails
+
       - name: Build implemented services
         run: |
           pnpm --filter @mavula/identity-access build

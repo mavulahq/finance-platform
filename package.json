@@ -21,7 +21,7 @@
     "git:hooks:install": "bash scripts/setup-git-hooks.sh",
     "pr:merge": "node scripts/merge-pr.mjs",
     "guardian:check": "node scripts/guardian.mjs",
-    "test:guardrails": "node --test scripts/guardrails.test.mjs",
+    "test:guardrails": "node --test scripts/guardrails.test.mjs scripts/guardian.test.mjs scripts/merge-pr.test.mjs scripts/validate-domain-contracts.policy.test.mjs",
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",
