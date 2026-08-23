@@ -176,7 +176,7 @@ docker compose logs -f ledger-core workbench
 Endpoints:
 
 - PostgreSQL: `localhost:15432`
-- Redis: `localhost:16379`
+- Redis: `localhost:16379` (requires `REDIS_PASSWORD` / AUTH)
 - `ledger-core`: `http://localhost:13000/api/health`
 - `workbench` status: `http://localhost:13010/api/status`
 - `workbench` metrics: `http://localhost:13010/api/metrics`

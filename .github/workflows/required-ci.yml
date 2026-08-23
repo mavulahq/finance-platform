@@ -43,7 +43,9 @@ jobs:
       LEGACY_CONNECTORS_MIGRATION_DATABASE_URL: postgresql://mavula:mavula_dev@127.0.0.1:5432/mavula?schema=legacy_connectors
       LEGACY_CONNECTORS_DATABASE_ROLE_PASSWORD: mavula_legacy_ci_password
       LEGACY_CONNECTORS_DATABASE_URL: postgresql://legacy_connectors_app:mavula_legacy_ci_password@127.0.0.1:5432/mavula?schema=legacy_connectors
-      REDIS_URL: redis://127.0.0.1:6379
+      REDIS_URL: redis://:compose-validation-placeholder@127.0.0.1:6379
+      REDIS_PASSWORD: compose-validation-placeholder
+      JOB_SIGNING_SECRET: compose-validation-placeholder
       IDENTITY_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=identity
       LEDGER_CORE_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=public
       WORKBENCH_DATABASE_URL: postgresql://mavula:mavula_dev@postgres:5432/mavula?schema=settlements
