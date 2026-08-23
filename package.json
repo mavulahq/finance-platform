@@ -22,6 +22,7 @@
     "pr:merge": "node scripts/merge-pr.mjs",
     "guardian:check": "node scripts/guardian.mjs",
     "test:guardrails": "node --test scripts/guardrails.test.mjs",
+    "test:recovery": "pnpm --filter @mavula/settlements build && pnpm --filter @mavula/legacy-connectors build && pnpm --filter @mavula/ledger-core exec tsc --pretty false --outDir dist --rootDir src --module commonjs --target ES2020 --esModuleInterop --skipLibCheck src/calculations/financial-calculations.ts src/utils/safe-expression-evaluator.ts && node --test scripts/settlements-recovery.test.mjs scripts/ledger-money-paths.test.mjs scripts/legacy-batch-recovery.test.mjs",
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",

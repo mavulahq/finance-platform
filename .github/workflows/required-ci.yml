@@ -165,6 +165,9 @@ jobs:
       - name: Test settlements
         run: pnpm --filter @mavula/settlements test
 
+      - name: Test payment recovery and money-path invariants
+        run: pnpm test:recovery
+
       - name: Sync ledger-core database schema
         run: |
           pnpm --filter @mavula/ledger-core database:migrate
