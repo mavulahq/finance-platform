@@ -199,3 +199,4 @@ questions should go to `legal@mavula.io`.
 - [docs/architecture/domain-events.md](docs/architecture/domain-events.md)
 - [docs/architecture/rfc-0001-phase-3-4-impact.md](docs/architecture/rfc-0001-phase-3-4-impact.md)
 - [docs/architecture/rfc-0002-ledger-core-closeout.md](docs/architecture/rfc-0002-ledger-core-closeout.md)
+- [docs/runbooks/settlement-callback-contract.md](docs/runbooks/settlement-callback-contract.md)
