@@ -116,6 +116,7 @@ const requiredCi = read(".github/workflows/required-ci.yml");
 for (const expected of [
   "pnpm guardian:check",
   "pnpm contracts:check",
+  "pnpm test:fail-closed",
   "pnpm --filter @mavula/identity-access build",
   "pnpm --filter @mavula/identity-access test",
   "pnpm --filter @mavula/ledger-core build",
